@@ -1,0 +1,8 @@
+# Problem
+In order to deal with a higher variety of situations pertaining changes in the number of drones and sensors, we are going to try a strategy of using a sequential model (perhaps Transformer based). The idea is reading observations a a sequence of sensor and drone information. Sequences can have variable size; thus, our model will be able to perform no matter the number of drones and sensors.
+
+# Solution
+Now we're ready to test the ability of this model to learn how to deal with sequential observations. We've anticipated that some hyper-parameter changes might be needed and already ran a trial in **flex_seq_obs_trial**. This run will contain the best hyper-parameters
+
+# Results
+Results were bad even with the best hyper-parameters trialed. It seems that something about the sequential observations is not allowing learning to proceed. We'll investigate in the next runs.

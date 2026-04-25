@@ -1,0 +1,21 @@
+# Problem
+Running with a variable number of agents was already working but was very slow, at about 40 steps/s. This is slow enough to hinder progress.
+
+# Solution
+Spent a long time optimizing the code. The transformer was the slowest portion of the code, but other ineficiencies were found. The bulk of the improvement came from batching computations on the encoder when shared parameters or centralized models were used, and removing intra-device copies of tensors. It involved intricate profiling using the torch profiler to find exactly where the unnecessary operations were to remove them.
+
+# Results
+Training speed went up to about 400 sps and performance didn't decline. Ended up developing a model with all_collected in 90% of scenarios. May need better hyperparameters to reach 100%, but I see this as good enough to move on.
+
+=== Evaluation Summary ===
+Runs: 20
+
+Metrics:
+- avg_reward: mean=6.7799, std=1.9889, min=3.6497, max=10.9961
+- max_reward: mean=47.5000, std=14.7902, min=30.0000, max=80.0000
+- sum_reward: mean=232.4226, std=67.4610, min=129.9286, max=335.0882
+- avg_collection_time: mean=19.0155, std=16.5011, min=6.0000, max=76.7273
+- episode_duration: mean=35.7500, std=11.4144, min=23.0000, max=71.0000
+- completion_time: mean=117.7000, std=129.3573, min=48.0000, max=500.0000
+- all_collected: mean=0.9000, std=0.3000, min=0.0000, max=1.0000
+- num_collected: mean=24.4000, std=6.8440, min=14.0000, max=34.0000

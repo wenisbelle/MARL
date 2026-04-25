@@ -1,0 +1,8 @@
+# Problem
+Training is too slow. I'm trying different strategies to optimize training times and increase sample efficiency
+
+# Solution
+Logging metrics in batches instead of one by one. Obviously no change in training performance but might bring a small speed increase.
+
+# Results
+Training it/s increased from ~80 to ~85. Tiny improvement.

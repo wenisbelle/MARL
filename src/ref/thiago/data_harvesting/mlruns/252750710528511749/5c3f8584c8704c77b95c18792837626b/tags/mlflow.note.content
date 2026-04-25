@@ -1,0 +1,8 @@
+# Problem
+Another important step in increasing the flexibility of this system is being able to handle a variable number of agents. This not only enables the model to handle dead agent faults but also should exponentially reduce training time by allowing a single model to be trained for every scenario variation.
+
+# Solution
+Use the new flex encoder to encode agents a a sequence of inputs on the centralized critic. That way variations on the number of agents are interpreted as variations on the size of the sequence, preserving the fixed input width that deep learning models require. 
+
+# Results
+Results were good, if not slow. We will run another trial to check if we can find better hyper-parameters for this use-case, but the truth is that the transformer architecture is quite heavy to run.

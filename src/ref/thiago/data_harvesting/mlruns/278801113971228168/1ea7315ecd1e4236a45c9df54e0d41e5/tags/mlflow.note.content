@@ -1,0 +1,8 @@
+# Problem
+Training is too slow. I'm trying different strategies to optimize training times and increase sample efficiency
+
+# Solution
+I've starting using a single asynchronous collector, instead of a synchronous one. The asynchronous collector keeps running the environment while the model is busy training. 
+
+# Results
+Training it/s increased from ~50 to ~60. A small improvement with no noticeable performance loss.

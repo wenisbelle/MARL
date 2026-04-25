@@ -1,0 +1,1 @@
+Experiment was created to figure out the optimal set of hyper-parameters to run MADDPG with batches of 256 experiences. The testes hyperparameters were lr, n_optimizer_steps and grad_clip. 

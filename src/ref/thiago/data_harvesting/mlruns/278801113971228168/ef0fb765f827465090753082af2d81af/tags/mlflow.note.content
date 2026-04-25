@@ -1,0 +1,8 @@
+# Problem
+Training is too slow. I'm trying different strategies to optimize training times and increase sample efficiency
+
+# Solution
+Using several collectors to fill a batch of more than one experience unlocks their potential. I'm expecting a huge increase in performance, but it might be accompanied with a huge drop in performance.
+
+# Results
+Training it/s increased from ~85 to ~600. An amazing performance increase but, as expected, it came with downsides. Performance was destroyed, average rewards don't seem to grow and losses don't seem to decrease. The capability to learn is lost.

@@ -1,0 +1,8 @@
+# Problem
+In order to deal with a higher variety of situations pertaining changes in the number of drones and sensors, we are going to try a strategy of using a sequential model (perhaps Transformer based). The idea is reading observations a a sequence of sensor and drone information. Sequences can have variable size; thus, our model will be able to perform no matter the number of drones and sensors.
+
+# Solution
+I believe that one of the reasons why the sequential obs implementation is not learning is because the critic cannot properly identify which agent is responsible for each sequential observations. I'll introduce an agentic encoding, similar to the positional encodings on a regular transformer architecture. Anticipating parameter changes we ran trial **flex_seq_obs_agent_encoding_trial** and picked the best hyper-parameters from there.
+
+# Results
+Great results. The learned policy is even better than the one learned with flat observations. It's the best policy yet. Learning slowed down to ~100 steps per second though.

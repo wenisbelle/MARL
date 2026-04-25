@@ -1,0 +1,1 @@
+collector.frames_per_batch=256 training.batch_size=256

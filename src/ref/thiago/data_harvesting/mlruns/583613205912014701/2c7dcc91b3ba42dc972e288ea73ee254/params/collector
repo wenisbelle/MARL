@@ -1,0 +1,1 @@
+{'num_collectors': 8, 'frames_per_batch': 2048, 'async_collector': True}

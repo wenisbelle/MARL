@@ -1,0 +1,1 @@
+{'total_timesteps': 300000, 'exploration_sigma_init': 0.1, 'exploration_sigma_end': 0.1, 'exploration_annealing_steps': 500000, 'batch_size': 1024, 'algorithm': 'maddpg'}

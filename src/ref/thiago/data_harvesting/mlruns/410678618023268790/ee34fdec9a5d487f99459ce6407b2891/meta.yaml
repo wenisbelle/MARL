@@ -1,0 +1,19 @@
+artifact_uri: file:///workspace/data_harvesting/mlruns/410678618023268790/ee34fdec9a5d487f99459ce6407b2891/artifacts
+end_time: 1771709231018
+entry_point_name: ''
+experiment_id: '410678618023268790'
+lifecycle_stage: active
+run_id: ee34fdec9a5d487f99459ce6407b2891
+run_name: collector.frames_per_batch=2048 flex_encoder.flat_heads.depth=2 flex_encoder.flat_heads.embed_dim=128
+  flex_encoder.flat_heads.num_cells=64 flex_encoder.mix_layer_depth=2 flex_encoder.mix_layer_num_cells=128
+  flex_encoder.sequential_heads.depth=1 flex_encoder.sequential_heads.embed_dim=128
+  flex_encoder.sequential_heads.ff_dim=128 flex_encoder.sequential_heads.num_heads=2
+  optimization.gamma=0.9647951613009195 optimization.grad_clip=1.0 optimization.lr=9.084154053735878e-05
+  optimization.num_optimizer_steps=10 optimization.tau=0.0010635378584722566 training.batch_size=256
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771708726372
+status: 3
+tags: []
+user_id: root

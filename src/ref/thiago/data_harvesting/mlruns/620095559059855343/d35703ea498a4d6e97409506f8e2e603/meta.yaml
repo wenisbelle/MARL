@@ -1,0 +1,14 @@
+artifact_uri: file:///home/thlamz/data_harvesting/mlruns/620095559059855343/d35703ea498a4d6e97409506f8e2e603/artifacts
+end_time: 1760047825575
+entry_point_name: ''
+experiment_id: '620095559059855343'
+lifecycle_stage: active
+run_id: d35703ea498a4d6e97409506f8e2e603
+run_name: optimization.grad_clip=0 optimization.lr=0.011989369696589584 optimization.num_optimizer_steps=10
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1760045798073
+status: 3
+tags: []
+user_id: thlamz

@@ -1,0 +1,6 @@
+artifact_location: file:///home/thlamz/data_harvesting/mlruns/507963521324496195
+creation_time: 1760013758376
+experiment_id: '507963521324496195'
+last_update_time: 1760013758376
+lifecycle_stage: active
+name: flat_obs_encoder_trial

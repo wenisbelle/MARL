@@ -1,0 +1,8 @@
+# Problem
+Training is too slow. I'm trying different strategies to optimize training times and increase sample efficiency
+
+# Solution
+I've reduced the logging frequency from every batch to every *n* batches. I've also changed my logging tool from DVCLive/DVC to mlflow. 
+
+# Results
+Training it/s increased from ~2 to ~50. A great improvement in training speed but no change in sample efficiency.

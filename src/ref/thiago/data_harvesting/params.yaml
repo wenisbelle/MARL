@@ -1,0 +1,164 @@
+environment:
+  # Time between iterations of the algorithm in seconds. Agents will make observations and take actions at this interval.
+  algorithm_iteration_interval: 2.0
+  # Minimum number of drones in the simulation.
+  min_num_agents: 1
+  # Maximum number of drones in the simulation.
+  max_num_agents: 8
+  # Minimum number of sensor nodes in the simulation.
+  min_num_sensors: 1
+  # Maximum number of sensor nodes in the simulation.
+  max_num_sensors: 36
+  # Size of the scenario (side length of the square area).
+  scenario_size: 100
+  # Maximum number of steps per episode.
+  max_episode_length: 500
+  # Maximum seconds a drone can be stalled before episode ends.
+  max_seconds_stalled: 30
+  # Maximum communication range for drones and sensors.
+  communication_range: 20.0
+  # Number of closest sensors to include in the state.
+  state_num_closest_sensors: 12
+  # Number of closest drones to include in the state.
+  state_num_closest_drones: 7
+  # Whether to include agent IDs in the state.
+  id_on_state: true
+  # Minimum priority value for sensors.
+  min_sensor_priority: 1.0
+  # Maximum priority value for sensors.
+  max_sensor_priority: 1.0
+  # If true, drone positions are fully randomized at start.
+  full_random_drone_position: false
+  # Reward function type. Only "punish" is supported.
+  reward: punish
+  # If true, agents can control their speed.
+  speed_action: true
+  # If true, episode ends when all sensors are collected.
+  end_when_all_collected: false
+  # Probability that each active agent dies after a step.
+  agent_death_probability: 0.0
+  # If true, the observations are shaped as a sequence, if false it is a flat vector.
+  sequential_obs: true
+
+actor:
+  # All actor networks will share the same parameters if true.
+  share_parameters: true
+  # Network depth (number of hidden layers).
+  network_depth: 2
+  # Network width (number of neurons per hidden layer).
+  network_width: 256
+  # Activation function for hidden layers. Options: "Tanh", "ReLU", "LeakyReLU".
+  activation_function: Tanh
+  # Whether to use a centralized policy (for multi-agent setups).
+  centralized: false
+
+training:
+  # Total number of training timesteps.
+  total_timesteps: 50000000
+  # Initial sigma for exploration noise (AdditiveGaussianModule).
+  exploration_sigma_init: 0.1
+  # Final sigma for exploration noise (AdditiveGaussianModule).
+  exploration_sigma_end: 0.1
+  # Number of steps to anneal sigma from init to end (AdditiveGaussianModule).
+  exploration_annealing_steps: 500_000
+  # Batch size for training updates.
+  batch_size: 1024
+  # Algorithm to use. Options: "maddpg", "mappo"
+  algorithm: maddpg
+
+critic:
+  # Number of hidden layers in the critic MLP.
+  network_depth: 2
+  # Number of neurons per hidden layer.
+  network_width: 512
+  # Activation function for hidden layers. Options: "Tanh", "ReLU", "LeakyReLU".
+  activation_function: Tanh
+  # Whether to share parameters across agents.
+  share_parameters: true
+  # Whether the critic is centralized.
+  centralized: true
+
+collector:
+  # Number of parallel environment instances.
+  num_collectors: 4
+  # Number of frames collected per batch.
+  frames_per_batch: 1024
+  # Whether to use async collectors
+  async_collector: true
+  # Device used for collecting experiences ("cpu" or "cuda").
+  device: cpu
+
+replay_buffer:
+  # Size of the replay buffer (number of transitions it can store).
+  buffer_size: 1000000
+  # Number of batches to prefetch asynchronously (0 disables prefetching).
+  prefetch: 32
+  # Device to store the buffer on ("cpu" or "cuda").
+  buffer_device: cpu
+
+optimization:
+  # Discount factor for future rewards.
+  gamma: 0.96
+  # Learning rate for optimizers.
+  lr: 0.0004
+  # Tau for the soft-update of the target network.
+  tau: 0.002
+  # Number of optimizer steps per batch.
+  num_optimizer_steps: 40
+  # Gradient clipping value (0 disables clipping).
+  grad_clip: 10.0
+  # Whether to use automatic mixed precision (AMP) during training.
+  use_amp: true
+
+# PPO-specific configuration (used when training.algorithm: mappo)
+ppo:
+  # Clipping range for PPO objective
+  clip_epsilon: 0.2
+  # GAE lambda
+  gae_lambda: 0.95
+  # Entropy bonus coefficient
+  entropy_coef: 0.0
+  # Value loss coefficient
+  value_coef: 0.5
+  # Number of optimization epochs per collected batch
+  num_epochs: 4
+  # Minibatch size within a batch
+  minibatch_size: 1024
+
+metrics:
+  # Log training metrics every N steps
+  log_every_n_steps: 5000
+  # Save model at the end of training
+  save_model: true
+
+# Flexible multi-head encoder configuration (optional replacement for MultiAgentMLP)
+flex_encoder:
+  # Master switch: when true, actor/critic construction logic should instantiate
+  # MultiAgentFlexEncoder instead of the standard MultiAgentMLP backbones.
+  enabled: true
+
+  # Transformer-based sequential heads. Each entry corresponds to an observation
+  # key whose tensor shape is (batch, n_agents, seq_len, input_dim).
+  # Provide one block per sequential sub-observation you wish to encode.
+  sequential_heads:
+    embed_dim: 64 # Output embedding size of this head
+    head_dim: 32 # Dimension per attention head
+    num_heads: 8 # Number of attention heads
+    ff_dim: 256 # Feed-forward (Transformer MLP) inner dim
+    depth: 2 # Number of Transformer layers
+    dropout: 0.1 # Dropout probability inside Transformer
+    critic_agent_embedding: true # Enrich observation encoding with agent ID embeddings
+
+  # MLP-based flat heads. Each entry corresponds to an observation key whose
+  # tensor shape is (batch, n_agents, input_dim) (no temporal dimension).
+  flat_heads:
+    embed_dim: 64 # Output embedding size of this flat head
+    depth: 1 # Hidden layer count inside this head MLP
+    num_cells: 64 # Hidden layer width of this head MLP
+    activation_function: Tanh # One of: Tanh, ReLU, LeakyReLU
+
+  # Final mixing MLP that fuses ALL head outputs per-agent (or centrally) into
+  # a unified embedding of size output_dim below.
+  mix_layer_depth: 3 # Hidden layer count of mixing MLP
+  mix_layer_num_cells: 128 # Hidden layer width of mixing MLP
+  mix_activation_function: Tanh # Activation for mixing MLP

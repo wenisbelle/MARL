@@ -1,0 +1,42 @@
+[project]
+name = "data-harvesting"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "argparse>=1.4.0",
+    "gradysim>=0.7.3",
+    "gymnasium>=1.2.0",
+    "hyperopt>=0.2.7",
+    "jupyter>=1.1.1",
+    "line-profiler>=5.0.0",
+    "matplotlib>=3.10.6",
+    "mlflow>=3.4.0",
+    "numpy>=2.2.6",
+    "pettingzoo==1.24.3",
+    "pyyaml>=6.0.2",
+    "torch>=2.9.1",
+    "torchrl>=0.10.1",
+    "torchvision>=0.24.1",
+    "tqdm>=4.67.1",
+    "vmas>=1.5.0",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu128", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu128", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]

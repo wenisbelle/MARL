@@ -1,0 +1,10 @@
+# Problem
+Training is too slow. I'm trying different strategies to optimize training times and increase sample efficiency
+
+# Solution
+Experiment **batch_opt_trial** did a hyperparameter sweep searching for the best parameters that allow us to run batch MADDPG learning without sacrificing training performance. Two solutions were tried:
+- lr-0.0008  num_optimizer_steps-2 grad_clip-3
+- lr-0.003 num_optimizer_steps-10 grad_clip-0 (this one)
+
+# Results
+Run *lr-0.003 num_optimizer_steps-10 grad_clip-0* (this one) achieved good training results as was able to outperform the non-batched version in the same amount of training time. There seemed to be a plateau on training though.

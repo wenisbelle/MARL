@@ -1,0 +1,8 @@
+# Problem
+Training is too slow. I'm trying different strategies to optimize training times and increase sample efficiency
+
+# Solution
+Experiment **batch_size_trial** studied different batch size values to speed up training. From that experiment the optimal batch size found was 1024 frames for the collector and 2048 experiences per iteration.
+
+# Results
+This one achieves by far the best results yet, having a training speed of about ~700 it/s and the best training performance yet.

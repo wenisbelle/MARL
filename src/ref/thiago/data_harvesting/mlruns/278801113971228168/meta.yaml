@@ -1,0 +1,8 @@
+artifact_location: file:///home/thlamz/data_harvesting/mlruns/278801113971228168
+creation_time: 1758569376465
+experiment_id: '278801113971228168'
+last_update_time: 1758583348927
+lifecycle_stage: active
+name: maddpg_t_speed
+tags:
+  mlflow.experimentKind: custom_model_development

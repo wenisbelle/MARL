@@ -1,0 +1,14 @@
+artifact_uri: file:///home/thlamz/data_harvesting/mlruns/552728603782970447/ee764e1577dd4cabb11e562ca89acc86/artifacts
+end_time: 1760160369039
+entry_point_name: ''
+experiment_id: '552728603782970447'
+lifecycle_stage: active
+run_id: ee764e1577dd4cabb11e562ca89acc86
+run_name: 5_seq_agentic_encoding
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1760133929664
+status: 4
+tags: []
+user_id: thlamz

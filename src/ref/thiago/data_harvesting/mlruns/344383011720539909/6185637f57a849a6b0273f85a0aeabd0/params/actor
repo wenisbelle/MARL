@@ -1,0 +1,1 @@
+{'share_parameters': True, 'network_depth': 2, 'network_width': 256, 'activation_function': 'Tanh', 'centralized': False}

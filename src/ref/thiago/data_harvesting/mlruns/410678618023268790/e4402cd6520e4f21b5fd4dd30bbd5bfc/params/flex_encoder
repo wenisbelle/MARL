@@ -1,0 +1,1 @@
+{'enabled': True, 'sequential_heads': {'embed_dim': 128, 'head_dim': 32, 'num_heads': 2, 'ff_dim': 256, 'depth': 1, 'dropout': 0.1, 'critic_agent_embedding': True}, 'flat_heads': {'embed_dim': 128, 'depth': 1, 'num_cells': 256, 'activation_function': 'Tanh'}, 'mix_layer_depth': 3, 'mix_layer_num_cells': 128, 'mix_activation_function': 'Tanh'}

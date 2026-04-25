@@ -1,0 +1,8 @@
+artifact_location: file:///home/thlamz/data_harvesting/mlruns/620095559059855343
+creation_time: 1760044009725
+experiment_id: '620095559059855343'
+last_update_time: 1760133715395
+lifecycle_stage: active
+name: flex_seq_obs_agent_encoding_trial
+tags:
+  mlflow.experimentKind: custom_model_development

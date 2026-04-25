@@ -1,0 +1,8 @@
+# Problem
+Training is too slow. I'm trying different strategies to optimize training times and increase sample efficiency
+
+# Solution
+I'm using multiple (4) asynchronous collectors. Since the batch size is still one (one experience step to one optimization step), the change won't be expressive, but at least there shouldn't be a great loss in performance.
+
+# Results
+Training it/s increased from ~60 to ~80. A small performance improvement. No loss in performance was observed

@@ -1,0 +1,6 @@
+artifact_location: file:///home/thlamz/data_harvesting/mlruns/583613205912014701
+creation_time: 1758828603075
+experiment_id: '583613205912014701'
+last_update_time: 1758828603075
+lifecycle_stage: active
+name: batch_size_trial

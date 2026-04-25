@@ -1,0 +1,1 @@
+{'gamma': 0.9811416102035192, 'lr': 5.0289174078003307e-05, 'tau': 0.017232421174735862, 'num_optimizer_steps': 40, 'grad_clip': 0.5, 'use_amp': True}
