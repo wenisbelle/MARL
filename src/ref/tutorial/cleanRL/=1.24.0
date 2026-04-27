@@ -1,0 +1,167 @@
+Requirement already satisfied: pettingzoo[atari,butterfly,testing] in /usr/local/lib/python3.10/dist-packages (1.26.0)
+Requirement already satisfied: numpy>=1.21.0 in /usr/local/lib/python3.10/dist-packages (from pettingzoo[atari,butterfly,testing]) (2.2.6)
+Requirement already satisfied: gymnasium>=1.0.0 in /usr/local/lib/python3.10/dist-packages (from pettingzoo[atari,butterfly,testing]) (1.3.0)
+Collecting pygame-ce>=2.3.0
+  Downloading pygame_ce-2.5.7-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (12.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 2.2 MB/s eta 0:00:00
+Requirement already satisfied: pymunk>=6.2.0 in /usr/local/lib/python3.10/dist-packages (from pettingzoo[atari,butterfly,testing]) (7.2.0)
+Requirement already satisfied: pytest>=8.0.0 in /usr/local/lib/python3.10/dist-packages (from pettingzoo[atari,butterfly,testing]) (9.0.2)
+Collecting pytest-xdist>=3.5.0
+  Downloading pytest_xdist-3.8.0-py3-none-any.whl (46 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.4/46.4 KB 352.7 kB/s eta 0:00:00
+Collecting pytest-markdown-docs>=0.5.0
+  Downloading pytest_markdown_docs-0.9.2-py3-none-any.whl (13 kB)
+Collecting pre-commit>=3.5.0
+  Downloading pre_commit-4.6.0-py2.py3-none-any.whl (226 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 226.5/226.5 KB 2.7 MB/s eta 0:00:00
+Collecting pynput>=1.7.6
+  Downloading pynput-1.8.1-py2.py3-none-any.whl (91 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 91.7/91.7 KB 502.5 kB/s eta 0:00:00
+Collecting AutoROM>=0.6.1
+  Downloading AutoROM-0.6.1-py3-none-any.whl (9.4 kB)
+Collecting pytest-cov>=4.1.0
+  Downloading pytest_cov-7.1.0-py3-none-any.whl (22 kB)
+Collecting multi_agent_ale_py>=0.1.11
+  Downloading multi_agent_ale_py-0.1.12-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (707 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 707.8/707.8 KB 1.1 MB/s eta 0:00:00
+Collecting requests
+  Downloading requests-2.33.1-py3-none-any.whl (64 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 64.9/64.9 KB 3.4 MB/s eta 0:00:00
+Requirement already satisfied: click in /usr/local/lib/python3.10/dist-packages (from AutoROM>=0.6.1->pettingzoo[atari,butterfly,testing]) (8.3.3)
+Requirement already satisfied: farama-notifications>=0.0.1 in /usr/local/lib/python3.10/dist-packages (from gymnasium>=1.0.0->pettingzoo[atari,butterfly,testing]) (0.0.6)
+Requirement already satisfied: typing-extensions>=4.3.0 in /usr/local/lib/python3.10/dist-packages (from gymnasium>=1.0.0->pettingzoo[atari,butterfly,testing]) (4.15.0)
+Requirement already satisfied: cloudpickle>=1.2.0 in /usr/local/lib/python3.10/dist-packages (from gymnasium>=1.0.0->pettingzoo[atari,butterfly,testing]) (3.1.2)
+Collecting nodeenv>=0.11.1
+  Downloading nodeenv-1.10.0-py2.py3-none-any.whl (23 kB)
+Collecting identify>=1.0.0
+  Downloading identify-2.6.19-py2.py3-none-any.whl (99 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 99.4/99.4 KB 2.7 MB/s eta 0:00:00
+Collecting pyyaml>=5.1
+  Downloading pyyaml-6.0.3-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (770 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 770.3/770.3 KB 1.2 MB/s eta 0:00:00
+Collecting virtualenv>=20.10.0
+  Downloading virtualenv-21.2.4-py3-none-any.whl (5.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.8/5.8 MB 1.3 MB/s eta 0:00:00
+Collecting cfgv>=2.0.0
+  Downloading cfgv-3.5.0-py2.py3-none-any.whl (7.4 kB)
+Requirement already satisfied: cffi>=1.17.1 in /usr/local/lib/python3.10/dist-packages (from pymunk>=6.2.0->pettingzoo[atari,butterfly,testing]) (2.0.0)
+Collecting python-xlib>=0.17
+  Downloading python_xlib-0.33-py2.py3-none-any.whl (182 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 182.2/182.2 KB 3.4 MB/s eta 0:00:00
+Collecting evdev>=1.3
+  Downloading evdev-1.9.3.tar.gz (32 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Discarding https://files.pythonhosted.org/packages/a5/f5/397b61091120a9ca5001041dd7bf76c385b3bfd67a0e5bcb74b852bd22a4/evdev-1.9.3.tar.gz#sha256=2c140e01ac8437758fa23fe5c871397412461f42d421aa20241dc8fe8cfccbc9 (from https://pypi.org/simple/evdev/) (requires-python:>=3.9): Requested unknown from https://files.pythonhosted.org/packages/a5/f5/397b61091120a9ca5001041dd7bf76c385b3bfd67a0e5bcb74b852bd22a4/evdev-1.9.3.tar.gz#sha256=2c140e01ac8437758fa23fe5c871397412461f42d421aa20241dc8fe8cfccbc9 (from pynput>=1.7.6->pettingzoo) has inconsistent name: filename has 'evdev', but metadata has 'unknown'
+  Downloading evdev-1.9.2.tar.gz (33 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Discarding https://files.pythonhosted.org/packages/63/fe/a17c106a1f4061ce83f04d14bcedcfb2c38c7793ea56bfb906a6fadae8cb/evdev-1.9.2.tar.gz#sha256=5d3278892ce1f92a74d6bf888cc8525d9f68af85dbe336c95d1c87fb8f423069 (from https://pypi.org/simple/evdev/) (requires-python:>=3.8): Requested unknown from https://files.pythonhosted.org/packages/63/fe/a17c106a1f4061ce83f04d14bcedcfb2c38c7793ea56bfb906a6fadae8cb/evdev-1.9.2.tar.gz#sha256=5d3278892ce1f92a74d6bf888cc8525d9f68af85dbe336c95d1c87fb8f423069 (from pynput>=1.7.6->pettingzoo) has inconsistent name: filename has 'evdev', but metadata has 'unknown'
+  Downloading evdev-1.9.1.tar.gz (33 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Discarding https://files.pythonhosted.org/packages/d1/99/4d24bb6db12fc170a5f209f4c9108054a2c84d289d1e7f743e979b202023/evdev-1.9.1.tar.gz#sha256=dc640a064cb1c9fe1f8b970dc2039945a2a275d7b7ee62284bf427238abe45ee (from https://pypi.org/simple/evdev/) (requires-python:>=3.8): Requested unknown from https://files.pythonhosted.org/packages/d1/99/4d24bb6db12fc170a5f209f4c9108054a2c84d289d1e7f743e979b202023/evdev-1.9.1.tar.gz#sha256=dc640a064cb1c9fe1f8b970dc2039945a2a275d7b7ee62284bf427238abe45ee (from pynput>=1.7.6->pettingzoo) has inconsistent name: filename has 'evdev', but metadata has 'unknown'
+  Downloading evdev-1.9.0.tar.gz (32 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Discarding https://files.pythonhosted.org/packages/8c/bf/0fe4d372ee62fe5aec06aae2e97c0603d131b8e3cbaffa2329e0bd763a98/evdev-1.9.0.tar.gz#sha256=38218bc95507cad756bc621a5fe7a77a41eb8d9c1213855de8e4ba0aba28e79f (from https://pypi.org/simple/evdev/) (requires-python:>=3.8): Requested unknown from https://files.pythonhosted.org/packages/8c/bf/0fe4d372ee62fe5aec06aae2e97c0603d131b8e3cbaffa2329e0bd763a98/evdev-1.9.0.tar.gz#sha256=38218bc95507cad756bc621a5fe7a77a41eb8d9c1213855de8e4ba0aba28e79f (from pynput>=1.7.6->pettingzoo) has inconsistent name: filename has 'evdev', but metadata has 'unknown'
+  Downloading evdev-1.8.0.tar.gz (32 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Discarding https://files.pythonhosted.org/packages/4c/eb/b8900082a13a47bb9f69f415174d03cbf12ce95d07345722e1f4ef0e2093/evdev-1.8.0.tar.gz#sha256=45598eee1ae3876a3122ca1dc0ec8049c01931672d12478b5c610afc24e47d75 (from https://pypi.org/simple/evdev/) (requires-python:>=3.8): Requested unknown from https://files.pythonhosted.org/packages/4c/eb/b8900082a13a47bb9f69f415174d03cbf12ce95d07345722e1f4ef0e2093/evdev-1.8.0.tar.gz#sha256=45598eee1ae3876a3122ca1dc0ec8049c01931672d12478b5c610afc24e47d75 (from pynput>=1.7.6->pettingzoo) has inconsistent name: filename has 'evdev', but metadata has 'unknown'
+  Downloading evdev-1.7.1.tar.gz (30 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Discarding https://files.pythonhosted.org/packages/12/bb/f622a8a5e64d46ca83020a761877c0ead19140903c9aaf1431f3c531fdf6/evdev-1.7.1.tar.gz#sha256=0c72c370bda29d857e188d931019c32651a9c1ea977c08c8d939b1ced1637fde (from https://pypi.org/simple/evdev/) (requires-python:>=3.6): Requested unknown from https://files.pythonhosted.org/packages/12/bb/f622a8a5e64d46ca83020a761877c0ead19140903c9aaf1431f3c531fdf6/evdev-1.7.1.tar.gz#sha256=0c72c370bda29d857e188d931019c32651a9c1ea977c08c8d939b1ced1637fde (from pynput>=1.7.6->pettingzoo) has inconsistent name: filename has 'evdev', but metadata has 'unknown'
+  Downloading evdev-1.7.0.tar.gz (30 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Discarding https://files.pythonhosted.org/packages/f3/0c/c87b141250a650ee53d4e9957e905b17c144cda6dc4187cbe89a641a1b34/evdev-1.7.0.tar.gz#sha256=95bd2a1e0c6ce2cd7a2ecc6e6cd9736ff794b3ad5cb54d81d8cbc2e414d0b870 (from https://pypi.org/simple/evdev/) (requires-python:>=3.6): Requested unknown from https://files.pythonhosted.org/packages/f3/0c/c87b141250a650ee53d4e9957e905b17c144cda6dc4187cbe89a641a1b34/evdev-1.7.0.tar.gz#sha256=95bd2a1e0c6ce2cd7a2ecc6e6cd9736ff794b3ad5cb54d81d8cbc2e414d0b870 (from pynput>=1.7.6->pettingzoo) has inconsistent name: filename has 'evdev', but metadata has 'unknown'
+  Downloading evdev-1.6.1.tar.gz (26 kB)
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Requirement already satisfied: six in /usr/local/lib/python3.10/dist-packages (from pynput>=1.7.6->pettingzoo[atari,butterfly,testing]) (1.17.0)
+Requirement already satisfied: iniconfig>=1.0.1 in /usr/local/lib/python3.10/dist-packages (from pytest>=8.0.0->pettingzoo[atari,butterfly,testing]) (2.3.0)
+Requirement already satisfied: exceptiongroup>=1 in /usr/local/lib/python3.10/dist-packages (from pytest>=8.0.0->pettingzoo[atari,butterfly,testing]) (1.3.1)
+Requirement already satisfied: pluggy<2,>=1.5 in /usr/local/lib/python3.10/dist-packages (from pytest>=8.0.0->pettingzoo[atari,butterfly,testing]) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in /usr/local/lib/python3.10/dist-packages (from pytest>=8.0.0->pettingzoo[atari,butterfly,testing]) (2.19.2)
+Requirement already satisfied: tomli>=1 in /usr/local/lib/python3.10/dist-packages (from pytest>=8.0.0->pettingzoo[atari,butterfly,testing]) (2.4.0)
+Requirement already satisfied: packaging>=22 in /usr/local/lib/python3.10/dist-packages (from pytest>=8.0.0->pettingzoo[atari,butterfly,testing]) (25.0)
+Collecting coverage[toml]>=7.10.6
+  Downloading coverage-7.13.5-cp310-cp310-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (248 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 248.3/248.3 KB 2.0 MB/s eta 0:00:00
+Collecting markdown-it-py<4.0,>=2.2.0
+  Downloading markdown_it_py-3.0.0-py3-none-any.whl (87 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 87.5/87.5 KB 487.1 kB/s eta 0:00:00
+Collecting execnet>=2.1
+  Downloading execnet-2.1.2-py3-none-any.whl (40 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40.7/40.7 KB 1.2 MB/s eta 0:00:00
+Requirement already satisfied: pycparser in /usr/local/lib/python3.10/dist-packages (from cffi>=1.17.1->pymunk>=6.2.0->pettingzoo[atari,butterfly,testing]) (3.0)
+Collecting mdurl~=0.1
+  Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Requirement already satisfied: filelock<4,>=3.24.2 in /usr/local/lib/python3.10/dist-packages (from virtualenv>=20.10.0->pre-commit>=3.5.0->pettingzoo[atari,butterfly,testing]) (3.29.0)
+Collecting distlib<1,>=0.3.7
+  Downloading distlib-0.4.0-py2.py3-none-any.whl (469 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 469.0/469.0 KB 1.4 MB/s eta 0:00:00
+Collecting python-discovery>=1.2.2
+  Downloading python_discovery-1.2.2-py3-none-any.whl (31 kB)
+Collecting platformdirs<5,>=3.9.1
+  Downloading platformdirs-4.9.6-py3-none-any.whl (21 kB)
+Collecting charset_normalizer<4,>=2
+  Downloading charset_normalizer-3.4.7-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (216 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 216.9/216.9 KB 3.3 MB/s eta 0:00:00
+Requirement already satisfied: certifi>=2023.5.7 in /usr/local/lib/python3.10/dist-packages (from requests->AutoROM>=0.6.1->pettingzoo[atari,butterfly,testing]) (2026.4.22)
+Collecting urllib3<3,>=1.26
+  Downloading urllib3-2.6.3-py3-none-any.whl (131 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 131.6/131.6 KB 2.9 MB/s eta 0:00:00
+Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.10/dist-packages (from requests->AutoROM>=0.6.1->pettingzoo[atari,butterfly,testing]) (3.13)
+Building wheels for collected packages: evdev
+  Building wheel for evdev (setup.py): started
+  Building wheel for evdev (setup.py): finished with status 'done'
+  Created wheel for evdev: filename=evdev-1.6.1-cp310-cp310-linux_x86_64.whl size=83808 sha256=bce9cf592690c6ad23a11edab1136f57a0e809552a00011bbf817f4bfe638be1
+  Stored in directory: /root/.cache/pip/wheels/bb/6e/51/0c0f5677bd58c532c42e13e7d93803fbf8d5d3bf5bfc5b0220
+Successfully built evdev
+Installing collected packages: evdev, distlib, urllib3, pyyaml, python-xlib, pygame-ce, platformdirs, nodeenv, multi_agent_ale_py, mdurl, identify, execnet, coverage, charset_normalizer, cfgv, requests, python-discovery, pynput, markdown-it-py, virtualenv, pytest-xdist, pytest-markdown-docs, pytest-cov, AutoROM, pre-commit
+Successfully installed AutoROM-0.6.1 cfgv-3.5.0 charset_normalizer-3.4.7 coverage-7.13.5 distlib-0.4.0 evdev-1.6.1 execnet-2.1.2 identify-2.6.19 markdown-it-py-3.0.0 mdurl-0.1.2 multi_agent_ale_py-0.1.12 nodeenv-1.10.0 platformdirs-4.9.6 pre-commit-4.6.0 pygame-ce-2.5.7 pynput-1.8.1 pytest-cov-7.1.0 pytest-markdown-docs-0.9.2 pytest-xdist-3.8.0 python-discovery-1.2.2 python-xlib-0.33 pyyaml-6.0.3 requests-2.33.1 urllib3-2.6.3 virtualenv-21.2.4

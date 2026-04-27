@@ -28,7 +28,7 @@ RUN pip install gradysim
 
 RUN mkdir -p /MARL/src
 
-WORKDIR /Comp_mov
+WORKDIR /MARL
 
 
     

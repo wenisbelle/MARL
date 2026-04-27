@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   vision_dev:
-    image: comp_mov:latest
-    container_name: comp_mov_container
-    hostname: comp_mov_container
+    image: marl:latest
+    container_name: marl_container
+    hostname: marl_container
     runtime: nvidia
     environment:
       - QT_X11_NO_MITSHM=1
