@@ -14,8 +14,6 @@ RUN apt update \
  && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y net-tools gedit
- 
-RUN apt-get install -y git
 
 RUN apt-get update
 
