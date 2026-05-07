@@ -49,7 +49,7 @@ class SendGoToMessage(TypedDict):
     message_type: int 
     goto: list
     sender: int
-    priority_value: float
+    sender_position: list
 
 class FlagMessage(enum.Enum):
     NONE = 0
@@ -61,6 +61,7 @@ class BufferedMobilityCommand(TypedDict):
     flag: int
     other_uav_id: Optional[int] ### only when the flag is  EXTERNAL_MOBILITY_COMMAND_LOWER_PRIORITY. In the other cases, it will be None.
     partner_position: Optional[np.array] ### only when the flag is  EXTERNAL_MOBILITY_COMMAND. In the other cases, it will be None.
+    partner_destination: Optional[np.array] ### only when the flag is  EXTERNAL_MOBILITY_COMMAND with lower priority. In the other cases, it will be None.
 
 
 class MovementDirection(enum.Enum):
@@ -155,7 +156,10 @@ class Drone(IProtocol):
         self.provider.schedule_timer("battery", self.provider.current_time() + 1)
 
         #### Mobility command buffer for RL trainning
-        self.mobility_command_buffer = BufferedMobilityCommand(flag=FlagMessage.NONE.value, other_uav_id=None, partner_position=None)
+        self.mobility_command_buffer = BufferedMobilityCommand(flag=FlagMessage.NONE.value,
+                                                               other_uav_id=None,
+                                                               partner_position=None,
+                                                               partner_destination=None)
 
 
     def camera_routine(self):      
@@ -212,10 +216,10 @@ class Drone(IProtocol):
          
     ##### Self mobility command. When the drone reaches the destination, it calculates the next one #####
     ##### Or after two UAVs meet. The information from the destination of the first UAV will be used in the NN not here #####
-    def mobility_command(self, x: float, y: float):
+    def mobility_command(self, action: list[float]):
         ##### receives the x and y varying from [0:1] and transform it to the map coordinates #####
         map_center_offset = (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2
-
+        x, y = action
         target_row, target_col = int(x * self.MAP_WIDTH), int(y * self.MAP_HEIGHT)
         
         self._log.info(f"Drone {self.provider.get_id()} going to cell ({target_row}, {target_col}).")
@@ -230,10 +234,17 @@ class Drone(IProtocol):
         command = GotoCoordsMobilityCommand(*self.goto_command)      
         self.provider.send_mobility_command(command)
 
+        ##### If the mobility command was triggerd by an encouter, we need to check if this is the drone wit the higher priority
+        ##### because it will send its own destination to the other drone, improving coordination
+        if self.mobility_command_buffer['flag'] == FlagMessage.EXTERNAL_MOBILITY_COMMAND_HIGHER_PRIORITY.value:
+            self.send_goto_command(self.goto_command, self.mobility_command_buffer['other_uav_id'])
+            
+
         ##### Now, realease the mobility command buffer, so the drone can receive new commands from the encounters until it reaches the destination.
         self.mobility_command_buffer['flag'] = FlagMessage.NONE.value
         self.mobility_command_buffer['other_uav_id'] = None
         self.mobility_command_buffer['partner_position'] = None
+        self.mobility_command_buffer['partner_destination'] = None
 
     
 
@@ -247,12 +258,12 @@ class Drone(IProtocol):
         command = BroadcastMessageCommand(json.dumps(message))
         self.provider.send_communication_command(command)
 
-    def send_goto_command(self, send_command: np.array, destination_id: int, cell_priority: float):
+    def send_goto_command(self, send_command: np.array, destination_id: int):
         message: SendGoToMessage = {
             'message_type': MessageType.SHARE_GOTO_POSITION_MESSAGE.value,
             'goto': send_command.tolist(),
             'sender': self.provider.get_id(),
-            'priority_value': cell_priority
+            'sender_position': np.array(self.drone_position).tolist()
         }
         command = SendMessageCommand(json.dumps(message), destination_id)
         self.provider.send_communication_command(command)
@@ -315,6 +326,7 @@ class Drone(IProtocol):
                     self.mobility_command_buffer['flag'] = FlagMessage.INTERNAL_MOBILITY_COMMAND.value
                     self.mobility_command_buffer['other_uav_id'] = None
                     self.mobility_command_buffer['partner_position'] = None
+                    self.mobility_command_buffer['partner_destination'] = None
 
                 self.provider.schedule_timer(
                     "mobility",
@@ -368,23 +380,32 @@ class Drone(IProtocol):
                 self.map = self.updated_map(data)
 
                 if self.provider.current_time() - self.last_drone_interaction_time[data['sender']]  > self.TIMEOUT_TO_UPDATE_DESTINATION: # the drone id starts at 0
+                    ##### Higher Priority
                     if self.provider.get_id() < data['sender']:
                         #### In this case, the drone with ID will decide first its next destination. Then will send to the other
                         #### drone the destination he choose. So the other drone will be able to choose a destination that is different but
                         #### also with a good fitness value. This will help to avoid that both drones go to the same place after an encounter.
                         
                         self.mobility_command_buffer['flag'] = FlagMessage.EXTERNAL_MOBILITY_COMMAND_HIGHER_PRIORITY.value
-                        self.mobility_command_buffer['other_uav_id'] = None
-                        self.mobility_command_buffer['partner_position'] = np.array(data['drone_position'])
-
-                    if self.provider.get_id() > data['sender']:
-                        #### This will be implemented in the RL framework. The drone with lower ID will wait for the decision of the drone with higher ID
-                        #### and then will choose its destination based on that.
-                        self.mobility_command_buffer['flag'] = FlagMessage.EXTERNAL_MOBILITY_COMMAND_LOWER_PRIORITY.value
                         self.mobility_command_buffer['other_uav_id'] = data['sender']
                         self.mobility_command_buffer['partner_position'] = np.array(data['drone_position'])
+                        self.mobility_command_buffer['partner_destination'] = None
+                    ##### Lower Priority
+                    if self.provider.get_id() > data['sender']:
+                        #### This will be implemented in the RL framework. The drone with lower ID will wait for the decision of the drone with higher ID
+                        #### and then will choose its destination after receiving the message.
+                        pass
 
                     self.last_drone_interaction_time[data['sender']] = self.provider.current_time() # the drone id starts at 0
+            
+            elif msg_type == MessageType.SHARE_GOTO_POSITION_MESSAGE.value:
+                ##### This message will be used in the RL framework. When a drone receives a mobility command from another drone with higher
+                #####  priority. This will help to improve the coordination between the drones after an encounter.
+                self.mobility_command_buffer['flag'] = FlagMessage.EXTERNAL_MOBILITY_COMMAND_LOWER_PRIORITY.value
+                self.mobility_command_buffer['other_uav_id'] = data['sender']
+                self.mobility_command_buffer['partner_position'] = np.array(data['sender_position'])
+                self.mobility_command_buffer['partner_destination'] = np.array(data['goto'])
+
             else:
                 self._log.warning(f"Received message with unknown type: {msg_type}")
 

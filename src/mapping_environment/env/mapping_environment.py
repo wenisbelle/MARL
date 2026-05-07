@@ -17,7 +17,7 @@ from torchrl.envs import EnvBase
 
 from .environment import EndCause
 from .metrics import make_data_collection_metrics_spec, EnvironmentMetricsSpec
-from .gradysim_environment.protocol import Drone, drone_protocol_factory
+from .gradysim_environment.protocol import Drone, drone_protocol_factory, FlagMessage
 from .base_gradys_env import BaseGrADySEnvironment
 
 @dataclasses.dataclass(slots=True)
@@ -241,6 +241,20 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 dtype=torch.float32,
                 device=device,
             ),
+            "partner_destination": Bounded(
+                torch.full(position_shape, -1.0, device=device), #### In some cases this will not be used, so -1 to indicate that.
+                torch.ones(position_shape, device=device),  # normalized to [0,1]
+                position_shape,
+                dtype=torch.float32,
+                device=device,
+            ),
+            "encounter_flag": Bounded(
+                torch.zeros((self.max_num_agents, 4), device=device),  # 4 possible flag values- None, External Higher Priority, External Lower Priority, Internal
+                torch.ones((self.max_num_agents, 4), device=device),
+                (self.max_num_agents, 4),
+                dtype=torch.float32,
+                device=device,
+            )
         }
 
         ##### For critics, it will observe the position of all drones and the full map, with lowest uncertainty in each cell from all individual observations.
@@ -375,6 +389,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         stepped_agents = self._active_episode_agents()
         self._apply_actions(actions)
 
+        
         # We record the collected sensors before stepping the simulation so we can compare with
         # that figure after the step to see if any new sensors were collected
         collected_before = self._get_sensor_collected()
@@ -493,10 +508,18 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         active_agents = self._active_episode_agents()
         actions_cpu = actions.detach().cpu()
 
-        for agent in active_agents:
+        for agent in active_agents:            
             agent_node = self.simulator.get_node(agent.node_id)
+            protocol = agent_node.protocol_encapsulator.protocol
+            flag = protocol.mobility_command_buffer['flag']
+            
+            ##### No not apply action if there is no Flag for that
+            if flag == FlagMessage.NONE.value:
+                continue 
+
             action = actions_cpu[agent.slot_index].tolist()
-            agent_node.protocol_encapsulator.protocol.act(action, self.scenario_size)
+            protocol.mobility_command(action, self.scenario_size)
+            
 
     def _sample_dying_agents(self, stepped_agents: list[EpisodeAgentState]) -> list[EpisodeAgentState]:
         if self.agent_death_probability <= 0.0:
