@@ -712,12 +712,32 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             observation_dict (Optional[dict]): Precomputed observations.
         """
         agents_td = td.get("agents")
-        obs_td = agents_td.get("observation")
+      
+        agent_obs_td = agents_td.get("observation")
 
-        sensors = obs_td.get("sensors")
-        drones = obs_td.get("drones")
-        sensors.zero_()
-        drones.zero_()
+        agent_map_patch = agent_obs_td.get("map_patch")
+        agent_map_patch.zero_()
+        agent_individual_map_uncertainty = agent_obs_td.get("individual_map_uncertainty")
+        agent_individual_map_uncertainty.zero_()
+        agent_position = agent_obs_td.get("position")
+        agent_position.zero_()
+        agent_partner_position = agent_obs_td.get("partner_position")
+        agent_partner_position.zero_()
+        agent_partner_destination = agent_obs_td("partner_destination")
+        agent_partner_destination.zero_()
+        agent_encounter_flag = agent_obs_td("encouter_flag")
+        agent_encounter_flag.zero_()          
+
+        global_td = td.get("global_state")
+
+        global_full_map = global_td.get("full_map")
+        global_full_map.zero_()
+        global_map_uncertainty = global_td.get("global_map_uncertainty")
+        global_map_uncertainty.zero_()
+        global_all_positions = global_td.get("all_positions")
+        global_all_positions.get_()
+        global_all_active = global_td.get("all_active")
+        global_all_active.get_()
 
 
         mask = agents_td.get("mask")
@@ -728,6 +748,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             return
 
         active_slots = self._agent_slot_tensor(active_agents)
+        
         sensors.index_copy_(
             0,
             active_slots,
