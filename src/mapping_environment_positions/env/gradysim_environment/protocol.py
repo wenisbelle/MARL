@@ -90,6 +90,7 @@ class Drone(IProtocol):
         self._log = logging.getLogger()
         self.drone_position = None
         self.goto_command = np.zeros(3)
+        self.ready = False
 
         self.TIMEOUT_TO_UPDATE_DESTINATION = 10.0
 
@@ -157,7 +158,8 @@ class Drone(IProtocol):
         self.provider.schedule_timer("battery", self.provider.current_time() + 1)
 
         #### Mobility command buffer for RL trainning
-        self.mobility_command_buffer = BufferedMobilityCommand(flag=FlagMessage.NONE.value,
+        # The first one is for the internal mobility command, to start the moviment
+        self.mobility_command_buffer = BufferedMobilityCommand(flag=FlagMessage.INTERNAL_MOBILITY_COMMAND.value,
                                                                time_since_last_uptdate=self.provider.current_time(),
                                                                other_uav_id=None,
                                                                partner_position=None,
@@ -261,7 +263,7 @@ class Drone(IProtocol):
 
         ##### Now, realease the mobility command buffer, so the drone can receive new commands from the encounters until it reaches the destination.
         self.mobility_command_buffer['flag'] = FlagMessage.NONE.value
-        self.mobility_command_buffer['time_since_last_uptdate']=self.provider.current_time(),
+        self.mobility_command_buffer['time_since_last_uptdate']=self.provider.current_time()
         self.mobility_command_buffer['other_uav_id'] = None
         self.mobility_command_buffer['partner_position'] = None
         self.mobility_command_buffer['partner_destination'] = None
@@ -429,7 +431,10 @@ class Drone(IProtocol):
 
     def handle_telemetry(self, telemetry: Telemetry) -> None:
         self.drone_position = telemetry.current_position
+        self.ready = True 
 
+    def die(self) -> None:
+        self.status = DroneStatus.DEAD
 
     def finish(self) -> None:
         pass

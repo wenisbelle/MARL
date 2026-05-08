@@ -35,18 +35,20 @@ class EpisodeAgentState:
      filled with meaningful data, but it may still exist in the simulation if it was active in the past"""
 
     node_id: int | None = None
-
-    individual_patch_map: np.ndarray 
-    individual_map_uncertainty: float 
+  
+    individual_map_uncertainty: float = 0.0
     current_position: np.array = np.zeros(2)
     current_partner_position: np.array = np.zeros(2)
     partner_destination: np.array = np.zeros(2)
     flag: int = FlagMessage.NONE.value
+    individual_patch_map: np.ndarray
 
 class EpisodeGlobalState:
     global_map_uncertainty: float
     active_drones_positions: np.ndarray
     """Position of all active drones in the environment"""
+    global_map: np.ndarray
+    """The global map is computed by taking the lowest uncertainty value for each cell across all drones"""
 
 @dataclasses.dataclass
 class MappingEnvironmentConfig:
@@ -58,9 +60,9 @@ class MappingEnvironmentConfig:
     # To fix the number, set min_num_agents == max_num_agents.
     min_num_agents: int = 3
     max_num_agents: int = 3
-    map_width: float = 50
-    map_height: float = 50
-    observation_map_size: float = 10 # Observe a square of side 10 cells centered on the drone. 
+    map_width: int = 50
+    map_height: int = 50
+    observation_map_size: int = 10 # Observe a square of side 10 cells centered on the drone. 
     drone_altitude: float = 25.0
     distance_between_cells: float = 20
     uncertainty_rate: float = 0.01
@@ -81,6 +83,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
     A specialized environment for data collection in simulations, extending the GrADySEnvironment.
     This environment simulates sensor data collection with autonomous agents.
     Per-episode agent state is centralized in `episode_agents`.
+    Per-episode global state is centralized in `episode_global`.
     """
 
     _simulation_configuration: SimulationConfiguration
@@ -123,14 +126,14 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         self.episode_agents: list[EpisodeAgentState] = []
         self.episode_global: EpisodeGlobalState
         self.episode_duration = 0
-        self.stall_duration = 0
-        self.reward_sum = 0.0
-        self.max_reward = -math.inf
+        self.global_reward = 0.0
+        self.individual_reward = [0.0 for _ in range(self.max_num_agents)]
+        self.max_global_reward = -math.inf
+        self.max_individual_reward = -math.inf
 
         self._metrics_spec: EnvironmentMetricsSpec = make_data_collection_metrics_spec()
         self._info_keys = self._metrics_spec.info_keys
-        self._extra_info_keys = ("num_sensors", "num_agents")
-        self._all_info_keys = self._info_keys + self._extra_info_keys
+        self._all_info_keys = self._info_keys 
 
         self._simulation_configuration = SimulationConfiguration(
             debug=False,
@@ -177,11 +180,12 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         builder.add_handler(TimerHandler())
 
         if self.render_mode == "visual":
+            scenario_size = max(self.map_width, self.map_height)*self.distance_between_cells
             builder.add_handler(VisualizationHandler(VisualizationConfiguration(
                 open_browser=False,
-                x_range=(-self.scenario_size, self.scenario_size),
-                y_range=(-self.scenario_size, self.scenario_size),
-                z_range=(0, self.scenario_size),
+                x_range=(-scenario_size, scenario_size),
+                y_range=(-scenario_size, scenario_size),
+                z_range=(0, 100),
             )))
 
         results_aggregator = {}
@@ -202,7 +206,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                     self.drone_altitude
                 ))
             else:
-                agent.node_id = builder.add_node(Drone, (
+                agent.node_id = builder.add_node(ConfiguredDrone, (
                     random.uniform(-2, 2),
                     random.uniform(-2, 2),
                     self.drone_altitude
@@ -219,6 +223,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         all_positions_shape = (self.max_num_agents, 2)
 
         map_patch_shape = (self.max_num_agents, M, M)
+        complete_map_shape = (self.map_width, self.map_height)
         position_shape = (self.max_num_agents, 2)
         uncertainty_shape = (self.max_num_agents, 1)
         mask_shape = (self.max_num_agents,)
@@ -280,10 +285,17 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         ##### For critics, it will observe the position of all drones and the full map, with lowest uncertainty in each cell from all individual observations.
         obs_global = {
+            "full_map": Bounded(
+                torch.zeros(complete_map_shape, device=device),
+                torch.full(complete_map_shape, 2.0, device=device),  # same reasoning as map_patch
+                complete_map_shape,
+                dtype=torch.float32,
+                device=device,
+            ),
             "global_map_uncertainty": Bounded(
                 torch.zeros(uncertainty_shape, device=device),
                 torch.ones(uncertainty_shape, device=device),  # normalized to [0,1] - Better for training stability
-                uncertainty_shape,
+                (1,),
                 dtype=torch.float32,
                 device=device,
             ),
@@ -363,6 +375,11 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                         )
                     },
                     device=device,
+                ),
+                "global_reward": Unbounded(
+                    shape=(1,),
+                    device=device,
+                    dtype=torch.float32
                 )
             },
             device=device,
@@ -406,46 +423,45 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         self,
         tensordict: TensorDictBase,
     ) -> TensorDictBase:
+        ##### Get actions from the dictionary
         actions = tensordict.get(("agents", "action"))
-        stepped_agents = self._active_episode_agents()
-        
+
+        ##### Get the individual uncertainty before the step, to compute the reward later
+        pre_step_agents = self._active_episode_agents()
+        collected_individual_uncertainty_before = self.get_individual_uncertainty_from_simulation(pre_step_agents)
+        collected_global_uncertainty_before = self.get_global_uncertainty_from_simulation(pre_step_agents)
+
         self._apply_actions(actions)
         status = self.step_simulation()
         end_cause = EndCause.NONE
 
+        ##### Get the individual uncertainty after the step, to compute the reward later
+        ##### For now, in this calculation we are considering that the reward is given to the specific agent even if he dies in this step
+        collected_individual_uncertainty_after = self.get_individual_uncertainty_from_simulation(pre_step_agents)
+        collected_global_uncertainty_after = self.get_global_uncertainty_from_simulation(pre_step_agents)       
+
+        ##### Reward
+        individual_rewards = self._compute_individual_rewards(collected_individual_uncertainty_before, collected_individual_uncertainty_after)
+        global_reward = self._compute_global_rewards(collected_global_uncertainty_before, collected_global_uncertainty_after)
         
-        collected_ = self._get_sensor_collected()
-
-        # Update the stall counter based on whether new sensors were collected
-        # A stall is when the agents fail to collect any new sensors. If the stall
-        # persists for too long, the episode ends.
-        self._update_stall(collected_before, collected_after)
-
-        # Check if all sensors have been collected
-        all_sensors_collected = sum(collected_after) == self.active_num_sensors
-
-        reward = self._compute_reward(collected_before, collected_after)
-        self._update_collection_times(collected_after)
-        dying_agents = self._sample_dying_agents(stepped_agents)
+        ##### Check for dying agents
+        post_stepped_agents = self._active_episode_agents()
+        ##### Random probability of a given agent dying after the step
+        dying_agents = self._sample_dying_agents(post_stepped_agents)
         self._deactivate_agents(dying_agents)
-        self._reward_sum_update(reward, stepped_agents)
+        self._reward_sum_update(individual_rewards, global_reward, pre_step_agents)
 
-        active_agents_after = self._active_episode_agents()
-        if all_sensors_collected and self.end_when_all_collected:
-            end_cause = EndCause.ALL_COLLECTED
-        elif not active_agents_after:
+        if not post_stepped_agents:
             end_cause = EndCause.ALL_AGENTS_INACTIVE
-        elif self.stall_duration > self.max_seconds_stalled:
-            end_cause = EndCause.STALLED
         elif status.has_ended:
             end_cause = EndCause.TIMEOUT
 
         # Filling the output tensordict for the step
         tensordict_out = self._cached_step_zero.clone()
         self._fill_observation(tensordict_out, self._observe_simulation())
-        self._fill_rewards(tensordict_out, reward, stepped_agents)
+        self._fill_rewards(tensordict_out, individual_rewards, global_reward, pre_step_agents)
         self._fill_done(tensordict_out, end_cause, dying_agents)
-        self._fill_info(tensordict_out, sum(collected_after), end_cause, end_cause != EndCause.NONE)
+        self._fill_info(tensordict_out, end_cause, end_cause != EndCause.NONE)
         return tensordict_out
 
     def _reset_statistics(self):
@@ -453,8 +469,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         Resets the statistics for a new episode.
         """
         self.episode_duration = 0
-        self.stall_duration = 0
-        self.reward_sum = 0
+        self.individual_reward = [0.0 for _ in range(self.max_num_agents)]
+        self.global_reward = 0
         self.max_reward = -math.inf
         self.collection_times = [self.max_episode_length for _ in range(self.active_num_sensors)]
 
@@ -535,7 +551,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 continue 
 
             action = actions_cpu[agent.slot_index].tolist()
-            protocol.mobility_command(action, self.scenario_size)
+            protocol.mobility_command(action)
             
 
     def _sample_dying_agents(self, stepped_agents: list[EpisodeAgentState]) -> list[EpisodeAgentState]:
@@ -554,11 +570,63 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             protocol.die()
             agent.active = False
 
-    def _get_sensor_collected(self) -> list[bool]:
-        return [
-            self.simulator.get_node(sensor_id).protocol_encapsulator.protocol.has_collected
-            for sensor_id in self.sensor_node_ids
-        ]
+    def get_flag_from_simulation(self, agent: EpisodeAgentState) -> int:
+        protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+        return protocol.mobility_command_buffer['flag']       
+
+    def get_individual_patch_map_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
+        protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+        return protocol.get_patched_map(self.observation_map_size)
+    
+    def get_individual_agent_uncertainty_from_simulation(self, agent: EpisodeAgentState) -> float:
+        protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+        return protocol.total_uncertainty
+    
+    def get_individual_position_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
+        protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+        return protocol.drone_position[:2]
+    
+    def get_partner_position_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
+        protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+        return protocol.mobility_command_buffer['partner_position']
+    
+    def get_partner_destination_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
+        protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+        return protocol.mobility_command_buffer['partner_destination']
+    
+    def get_global_positions_from_simulation(self, agents: list[EpisodeAgentState]) -> list[np.ndarray]:
+        positions = []
+        for agent in agents:
+            if agent.active is False:
+                positions.append(np.array([-1.0, -1.0]))  # Placeholder for inactive agents
+                continue
+            protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+            positions.append(protocol.drone_position[:2])
+        return positions
+    
+    def get_individual_uncertainty_from_simulation(self, agents: list[EpisodeAgentState]) -> list[float]:
+        agents_uncertainty = []
+        for agent in agents:
+            if agent.active is False:
+                continue
+            protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+            agents_uncertainty.append(protocol.total_uncertainty)
+        return agents_uncertainty
+    
+    def get_global_uncertainty_from_simulation(self, agents: list[EpisodeAgentState]) -> list[float]:
+        global_map = self.get_global_map_from_simulation(agents)
+        return global_map.sum()
+    
+    def get_global_map_from_simulation(self, agents: list[EpisodeAgentState]) -> np.ndarray:
+        individual_maps = []
+        for agent in agents:
+            if agent.active is False:
+                continue
+            protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+            individual_maps.append(protocol.map[:, :, 0])  # shape: (map_width, map_height)
+        ##### Take the lowest uncertainty value for each cell across all drones
+        return np.min(individual_maps, axis=0)
+
 
     def _update_stall(self, collected_before: list[bool], collected_after: list[bool]) -> None:
         if sum(collected_after) > sum(collected_before):
@@ -568,95 +636,69 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         self.episode_duration += 1
 
-    def _compute_reward(self, collected_before: list[bool], collected_after: list[bool]) -> float:
-        before = sum(collected_before)
-        after = sum(collected_after)
-        if after > before:
-            return float((after - before) * 10)
-        remaining = self.active_num_sensors - after
-        return float(-(remaining) / max(1, self.active_num_sensors))
+    def _compute_individual_rewards(self, uncertainty_before: list[float], uncertainty_after: list[float]) -> list[float]:
+        """Return the list of rewards for each agent based on the change in their individual uncertainty."""
+        return [float(before - after) for before, after in zip(uncertainty_before, uncertainty_after)]
+    
+    def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float) -> float:
+        """Return the global reward based on the change in global uncertainty."""
+        return uncertainty_before - uncertainty_after
 
-    def _update_collection_times(self, collected_after: list[bool]) -> None:
-        current_timestamp = self.episode_duration * self.algorithm_iteration_interval
-        for index, sensor_id in enumerate(self.sensor_node_ids):
-            if collected_after[index] and self.collection_times[index] == self.max_episode_length:
-                self.collection_times[index] = current_timestamp
 
-    def _reward_sum_update(self, reward: float, stepped_agents: list[EpisodeAgentState]) -> None:
+    def _reward_sum_update(self, individual_rewards: list[float], global_reward: float, stepped_agents: list[EpisodeAgentState]) -> None:
         if stepped_agents:
-            self.reward_sum += reward
-            self.max_reward = max(self.max_reward, reward)
+            self.global_reward += global_reward
+            self.max_global_reward = max(self.max_global_reward, global_reward)
+
+            for agent in stepped_agents:
+                self.individual_reward[agent.slot_index] += individual_rewards[agent.slot_index]
+                self.max_individual_reward = max(self.max_individual_reward, self.individual_reward[agent.slot_index])            
 
     def _observe_simulation(self) -> dict:
         """
         Extracts information from the simulation to form the observation for each agent. 
-        Each agent's observation includes the positions of the closest unvisited sensors
-        and the closest other drones, normalized within the scenario size.
+        Each agent's and global observations are computed based on the defined in the build_specs method. 
         Returns:
             dict: A dictionary containing observations for each agent.
         """
-        sensor_nodes = np.array([
-            self.simulator.get_node(sensor_id).position[:2]
-            for sensor_id in self.sensor_node_ids
-        ])
-        unvisited_sensor_mask = np.array([
-            not self.simulator.get_node(sensor_id)
-            .protocol_encapsulator.protocol.has_collected
-            for sensor_id in self.sensor_node_ids
-        ])
-        unvisited_sensor_nodes = sensor_nodes[unvisited_sensor_mask]
-
-        existing_agents = self._active_episode_agents()
+        existing_agents = self._existing_episode_agents()
         if not existing_agents:
             return {}
-        agent_nodes = np.array([
-            self.simulator.get_node(agent.node_id).position[:2]
-            for agent in existing_agents
-        ])
 
-        max_distance = self.scenario_size * 2
-
-        state = {}
+        individual_state = {}
         for agent_index, agent in enumerate(existing_agents):
-            agent_position = agent_nodes[agent_index]
-
-            sensor_distances = np.linalg.norm(
-                unvisited_sensor_nodes - agent_position, axis=1
-            ) if len(unvisited_sensor_nodes) else np.array([])
-            sorted_sensor_indices = np.argsort(sensor_distances)
-
-            closest_unvisited_sensors = np.zeros((self.state_num_closest_sensors, 2))
-            closest_unvisited_sensors.fill(-1)
-            if len(sorted_sensor_indices):
-                closest_unvisited_sensors[:len(sorted_sensor_indices)] = unvisited_sensor_nodes[
-                    sorted_sensor_indices[:self.state_num_closest_sensors]
-                ]
-
-            agent_distances = np.linalg.norm(agent_nodes - agent_position, axis=1)
-            sorted_agent_indices = np.argsort(agent_distances)
-
-            closest_agents = np.zeros((self.state_num_closest_drones, 2))
-            closest_agents.fill(-1)
-            if len(sorted_agent_indices) > 1:
-                closest_agents[:len(sorted_agent_indices) - 1] = agent_nodes[
-                    sorted_agent_indices[1:self.state_num_closest_drones + 1]
-                ]
-
-            if len(sorted_agent_indices) > 1:
-                closest_agents[:len(sorted_agent_indices) - 1] = (
-                    closest_agents[:len(sorted_agent_indices) - 1] - agent_position + max_distance
-                ) / (max_distance * 2)
-
-            if len(sorted_sensor_indices):
-                closest_unvisited_sensors[:len(sorted_sensor_indices)] = (
-                    closest_unvisited_sensors[:len(sorted_sensor_indices)] - agent_position + max_distance
-                ) / (max_distance * 2)
-
-            state[agent.name] = {
-                "drones": closest_agents,
-                "sensors": closest_unvisited_sensors,
+            agent_patch_map = self.get_individual_patch_map_from_simulation(agent)
+            agent_uncertainty = self.get_individual_agent_uncertainty_from_simulation(agent)
+            agent_position = self.get_individual_position_from_simulation(agent)
+            partner_position = self.get_partner_position_from_simulation(agent)
+            partner_destination = self.get_partner_destination_from_simulation(agent)
+            flag = self.get_flag_from_simulation(agent)
+            
+            individual_state[agent.name] = {
+                "map_patch": agent_patch_map,
+                "individual_map_uncertainty": agent_uncertainty,
+                "position": agent_position,
+                "partner_position": partner_position,
+                "partner_destination": partner_destination,
+                "encounter_flag": flag
             }
-        return state
+
+        global_state = {}
+        global_map = self.get_global_map_from_simulation(existing_agents)
+        global_uncertainty = self.get_global_uncertainty_from_simulation(existing_agents)
+        global_positions = self.get_global_positions_from_simulation(existing_agents)
+        global_active = [agent.active for agent in self.episode_agents]
+
+        global_state["full_map"] = global_map
+        global_state["global_map_uncertainty"] = global_uncertainty
+        global_state["all_positions"] = global_positions
+        global_state["all_active"] = global_active
+
+        return {
+            "individual": individual_state,
+            "global": global_state
+        }
+ 
 
     def _fill_observation(
         self,
@@ -706,58 +748,6 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         )
         mask.index_fill_(0, active_slots, True)
     
-    ####### THIS FUNCTION NEEDS TO BE BETTER EVALUATED #####
-    def _observe_global_state(self) -> dict:
-        """
-        Computes the global state observation (full map + all drone positions).
-        Returns a dict with 'full_map', 'all_positions', 'all_active'.
-        """
-        active_agents = self._active_episode_agents()
-
-        # Aggregated full map: take the lowest uncertainty per cell across all drones'
-        # individual maps (i.e. the most recently observed value).
-        if active_agents:
-            protocol_maps = np.stack([
-                self.simulator.get_node(agent.node_id)
-                .protocol_encapsulator.protocol.map[:, :, 0]
-                for agent in active_agents
-            ])  # shape: (n_active, MAP_WIDTH, MAP_HEIGHT)
-            full_map = protocol_maps.min(axis=0)  # team's best knowledge per cell
-        else:
-            full_map = np.ones((self.MAP_WIDTH, self.MAP_HEIGHT))  # max uncertainty fallback
-
-        # All drone positions, normalized, with -1 sentinel for inactive slots
-        all_positions = np.full((self.max_num_agents, 2), -1.0, dtype=np.float32)
-        all_active = np.zeros(self.max_num_agents, dtype=bool)
-        for agent in active_agents:
-            node = self.simulator.get_node(agent.node_id)
-            pos = np.array(node.position[:2])
-            normalized = (pos + self.scenario_size) / (2 * self.scenario_size)
-            all_positions[agent.slot_index] = normalized
-            all_active[agent.slot_index] = True
-
-        return {
-            "full_map": full_map,
-            "all_positions": all_positions,
-            "all_active": all_active,
-        }
-
-    ####### THIS FUNCTION NEEDS TO BE BETTER EVALUATED #####
-    def _fill_global_state(self, td: TensorDictBase, global_state_dict: dict) -> None:
-        """
-        Fills the global state portion of the tensordict from a precomputed dict.
-        """
-        global_td = td.get("global_state")
-
-        global_td.get("full_map").copy_(
-            torch.as_tensor(global_state_dict["full_map"], device=self.device, dtype=torch.float32)
-        )
-        global_td.get("all_positions").copy_(
-            torch.as_tensor(global_state_dict["all_positions"], device=self.device, dtype=torch.float32)
-        )
-        global_td.get("all_active").copy_(
-            torch.as_tensor(global_state_dict["all_active"], device=self.device, dtype=torch.bool)
-        )
 
     def _fill_rewards(
         self,
