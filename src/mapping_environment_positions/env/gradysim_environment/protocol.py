@@ -6,7 +6,6 @@ import numpy as np
 from dataclasses import dataclass
 import json
 import random
-from .fitness import FitnessEvaluator
 from .energy import EnergyComsuption, BatteryError
 
 from gradysim.protocol.interface import IProtocol
@@ -99,14 +98,12 @@ class Drone(IProtocol):
         self.NUMBER_OF_DRONES = self._config["number_of_drones"]
         self.MAP_WIDTH = self._config["map_width"]
         self.MAP_HEIGHT = self._config["map_height"]
-        self.DISTANCE_NORM = 3611.5
-        self.DISTANCE_BETWEEN_DRONE_NORM = 3563.1
         self.results_aggregator = self._config.get("results_aggregator", {})
         
         self.DRONE_ALTITUDE = 50.0
         self.DISTANCE_BETWEEN_CELLS = 20
         self.CAMERA_ANGLE = np.pi/6
-        self.CELLS_EVALUETED_FOR_PRIORITY = 20
+        self.CELLS_EVALUETED_FOR_PRIORITY = 10
 
         
         ##### Initialize map #####
@@ -122,16 +119,6 @@ class Drone(IProtocol):
         ##### Camera Configuration #####
         configuration = CameraConfiguration(100, 30, 180, 0)
         self.camera = CameraHardware(self, configuration)
-
-        ### It's considered that the at any high the camera reach will be enough #####
-        ##### Cluster plugins initialization #####
-        self.fitness = FitnessEvaluator(map_width=self.MAP_WIDTH,
-                                        map_height=self.MAP_HEIGHT,
-                                        distance_between_cells = self.DISTANCE_BETWEEN_CELLS,
-                                        distance_norm=self.DISTANCE_NORM,
-                                        distance_between_drone_norm=self.DISTANCE_BETWEEN_DRONE_NORM,
-                                        camera_angle=self.CAMERA_ANGLE,
-                                        number_of_cells_x_y = self.CELLS_EVALUETED_FOR_PRIORITY)
         
         ##### Communication tracking. Avoiding communications loops #####
         self.last_drone_interaction_time = np.zeros(self.NUMBER_OF_DRONES)  
@@ -212,7 +199,7 @@ class Drone(IProtocol):
         return self.total_uncertainty
     
     def get_patched_map(self, observation_map_size):
-        map_data = self.map.copy()
+        map_data = self.map[:,:,0].copy()
         current_x = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
         current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
 
@@ -235,15 +222,26 @@ class Drone(IProtocol):
         self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
 
          
-    ##### Self mobility command. When the drone reaches the destination, it calculates the next one #####
+    ##### Mobility command. When the drone reaches the destination, it calculates the next one #####
     ##### Or after two UAVs meet. The information from the destination of the first UAV will be used in the NN not here #####
-    def mobility_command(self, action: list[float]):
-        ##### receives the x and y varying from [0:1] and transform it to the map coordinates #####
+    def mobility_command(self, action: list[float], observation_map_size: int):
+        self._log.info(f"Drone {self.provider.get_id()} received mobility command with action: {action}")
+        print(f"Drone {self.provider.get_id()} received mobility command with action: {action}")
+        
         map_center_offset = (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2
+        ##### receives the x and y varying from [0:1] and transform it to the map coordinates #####
+        current_x_cell = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        current_y_cell = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        
         x, y = action
-        target_row, target_col = int(x * self.MAP_WIDTH), int(y * self.MAP_HEIGHT)
+        raw_target_row = int(current_x_cell + (x-0.5) * observation_map_size)
+        raw_target_col = int(current_y_cell + (y-0.5) * observation_map_size)
+        
+        target_row = max(0, min(raw_target_row, self.MAP_WIDTH - 1))
+        target_col = max(0, min(raw_target_col, self.MAP_HEIGHT - 1))
         
         self._log.info(f"Drone {self.provider.get_id()} going to cell ({target_row}, {target_col}).")
+        print(f"Drone {self.provider.get_id()} going to cell ({target_row}, {target_col}).")
         #### Setting the speed
         speed = SetSpeedMobilityCommand(self.speed_command)
         self.provider.send_mobility_command(speed)
@@ -267,8 +265,6 @@ class Drone(IProtocol):
         self.mobility_command_buffer['other_uav_id'] = None
         self.mobility_command_buffer['partner_position'] = None
         self.mobility_command_buffer['partner_destination'] = None
-
-    
 
     def send_heartbeat(self):
         #self._log.info(f"Sending heartbeat ...")
@@ -347,6 +343,8 @@ class Drone(IProtocol):
                     self.mobility_command_buffer['other_uav_id'] = None
                     self.mobility_command_buffer['partner_position'] = None
                     self.mobility_command_buffer['partner_destination'] = None
+
+                #print(f"Drone {self.provider.get_id()} has a total uncertainty of {self.total_uncertainty} and an accomulated uncertainty of {self.accomulated_uncertainty}")
 
                 self.provider.schedule_timer(
                     "mobility",

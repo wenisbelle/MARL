@@ -66,14 +66,11 @@ class EnvironmentMetricsSpec:
 def make_data_collection_metrics_spec() -> EnvironmentMetricsSpec:
     return EnvironmentMetricsSpec(
         metrics=(
-            EnvironmentMetricSpec("avg_reward", MetricKind.SCALAR, MetricReducer.MEAN),
             EnvironmentMetricSpec("max_reward", MetricKind.SCALAR, MetricReducer.MEAN),
+            EnvironmentMetricSpec("reward", MetricKind.SCALAR, MetricReducer.MEAN),
             EnvironmentMetricSpec("sum_reward", MetricKind.SCALAR, MetricReducer.MEAN),
-            EnvironmentMetricSpec("avg_collection_time", MetricKind.SCALAR, MetricReducer.MEAN),
             EnvironmentMetricSpec("episode_duration", MetricKind.SCALAR, MetricReducer.MEAN),
-            EnvironmentMetricSpec("completion_time", MetricKind.SCALAR, MetricReducer.MEAN),
-            EnvironmentMetricSpec("all_collected", MetricKind.SCALAR, MetricReducer.MEAN),
-            EnvironmentMetricSpec("num_collected", MetricKind.SCALAR, MetricReducer.MEAN),
+            EnvironmentMetricSpec("num_agents", MetricKind.SCALAR, MetricReducer.MEAN),
             EnvironmentMetricSpec(
                 "cause",
                 MetricKind.CATEGORICAL,
