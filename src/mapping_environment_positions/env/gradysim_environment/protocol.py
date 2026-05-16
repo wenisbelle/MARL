@@ -13,6 +13,7 @@ from gradysim.protocol.messages.telemetry import Telemetry
 from gradysim.protocol.messages.mobility import GotoCoordsMobilityCommand, SetSpeedMobilityCommand
 from gradysim.simulator.extension.camera import CameraHardware, CameraConfiguration
 from gradysim.protocol.messages.communication import SendMessageCommand, BroadcastMessageCommand
+from .visualization import MapVisualizer
 
 
 @dataclass
@@ -76,6 +77,7 @@ class Drone(IProtocol):
     _log: logging.Logger
     ### Variable to track how many interactions happened ###
     Number_of_Encounters: int = 0
+    visualizer: MapVisualizer = None
 
     ##### Configuration for drone inheritance #####
     _config = {
@@ -160,6 +162,15 @@ class Drone(IProtocol):
         self.drone_states = [{'position': np.zeros(2), 'time_since_last_update': self.provider.current_time()} for _ in range(self.NUMBER_OF_DRONES)]
 
 
+        # FOr debugging process
+        #if Drone.visualizer is None:
+        #    # We have 3 drones in the simulation.
+        #    # I have to think a better way to do this.
+        #   Drone.visualizer = MapVisualizer(num_drones=self.NUMBER_OF_DRONES, map_width=self.MAP_WIDTH, map_height=self.MAP_HEIGHT, distance_between_cells=self.DISTANCE_BETWEEN_CELLS)
+        
+        if self.visualizer:
+            self.visualizer.update_map(self.provider.get_id(), self.map[:,:,0])
+
     def camera_routine(self):      
         ##### New Camera Routine is needed. The previous approach was too slow for running large maps.
         ### Getting the current observation radius based on the altitude and camera angle. Assuming that the drone is always looking down.
@@ -198,8 +209,10 @@ class Drone(IProtocol):
         
         self.total_uncertainty = self.map[:,:,0].sum()
         self.accomulated_uncertainty += self.total_uncertainty
-        self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has a accomulated uncertainty of {self.accomulated_uncertainty}")
-    
+        #self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has a accomulated uncertainty of {self.accomulated_uncertainty}")
+        
+        if self.visualizer:
+            self.visualizer.update_map(self.provider.get_id(), self.map[:,:,0])
 
     ###### Getting the total map uncertainty #####
     def get_current_map_uncertainty(self):
@@ -322,6 +335,25 @@ class Drone(IProtocol):
         command = SendMessageCommand(json.dumps(message), destination_id)
         self.provider.send_communication_command(command)
 
+    def send_states_message(self, destination_id: int):
+        # Update the drone own state before sending 
+        self.drone_states[self.provider.get_id()]['position'] = np.array(self.drone_position[0:2]) # only x and y
+        self.drone_states[self.provider.get_id()]['time_since_last_update'] = self.provider.current_time()
+        message: ShareStateMessage = {
+                'message_type': MessageType.SHARE_STATE_MESSAGE.value,
+                'map': self.map.tolist(),
+                'sender': self.provider.get_id(),
+                'drone_position': np.array(self.drone_position).tolist(),
+                'list_drone_states': [
+                    {'position': s['position'].tolist(),
+                     'time_since_last_update': s['time_since_last_update']}
+                    for s in self.drone_states
+                ],
+            }
+        
+        command = SendMessageCommand(json.dumps(message), destination_id)
+        self.provider.send_communication_command(command)
+
 
     def compare_maps(self, incoming_map: np.ndarray) -> np.ndarray:
         condition = incoming_map[:, :, 1] > self.map[:, :, 1]
@@ -334,24 +366,10 @@ class Drone(IProtocol):
         #self._log.info(f"Received heartbeat from {heartbeat_msg['sender']}")
 
         if heartbeat_msg['status'] == DroneStatus.MAPPING.value and self.status == DroneStatus.MAPPING:
-            # Update the drone own state before sending 
-            self.drone_states[self.provider.get_id()]['position'] = np.array(self.drone_position[0:2]) # only x and y
-            self.drone_states[self.provider.get_id()]['time_since_last_update'] = self.provider.current_time()
-            message: ShareStateMessage = {
-                'message_type': MessageType.SHARE_STATE_MESSAGE.value,
-                'map': self.map.tolist(),
-                'sender': self.provider.get_id(),
-                'drone_position': np.array(self.drone_position).tolist(),
-                'list_drone_states': [
-                    {'position': s['position'].tolist(),
-                     'time_since_last_update': s['time_since_last_update']}
-                    for s in self.drone_states
-                ],
-                }
-            destination_id = heartbeat_msg['sender']                
-            command = SendMessageCommand(json.dumps(message), destination_id)
-            self.provider.send_communication_command(command)
+            destination_id = heartbeat_msg['sender']
+            self.send_states_message(destination_id)
 
+            
     def compare_states(self, incoming_state: list) -> list:
         for i in range(self.NUMBER_OF_DRONES):
             if incoming_state[i]['time_since_last_update'] > self.drone_states[i]['time_since_last_update']:
@@ -364,10 +382,13 @@ class Drone(IProtocol):
         share_state_msg: ShareStateMessage = data
         # Update the map
         self.map = self.compare_maps(np.array(share_state_msg['map']))
+        if self.visualizer:
+            self.visualizer.update_map(self.provider.get_id(), self.map[:,:,0])
 
         # Updating the drone states
+        #print(f"Drone {self.provider.get_id()} is updating the original states: {self.drone_states}")
         self.compare_states(share_state_msg['list_drone_states'])
-        
+        #print(f"Drone {self.provider.get_id()} updated the status to {self.drone_states}")
         
     def handle_timer(self, timer: str) -> None:
         
@@ -457,7 +478,7 @@ class Drone(IProtocol):
                 destination = np.array(data['destination'])
                 self.drone_states[sender_id]['position'] = destination[0:2] # only x and y
                 self.drone_states[sender_id]['time_since_last_update'] = self.provider.current_time()
-                print(f"Drone {self.provider.get_id()} received broadcasted destination {destination} from drone {sender_id}.") 
+                #print(f"Drone {self.provider.get_id()} received broadcasted destination {destination} from drone {sender_id}.") 
             else:
                 self._log.warning(f"Received message with unknown type: {msg_type}")
 

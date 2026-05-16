@@ -6,7 +6,7 @@ from env.mapping_environment import MappingEnvironment, MappingEnvironmentConfig
 def main():
 
     config = MappingEnvironmentConfig(
-            render_mode=None,            #"visual",          
+            render_mode="visual",            #"visual" or None,          
             algorithm_iteration_interval=1.0,
             min_num_agents=3,
             max_num_agents=3,
@@ -28,6 +28,7 @@ def main():
             print(f"SIMULATION FINISHED")
         else:
             td = td["next"]
+            print(td)
 
     print(f"Collected {len(collector.agent_transitions)} agent transitions")
     print(f"Collected {len(collector.global_transitions)} global transitions")
