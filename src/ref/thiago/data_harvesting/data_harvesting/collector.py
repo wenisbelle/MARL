@@ -16,7 +16,7 @@ def _shutdown_collector(collector: Any) -> None:
         try:
             collector.stop()
             return
-        except Exception:
+        except Exception: 
             pass
     if hasattr(collector, "close"):
         try:
