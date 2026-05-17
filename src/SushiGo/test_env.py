@@ -1,7 +1,7 @@
 """Sanity checks: scoring rules, PettingZoo API compliance, hand-history memory."""
 import numpy as np
 from pettingzoo.test import parallel_api_test
-from sushi_go_env import (
+from Dev.src.SushiGo.sushi_go_env import (
     SushiGoParallelEnv, TEMPURA, SASHIMI, DUMPLING, NIGIRI_EGG, NIGIRI_SALMON,
     NIGIRI_SQUID, WASABI, N_TYPES,
 )
