@@ -214,11 +214,12 @@ class SushiGoParallelEnv(ParallelEnv):
         infos = {a: {} for a in acting}
 
         round_over = len(self.hands[0]) == 0
-        turn_scores = self._score_turn() - self.last_rewards        
+        current_scores = self._score_turn()
+        turn_scores = current_scores - self.last_rewards        
         for p, agent in enumerate(acting):
                 rewards[agent] += float(turn_scores[p])
                 infos[agent]["turn_score"] = float(turn_scores[p])
-        self.last_rewards = self._score_turn()
+        self.last_rewards = current_scores
 
         if not round_over:
             # Each player files away the hand it just saw, then hands pass one seat
@@ -254,6 +255,7 @@ class SushiGoParallelEnv(ParallelEnv):
                                  for _ in range(self.n_players)]
         self.wasabi_unused = [0 for _ in range(self.n_players)]
         self.seen_history = [[] for _ in range(self.n_players)]  # hand memory resets
+        self.last_rewards = [0.0 for _ in range(self.n_players)]
         self.hands = [
             [self.deck.pop() for _ in range(self.hand_size)]
             for _ in range(self.n_players)
