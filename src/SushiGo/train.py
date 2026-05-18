@@ -40,10 +40,10 @@ import warnings
 import torch
 from torch import nn
 from tensordict.nn import TensorDictModule, TensorDictSequential
-from torchrl.collectors import SyncDataCollector
+from torchrl.collectors import SyncDataCollector, MultiSyncDataCollector
 from torchrl.data import TensorDictReplayBuffer
 from torchrl.data.replay_buffers import LazyTensorStorage
-from torchrl.envs import check_env_specs
+from torchrl.envs import check_env_specs, ParallelEnv
 from torchrl.modules import EGreedyModule, MultiAgentMLP, QValueModule
 from torchrl.objectives import DQNLoss, SoftUpdate, ValueEstimators
 
@@ -56,6 +56,7 @@ warnings.filterwarnings("ignore")
 ACTION_VALUE_KEY = (GROUP, "action_value")          # the 12 Q-values
 CHOSEN_VALUE_KEY = (GROUP, "chosen_action_value")   # Q of the action actually taken
 
+NUM_WORKERS = 16 
 
 def build_qvalue_actor(n_players, obs_dim, num_cells=128, depth=2, device="cpu"):
     """Shared-parameter multi-agent Q-network + masked argmax head."""
@@ -82,6 +83,7 @@ def build_qvalue_actor(n_players, obs_dim, num_cells=128, depth=2, device="cpu")
         out_keys=[ACTION_KEY, ACTION_VALUE_KEY, CHOSEN_VALUE_KEY],
     )
     return TensorDictSequential(q_module, qvalue_module)
+
 
 
 def train(args):
@@ -139,11 +141,17 @@ def train(args):
     optim = torch.optim.Adam(loss_module.parameters(), lr=args.lr)
 
     # ---- data collection + replay buffer ----------------------------------------------
-    collector = SyncDataCollector(
-        env, collector_policy,
-        frames_per_batch=args.frames_per_batch,
+    def env_factory():
+        return make_torchrl_env(
+            n_players=args.n_players, reward_scale=args.reward_scale, device="cpu")
+
+    collector = MultiSyncDataCollector(
+        create_env_fn=[env_factory] * NUM_WORKERS,
+        policy=collector_policy,
+        frames_per_batch=args.frames_per_batch,   # split across workers automatically
         total_frames=total_frames,
         device=device,
+        storing_device="cpu",
     )
     replay = TensorDictReplayBuffer(
         storage=LazyTensorStorage(args.buffer_size, device=device),
@@ -189,9 +197,9 @@ def train(args):
 
 def get_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--n-players", type=int, default=3, choices=[2, 3, 4])
-    p.add_argument("--iterations", type=int, default=400)
-    p.add_argument("--frames-per-batch", type=int, default=4000)
+    p.add_argument("--n-players", type=int, default=4, choices=[2, 3, 4])
+    p.add_argument("--iterations", type=int, default=500)
+    p.add_argument("--frames-per-batch", type=int, default=5000)
     p.add_argument("--buffer-size", type=int, default=100_000)
     p.add_argument("--batch-size", type=int, default=512)
     p.add_argument("--updates-per-batch", type=int, default=16)
@@ -202,7 +210,7 @@ def get_args():
     p.add_argument("--reward-scale", type=float, default=0.1)
     p.add_argument("--cuda", action="store_true")
     p.add_argument("--smoke", action="store_true", help="tiny wiring-check run")
-    p.add_argument("--save-path", type=str, default="sushi_go_qnet.pt")
+    p.add_argument("--save-path", type=str, default="sushi_go_qnet_4_players.pt")
     return p.parse_args()
 
 
