@@ -40,6 +40,9 @@ Each agent's observation is a flat float vector with four sections, plus an
                            plus [unused_wasabi, pudding_total]. Disable with
                            `include_opponent_tableaus=False`.
 
+   5. cards_played    : counts of each of the 12 card types descarted by all
+                            players so far this round 
+
   + game_scalars         : [round_index / 3, cards_in_hand / hand_size].
 
 The observation size depends on `n_players` and `history_len` (a fresh env is
@@ -134,6 +137,7 @@ class SushiGoParallelEnv(ParallelEnv):
         self.reward_scale = reward_scale
         self.render_mode = render_mode
         self.last_rewards = [0.0 for _ in range(n_players)]
+        self.cards_discarted = np.zeros(N_TYPES, dtype=np.int64)
 
         self.possible_agents = [f"player_{i}" for i in range(n_players)]
         self.agents = list(self.possible_agents)
@@ -141,10 +145,11 @@ class SushiGoParallelEnv(ParallelEnv):
         # ---- observation layout (named slices into the flat vector) -------------------
         n_opp = (n_players - 1) if include_opponent_tableaus else 0
         sizes = [
-            ("current_hand", N_TYPES),                       # section 1
-            ("hand_history", self.history_len * N_TYPES),    # section 2
-            ("own_tableau", N_TYPES + 2),                    # section 3
-            ("opponent_tableaus", n_opp * (N_TYPES + 2)),    # section 4
+            ("current_hand", N_TYPES),                       
+            ("hand_history", self.history_len * N_TYPES),    
+            ("own_tableau", N_TYPES + 2),                    
+            ("opponent_tableaus", n_opp * (N_TYPES + 2)),
+            ("cards_played", N_TYPES),   
             ("game_scalars", 2),
         ]
         self.obs_slices, cursor = {}, 0
@@ -185,6 +190,7 @@ class SushiGoParallelEnv(ParallelEnv):
         self.round_idx = 1
         self.turn = 0
         self.last_rewards = [0.0 for _ in range(self.n_players)]
+        self.cards_played = np.zeros(N_TYPES, dtype=np.int64)
         self._deal_round()  # deals hands; clears tableaus and hand-history memory
 
         observations = {a: self._obs_for(i) for i, a in enumerate(self.agents)}
@@ -198,7 +204,7 @@ class SushiGoParallelEnv(ParallelEnv):
         # players will remember in their hand_history.
         snapshots = [self._hand_counts(p) for p in range(self.n_players)]
 
-        # 1. Each player drafts one card of the chosen type.
+        # Each player drafts one card of the chosen type.
         for p, agent in enumerate(acting):
             a = int(actions[agent])
             hand = self.hands[p]
@@ -263,6 +269,7 @@ class SushiGoParallelEnv(ParallelEnv):
 
     def _place_card(self, p, card):
         """Add a drafted card to player p's tableau, handling pudding and wasabi."""
+        self.cards_played[card] += 1
         if card == PUDDING:
             self.pudding_total[p] += 1
         elif card in NIGIRI_VALUE:
@@ -361,6 +368,10 @@ class SushiGoParallelEnv(ParallelEnv):
         if self.include_opponent_tableaus:
             for off in range(1, self.n_players):
                 parts.append(self._tableau_block((p + off) % self.n_players))
+
+        # 5. cards_discarted
+        DECK_COUNTS = np.array([DECK_COMPOSITION[i] for i in range(N_TYPES)], dtype=np.float32)
+        parts.append(self.cards_discarted / DECK_COUNTS)
 
         # game scalars
         parts.append(np.array([
