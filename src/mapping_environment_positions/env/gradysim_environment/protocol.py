@@ -205,19 +205,43 @@ class Drone(IProtocol):
     def get_current_map_uncertainty(self):
         return self.total_uncertainty
     
-    def get_patched_map(self, observation_map_size):
-        map_data = self.map[:,:,0].copy()
-        current_x = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
-        current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+    def get_patched_map(self, observation_map_size: int) -> np.ndarray:
+        """
+        Return an (M, M) patch of the uncertainty map centered on the drone.
+        Cells outside the world are padded with 0.0 (maximum uncertainty), so
+        the drone is always at patch[M//2, M//2] regardless of edge proximity.
+        """
+        M = observation_map_size
+        half = M // 2
 
-        ### Calculating the range of cells to update based on the observation map size.  
-        x_min = max(0, math.floor(current_x - observation_map_size/2))
-        x_max = min(self.MAP_WIDTH, math.floor(current_x + observation_map_size/2) + 1)
-        y_min = max(0, math.floor(current_y - observation_map_size/2))
-        y_max = min(self.MAP_HEIGHT, math.floor(current_y + observation_map_size/2) + 1)
+        # Drone's current cell in map coordinates.
+        cx = int((self.drone_position[0] + (self.MAP_WIDTH  * self.DISTANCE_BETWEEN_CELLS) / 2)
+                 / self.DISTANCE_BETWEEN_CELLS)
+        cy = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2)
+                 / self.DISTANCE_BETWEEN_CELLS)
 
-        return map_data[x_min:x_max, y_min:y_max]
+        # Full desired window in world-cell indices (may extend off the map).
+        x_lo, x_hi = cx - half, cx - half + M
+        y_lo, y_hi = cy - half, cy - half + M
 
+        # Overlap of the desired window with the actual map.
+        src_x_lo = max(0, x_lo)
+        src_x_hi = min(self.MAP_WIDTH,  x_hi)
+        src_y_lo = max(0, y_lo)
+        src_y_hi = min(self.MAP_HEIGHT, y_hi)
+
+        # Pre-fill with 0.0 so off-map cells look maximally uncertain (not "explored").
+        patch = np.full((M, M), 0.0, dtype=np.float32)
+
+        if src_x_hi > src_x_lo and src_y_hi > src_y_lo:
+            dst_x_lo = src_x_lo - x_lo
+            dst_y_lo = src_y_lo - y_lo
+            dst_x_hi = dst_x_lo + (src_x_hi - src_x_lo)
+            dst_y_hi = dst_y_lo + (src_y_hi - src_y_lo)
+            patch[dst_x_lo:dst_x_hi, dst_y_lo:dst_y_hi] = \
+                self.map[src_x_lo:src_x_hi, src_y_lo:src_y_hi, 0]
+        return patch
+    
     ##### Map updating ##### 
     def vanishing_map_routine(self):
         self.map[:, :, 0] = self.map[:, :, 0] + self.UNCERTAINTY_RATE
@@ -311,14 +335,18 @@ class Drone(IProtocol):
 
         if heartbeat_msg['status'] == DroneStatus.MAPPING.value and self.status == DroneStatus.MAPPING:
             # Update the drone own state before sending 
-            self.drone_states[self._provider.get_id()]['position'] = np.array(self.drone_position[0:2]) # only x and y
-            self.drone_states[self._provider.get_id()]['time_since_last_update'] = self.provider.current_time()
+            self.drone_states[self.provider.get_id()]['position'] = np.array(self.drone_position[0:2]) # only x and y
+            self.drone_states[self.provider.get_id()]['time_since_last_update'] = self.provider.current_time()
             message: ShareStateMessage = {
                 'message_type': MessageType.SHARE_STATE_MESSAGE.value,
                 'map': self.map.tolist(),
                 'sender': self.provider.get_id(),
                 'drone_position': np.array(self.drone_position).tolist(),
-                'list_drone_states': self.drone_states
+                'list_drone_states': [
+                    {'position': s['position'].tolist(),
+                     'time_since_last_update': s['time_since_last_update']}
+                    for s in self.drone_states
+                ],
                 }
             destination_id = heartbeat_msg['sender']                
             command = SendMessageCommand(json.dumps(message), destination_id)
@@ -327,7 +355,10 @@ class Drone(IProtocol):
     def compare_states(self, incoming_state: list) -> list:
         for i in range(self.NUMBER_OF_DRONES):
             if incoming_state[i]['time_since_last_update'] > self.drone_states[i]['time_since_last_update']:
-                self.drone_states[i] = incoming_state[i]
+                self.drone_states[i] = {
+                    'position': np.array(incoming_state[i]['position'], dtype=np.float32),
+                    'time_since_last_update': incoming_state[i]['time_since_last_update'],
+            }
 
     def update_states(self, data: dict):
         share_state_msg: ShareStateMessage = data
@@ -363,7 +394,7 @@ class Drone(IProtocol):
                 if np.linalg.norm(current_pos_array - self.goto_command) < 1:
                     #### In this case the drone needs to update its current goal.
                     #### This will be called in the RL framework
-                    self.mobility_command_buffer['flag'] = FlagMessage.INTERNAL_MOBILITY_COMMAND.value
+                    self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
 
                 #print(f"Drone {self.provider.get_id()} has a total uncertainty of {self.total_uncertainty} and an accomulated uncertainty of {self.accomulated_uncertainty}")
 

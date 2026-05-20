@@ -257,17 +257,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 dtype=torch.float32,
                 device=device,
             ),
-            "partner_position": Bounded(
-                torch.full(position_shape, -1.0, device=device), #### In some cases this will not be used, so -1 to indicate that. 
-                torch.ones(position_shape, device=device),       # normalized to [0,1]
-                position_shape,
-                dtype=torch.float32,
-                device=device,
-            ),
-            "partner_destination": Bounded(
-                torch.full(position_shape, -1.0, device=device), #### In some cases this will not be used, so -1 to indicate that.
-                torch.ones(position_shape, device=device),       # normalized to [0,1]
-                position_shape,
+            "estimated_positions": Bounded(
+                torch.zeros(estimated_positions_shape, device=device),       #### In some cases this will not be used 
+                torch.ones(estimated_positions_shape, device=device),        #### normalized to [0,1]
+                estimated_positions_shape,
                 dtype=torch.float32,
                 device=device,
             ),
@@ -469,7 +462,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         self.episode_duration = 0
         self.individual_reward = [0.0 for _ in range(self.max_num_agents)]
         self.global_reward = 0
-        self.max_reward = -math.inf
+        self.max_global_reward = -math.inf
+        self.max_individual_reward = -math.inf
 
     def _reset(self, tensordict: TensorDictBase, **kwargs) -> TensorDictBase:
         ##### Reset the environment 
@@ -568,13 +562,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
         return protocol.drone_position[:2]
     
-    def get_partner_position_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
+    def get_estimated_positions_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-        return protocol.mobility_command_buffer['partner_position']
-    
-    def get_partner_destination_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
-        protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-        return protocol.mobility_command_buffer['partner_destination']
+        return np.array([state['position'][:2] for state in protocol.drone_states],
+                        dtype=np.float32,)    
     
     def get_global_positions_from_simulation(self, agents: list[EpisodeAgentState]) -> list[np.ndarray]:
         positions = []
@@ -590,7 +581,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         agents_uncertainty = []
         for agent in agents:
             if agent.active is False:
-                return None
+                continue
             protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
             agents_uncertainty.append(protocol.total_uncertainty)
         return agents_uncertainty
@@ -660,16 +651,14 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             agent_patch_map = self.get_individual_patch_map_from_simulation(agent)
             agent_uncertainty = self.get_individual_agent_uncertainty_from_simulation(agent)
             agent_position = self.get_individual_position_from_simulation(agent)
-            partner_position = self.get_partner_position_from_simulation(agent)
-            partner_destination = self.get_partner_destination_from_simulation(agent)
+            estimated_positions = self.get_estimated_positions_from_simulation(agent)
             flag = self.get_flag_from_simulation(agent)
             
             individual_state[agent.name] = {
                 "map_patch": agent_patch_map,
                 "individual_map_uncertainty": agent_uncertainty,
                 "position": agent_position,
-                "partner_position": partner_position,
-                "partner_destination": partner_destination,
+                "estimated_positions": estimated_positions,
                 "encounter_flag": flag
             }
         global_state = {}
@@ -702,8 +691,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         agent_map_patch                  = agent_obs_td.get("map_patch")
         agent_individual_map_uncertainty = agent_obs_td.get("individual_map_uncertainty")
         agent_position                   = agent_obs_td.get("position")
-        agent_partner_position           = agent_obs_td.get("partner_position")
-        agent_partner_destination        = agent_obs_td.get("partner_destination")
+        estimated_positions_t            = agent_obs_td.get("estimated_positions") 
         agent_encounter_flag             = agent_obs_td.get("encounter_flag")
 
         global_td               = td.get("global_state")
@@ -718,8 +706,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         agent_map_patch.zero_()
         agent_individual_map_uncertainty.zero_()
         agent_position.zero_()
-        agent_partner_position.fill_(-1.0)
-        agent_partner_destination.fill_(-1.0)
+        estimated_positions_t.fill_(-1.0)
         agent_encounter_flag.zero_()
 
         global_full_map.zero_()
@@ -756,13 +743,12 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
             # map_patch -> take uncertainty channel, pad to (M, M)
             raw_patch = obs["map_patch"]
-            if raw_patch.ndim == 3:
-                raw_patch = raw_patch[:, :, 0]
-            h, w = raw_patch.shape[:2]
-            h_clip, w_clip = min(h, M), min(w, M)
-            padded = np.zeros((M, M), dtype=np.float32)
-            padded[:h_clip, :w_clip] = raw_patch[:h_clip, :w_clip]
-            agent_map_patch[slot] = torch.as_tensor(padded, device=self.device, dtype=agent_map_patch.dtype)
+            assert raw_patch.shape == (M, M), (
+                f"Expected patch shape ({M}, {M}) from protocol, got {raw_patch.shape}"
+                )
+            agent_map_patch[slot] = torch.as_tensor(
+                raw_patch, device=self.device, dtype=agent_map_patch.dtype
+            )
 
             # scalar uncertainty (normalized)
             agent_individual_map_uncertainty[slot, 0] = (
@@ -774,23 +760,18 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 _normalize_xy(obs["position"]), device=self.device, dtype=agent_position.dtype
             )
 
-            # partner_position / partner_destination -- MAY BE None
-            partner_pos = obs.get("partner_position")
-            if partner_pos is not None:
-                agent_partner_position[slot] = torch.as_tensor(
-                    _normalize_xy(partner_pos), device=self.device, dtype=agent_partner_position.dtype
-                )
-
-            partner_dest = obs.get("partner_destination")
-            if partner_dest is not None:
-                agent_partner_destination[slot] = torch.as_tensor(
-                    _normalize_xy(partner_dest), device=self.device, dtype=agent_partner_destination.dtype
-                )
-
+            # partner_position / partner_destination
+            raw_estimates = obs.get("estimated_positions")  # shape (max_num_agents, 2)
+            if raw_estimates is not None:
+                for j in range(self.max_num_agents):
+                    xy = raw_estimates[j]
+                    estimated_positions_t[slot, j] = torch.as_tensor(
+                        _normalize_xy(xy), device=self.device, dtype=estimated_positions_t.dtype
+                    )
+            
             # encounter_flag (int) -> one-hot of length 4
-            flag_idx = int(obs["encounter_flag"])
-            if 0 <= flag_idx < agent_encounter_flag.shape[-1]:
-                agent_encounter_flag[slot, flag_idx] = 1.0
+            agent_encounter_flag[slot, 0] = bool(obs["encounter_flag"])
+
 
         ##### global / critic observation 
         if "full_map" in global_obs:
