@@ -11,7 +11,7 @@ from gradysim.simulator.handler.mobility import MobilityHandler, MobilityConfigu
 from gradysim.simulator.handler.timer import TimerHandler
 from gradysim.simulator.handler.visualization import VisualizationHandler, VisualizationConfiguration
 from tensordict import TensorDictBase
-from torchrl.data import Bounded
+from torchrl.data import Bounded, Binary
 from torchrl.data.tensor_specs import Categorical, Composite, Unbounded
 from torchrl.envs import EnvBase
 
@@ -38,9 +38,8 @@ class EpisodeAgentState():
   
     #individual_map_uncertainty: float = 0.0
     #current_position: np.array = np.zeros(2)
-    #current_partner_position: np.array = np.zeros(2)
-    #partner_destination: np.array = np.zeros(2)
-    #flag: int = FlagMessage.NONE.value
+    #estimation_drone_positions: np.array = np.zeros((self.max_num_agents, 2))
+    #flag: int = FlagMessage.NONE.value 
     #individual_patch_map: np.ndarray
 
 @dataclasses.dataclass(slots=True)
@@ -70,7 +69,6 @@ class MappingEnvironmentConfig:
     vanishing_update_time: float = 10.0
 
     max_episode_length: int = 500
-    max_seconds_stalled: int = 30
     communication_range: float = 100
     full_random_drone_position: bool = False
     reward: str = 'punish'  # Fixed reward mode: punish
@@ -219,6 +217,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         action_dim = 3 if self.speed_action else 2
         M = self.observation_map_size
         all_positions_shape = (self.max_num_agents, 2)
+        estimated_positions_shape = (self.max_num_agents, self.max_num_agents, 2)
 
         map_patch_shape = (self.max_num_agents, M, M)
         complete_map_shape = (self.map_width, self.map_height)
@@ -272,12 +271,11 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 dtype=torch.float32,
                 device=device,
             ),
-            "encounter_flag": Bounded(
-                torch.zeros((self.max_num_agents, 4), device=device),  # 4 possible flag values- None, External Higher Priority, External Lower Priority, Internal
-                torch.ones((self.max_num_agents, 4), device=device),
-                (self.max_num_agents, 4),
-                dtype=torch.float32,
+            "encounter_flag": Binary(
+                n=1,
+                shape=(self.max_num_agents, 1),
                 device=device,
+                dtype=torch.bool,
             )
         }
 

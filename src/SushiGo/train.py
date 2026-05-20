@@ -32,7 +32,7 @@ opponent behaviour — keep the buffer moderate in size so it does not get too s
 
 Run:
   python train_madqn.py --smoke                 # quick wiring check, ~3 iters
-  python train_madqn.py --n-players 3 --iterations 400
+  python train.py --n-players 3 --iterations 400
 """
 import argparse
 import warnings
@@ -56,7 +56,11 @@ warnings.filterwarnings("ignore")
 ACTION_VALUE_KEY = (GROUP, "action_value")          # the 12 Q-values
 CHOSEN_VALUE_KEY = (GROUP, "chosen_action_value")   # Q of the action actually taken
 
+<<<<<<< HEAD
 NUM_WORKERS = 16 
+=======
+NUM_WORKERS = 4 
+>>>>>>> 7dbaa81 (Implementing the draft history in the observations)
 
 def build_qvalue_actor(n_players, obs_dim, num_cells=128, depth=2, device="cpu"):
     """Shared-parameter multi-agent Q-network + masked argmax head."""
@@ -197,7 +201,11 @@ def train(args):
 
 def get_args():
     p = argparse.ArgumentParser()
+<<<<<<< HEAD
     p.add_argument("--n-players", type=int, default=4, choices=[2, 3, 4])
+=======
+    p.add_argument("--n-players", type=int, default=2, choices=[2, 3, 4])
+>>>>>>> 7dbaa81 (Implementing the draft history in the observations)
     p.add_argument("--iterations", type=int, default=500)
     p.add_argument("--frames-per-batch", type=int, default=5000)
     p.add_argument("--buffer-size", type=int, default=100_000)
@@ -210,7 +218,11 @@ def get_args():
     p.add_argument("--reward-scale", type=float, default=0.1)
     p.add_argument("--cuda", action="store_true")
     p.add_argument("--smoke", action="store_true", help="tiny wiring-check run")
+<<<<<<< HEAD
     p.add_argument("--save-path", type=str, default="sushi_go_qnet_4_players.pt")
+=======
+    p.add_argument("--save-path", type=str, default="sushi_go_qnet_2_players.pt")
+>>>>>>> 7dbaa81 (Implementing the draft history in the observations)
     return p.parse_args()
 
 
