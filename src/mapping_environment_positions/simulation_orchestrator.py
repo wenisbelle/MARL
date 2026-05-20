@@ -50,8 +50,8 @@ class AsyncMARLOrchestrator:
 
     @staticmethod
     def _read_flags(obs_td: TensorDict) -> torch.Tensor:
-        """Return a (N,) tensor of integer flag indices."""
-        return obs_td["agents", "observation", "encounter_flag"].argmax(dim=-1)
+        """Return a (N,) bool tensor: True if the agent has a pending decision."""
+        return obs_td["agents", "observation", "encounter_flag"].squeeze(-1).bool()
 
     def _slice_agent_obs(self, obs_td: TensorDict, i: int) -> TensorDict:
         """Take just agent i's observation, cloned so the env can't mutate it."""
@@ -135,7 +135,7 @@ class AsyncMARLOrchestrator:
             if not mask[i]:
                 continue
             f = flags[i].item()
-            if f == FlagMessage.NONE.value and not opening_episode:
+            if not f and not opening_episode:
                 continue
             any_flag_fired = True
 
