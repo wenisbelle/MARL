@@ -46,11 +46,29 @@ def _worker_loop(
     orch = AsyncMARLOrchestrator(env, policy_callable)
     td = orch.reset()
 
+    def pause(self):
+        for q in self.control_queues:
+            q.put_nowait("PAUSE")
+
+    def resume(self):
+        for q in self.control_queues:
+            q.put_nowait("CONTINUE")
+
+
     while True:
         # shutdown?
         try:
-            if control_queue.get_nowait() == "STOP":
+            msg = control_queue.get_nowait()
+            if msg == "STOP":
                 break
+            elif msg == "PAUSE":
+                if SYNC:
+                # Discard any pending in-flight transitions if the system is synchronous
+                    orch.agent_transitions.clear()
+                    orch.global_transitions.clear()
+                    # Block until told to continue
+                    while control_queue.get() != "CONTINUE":
+                        pass
         except Empty:
             pass
 

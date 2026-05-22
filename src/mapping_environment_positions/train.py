@@ -45,3 +45,14 @@ with SystemOrchestrator(
 
             # 3. ship updated weights to all workers
             system.broadcast_weights(actor.state_dict())
+
+for it in range(num_iters):
+    system.collect(...)              # collect + pause
+    train(...)
+    system.set_weights(actor.state_dict())
+    system.broadcast()
+    system.resume()  
+
+
+
+    

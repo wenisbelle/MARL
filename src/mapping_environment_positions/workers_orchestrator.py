@@ -27,7 +27,6 @@ class WorkersOrchestrator:
         self.sync = sync
         self.policy_fn = policy_fn
         self.current_state_dict = None  
-        self._update_weights = True  # whether the workers are currently running with the same weights   
 
         self.agent_buffer = agent_buffer
         self.global_buffer = global_buffer
@@ -57,9 +56,6 @@ class WorkersOrchestrator:
         """Drain the transition queue until enough new data is in the buffers."""
         new_count = 0
         deadline = time.time() + timeout
-        if self.sync:
-            if self.sync:
-                pass 
         while new_count < min_new_transitions and time.time() < deadline:
             # I keep sending this 
             try:
@@ -73,7 +69,9 @@ class WorkersOrchestrator:
                 self.global_buffer.extend(td)
 
         if self.sync:
-            self._can_update.set()     # allow again
+            for q in self.control_queues:
+                try: q.put_nowait("PAUSE")  # allow workers to proceed until they hit the next sync point
+                except Exception: pass
 
         return new_count
 
