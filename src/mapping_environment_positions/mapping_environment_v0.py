@@ -28,7 +28,7 @@ def main():
             print(f"SIMULATION FINISHED")
         else:
             td = td["next"]
-            print(td)
+            #print(td)
 
     print(f"Collected {len(collector.agent_transitions)} agent transitions")
     print(f"Collected {len(collector.global_transitions)} global transitions")

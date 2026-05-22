@@ -165,27 +165,29 @@ class AsyncMARLOrchestrator:
 
     def _close_agent(self, i: int, next_obs_td: TensorDict, terminal: bool):
         p = self.pending_agents[i]
-        self.agent_transitions.append({
-            "state": p.state,
-            "action": p.action,
-            "reward": p.reward_sum,
-            "next_state": self._slice_agent_obs(next_obs_td, i),
-            "done": terminal,
-            "n_sim_steps": p.n_sim_steps,
-            "agent_idx": i,
-        })
+        transition = TensorDict({
+            "obs":         p.state,
+            "next_obs":    self._slice_agent_obs(next_obs_td, i),
+            "action":      p.action,
+            "reward":      torch.tensor([p.reward_sum], dtype=torch.float32),
+            "done":        torch.tensor([terminal], dtype=torch.bool),
+            "n_sim_steps": torch.tensor([p.n_sim_steps], dtype=torch.long),
+            "agent_idx":   torch.tensor([i], dtype=torch.long),
+        }, batch_size=[])
+        self.agent_transitions.append(transition)
         self.pending_agents[i] = None
 
     def _close_global(self, next_obs_td: TensorDict, terminal: bool):
         g = self.pending_global
-        self.global_transitions.append({
-            "state": g.global_state,
+        global_transition = TensorDict({
+            "obs": g.global_state,
+            "next_obs": self._snapshot_global(next_obs_td),
             "joint_action": g.joint_action,
-            "reward": g.reward_sum,
-            "next_state": self._snapshot_global(next_obs_td),
-            "done": terminal,
-            "n_sim_steps": g.n_sim_steps,
-        })
+            "reward": torch.tensor([g.reward_sum], dtype=torch.float32),
+            "done": torch.tensor([terminal], dtype=torch.bool),
+            "n_sim_steps": torch.tensor([g.n_sim_steps], dtype=torch.long),
+        }, batch_size=[])
+        self.global_transitions.append(global_transition)
         self.pending_global = None
 
     def _close_all_pending(self, next_obs_td: TensorDict, terminal: bool):
