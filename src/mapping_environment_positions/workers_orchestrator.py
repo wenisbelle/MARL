@@ -1,10 +1,28 @@
+"""
+WORKERS ORCHESTRATOR
+--------------------
+Trainer-side handle for a pool of worker processes.
+
+Lifecycle in sync mode:
+    1. __init__   -> spawn workers 
+    2. set_weights(state_dict)
+    3. broadcast()
+    4. resume()                     # workers wake up and start collecting
+    5. collect(min_new_transitions) # blocks until threshold; sends PAUSE at end
+    6. ... train ...
+    7. set_weights + broadcast + resume   (back to step 5)
+
+Lifecycle in async mode:
+    No PAUSE / CONTINUE — workers free-run from the moment they receive their
+    first weight broadcast. The trainer drains transitions opportunistically.
+"""
+
 import multiprocessing as mp
 import time
-import torch
 from queue import Empty
-from tensordict import TensorDict
 
 from worker import _worker_loop
+
 
 class WorkersOrchestrator:
     def __init__(
@@ -12,21 +30,23 @@ class WorkersOrchestrator:
         num_workers: int,
         env_fn,
         policy_fn,
-        agent_buffer,         # agent TensorDictReplayBuffer
-        global_buffer,        # global TensorDictReplayBuffer
+        agent_buffer,
+        global_buffer,
         steps_per_batch: int = 200,
         base_seed: int = 0,
-        sync: bool = True, # sync or async
+        sync: bool = True,
     ):
-        ctx = mp.get_context("spawn")   # safest cross-platform; required on macOS/Windows
+        # "spawn" is required cross-platform 
+        ctx = mp.get_context("spawn")
         self.transition_queue = ctx.Queue(maxsize=4 * num_workers)
-        # need to provide a list because the first worker to grab the message would consume it, leaving the others without weights
-        self.weight_queues   = [ctx.Queue(maxsize=2) for _ in range(num_workers)]
-        self.control_queues  = [ctx.Queue() for _ in range(num_workers)]
-    
+        # One weight queue per worker — broadcasting via a shared queue would
+        # let the first worker consume the message and leave the others stale.
+        self.weight_queues  = [ctx.Queue(maxsize=2) for _ in range(num_workers)]
+        self.control_queues = [ctx.Queue() for _ in range(num_workers)]
+
         self.sync = sync
         self.policy_fn = policy_fn
-        self.current_state_dict = None  
+        self._pending_state_dict = None  # set by set_weights, consumed by broadcast
 
         self.agent_buffer = agent_buffer
         self.global_buffer = global_buffer
@@ -47,45 +67,77 @@ class WorkersOrchestrator:
                     self.control_queues[i],
                     self.sync,
                 ),
-                daemon=True,
+                daemon=False, # in trainning it should be False
             )
             p.start()
             self.workers.append(p)
 
-    def collect(self, min_new_transitions: int = 1000, timeout: float = 30.0):
-        """Drain the transition queue until enough new data is in the buffers."""
-        new_count = 0
-        deadline = time.time() + timeout
-        while new_count < min_new_transitions and time.time() < deadline:
-            # I keep sending this 
-            try:
-                kind, td = self.transition_queue.get(timeout=0.5)
-            except Empty:
-                continue
-            if kind == "agent":
-                self.agent_buffer.extend(td)
-                new_count += td.batch_size[0]
-            elif kind == "global":
-                self.global_buffer.extend(td)
 
-        if self.sync:
-            for q in self.control_queues:
-                try: q.put_nowait("PAUSE")  # allow workers to proceed until they hit the next sync point
-                except Exception: pass
+    def pause(self):
+        """Tell workers to stop producing transitions and discard in-flight work."""
+        for q in self.control_queues:
+            try: q.put_nowait("PAUSE")
+            except Exception: pass
 
-        return new_count
+    def resume(self):
+        """Wake paused workers up. Workers will drain the latest weights, then run."""
+        for q in self.control_queues:
+            try: q.put_nowait("CONTINUE")
+            except Exception: pass
+
+
+    def set_weights(self, state_dict):
+        """Stage a new state dict for the next broadcast. CPU-side, detached."""
+        self._pending_state_dict = {
+            k: v.detach().cpu().clone() for k, v in state_dict.items()
+        }
 
     def broadcast(self):
-        """Push the pending state dict to all workers."""
+        """Push the pending state dict to every worker. No-op if none staged."""
         if self._pending_state_dict is None:
             return
         for q in self.weight_queues:
             try:
                 q.put_nowait(self._pending_state_dict)
             except Exception:
+                # Queue full -> the worker hasn't drained its previous weights
+                # yet. Safe to drop in async mode (latest wins); in sync mode
+                # this shouldn't happen because workers drain on every iter.
                 pass
 
+    def collect(self, min_new_transitions: int = 1000, timeout: float = 300.0) -> int:
+        """
+        Drain the transition queue into the replay buffers until either:
+          - at least `min_new_transitions` *agent* transitions have arrived, or
+          - `timeout` seconds have elapsed.
+
+        In sync mode, sends PAUSE to all workers at the end so they stop
+        producing before the trainer starts its update.
+
+        Returns the number of new agent transitions ingested.
+        """
+        new_count = 0
+        deadline = time.time() + timeout
+        while new_count < min_new_transitions and time.time() < deadline:
+            try:
+                agent_td, global_td = self.transition_queue.get(timeout=0.5)
+            except Empty:
+                continue
+            if agent_td is not None:
+                self.agent_buffer.extend(agent_td)
+                new_count += agent_td.batch_size[0]
+            if global_td is not None:
+                self.global_buffer.extend(global_td)
+
+        if self.sync:
+            self.pause()
+
+        return new_count
+
+
     def shutdown(self, timeout: float = 5.0):
+        # If we're paused, workers are blocking on control_queue.get() — STOP
+        # is delivered that way too, so this works in either state.
         for q in self.control_queues:
             try: q.put_nowait("STOP")
             except Exception: pass
@@ -93,15 +145,8 @@ class WorkersOrchestrator:
             p.join(timeout=timeout)
             if p.is_alive():
                 p.terminate()
-        # close queues
         for q in [self.transition_queue, *self.weight_queues, *self.control_queues]:
             q.close()
-
-    def set_weights(self, state_dict):
-        """Stage a new state dict for the next broadcast."""
-        self._pending_state_dict = {
-            k: v.detach().cpu().clone() for k, v in state_dict.items()
-    }
 
     def __enter__(self):  return self
     def __exit__(self, *args):  self.shutdown()

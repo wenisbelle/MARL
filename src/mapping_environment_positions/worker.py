@@ -12,8 +12,17 @@ from queue import Empty
 from tensordict import TensorDict
 from torchrl.envs.utils import step_mdp
 
-from .simulation_orchestrator import AsyncMARLOrchestrator
+from simulation_orchestrator import AsyncMARLOrchestrator
 
+def _drain_latest(q: mp.Queue):
+    """Pop everything available on `q` non-blocking; return the last item or None."""
+    latest = None
+    try:
+        while True:
+            latest = q.get_nowait()
+    except Empty:
+        pass
+    return latest
 
 def _worker_loop(
     worker_id: int,
@@ -45,14 +54,7 @@ def _worker_loop(
 
     orch = AsyncMARLOrchestrator(env, policy_callable)
     td = orch.reset()
-
-    def pause(self):
-        for q in self.control_queues:
-            q.put_nowait("PAUSE")
-
-    def resume(self):
-        for q in self.control_queues:
-            q.put_nowait("CONTINUE")
+    paused = False
 
 
     while True:
@@ -60,52 +62,60 @@ def _worker_loop(
         try:
             msg = control_queue.get_nowait()
             if msg == "STOP":
-                break
+                env.close()
+                return
             elif msg == "PAUSE":
-                if SYNC:
-                # Discard any pending in-flight transitions if the system is synchronous
-                    orch.agent_transitions.clear()
-                    orch.global_transitions.clear()
-                    # Block until told to continue
-                    while control_queue.get() != "CONTINUE":
-                        pass
+                paused = True
+            elif msg == "CONTINUE":
+                paused = False
         except Empty:
             pass
 
-        # new weights? drain everything, keep only the most recent.
-        if SYNC:
-            # Block until trainer sends the next policy version. Don't drain;
-            # we want exactly one weight update per training iteration.
-            new_state_dict = weight_queue.get()
-            policy.load_state_dict(new_state_dict)
-        else:
-            # Async: drain to latest, skip if nothing new.
-            new_state_dict = None
-            try:
-                while True:
-                    new_state_dict = weight_queue.get_nowait()
-            except Empty:
-                pass
-            if new_state_dict is not None:
-                policy.load_state_dict(new_state_dict)
-                
-       #  run a chunk of simulation.
+
+        # If paused, discard old-policy work and block 
+        if paused:
+            # Drop unshipped transitions — they belong to the old policy.
+            orch.agent_transitions.clear()
+            orch.global_transitions.clear()
+            # Also reset to avoid mixed-policy partial SMDP transitions.
+            # Reset the whole simulation
+            ##### Carefull here, maybe is not the best option
+            td = orch.reset()
+ 
+            # Block on the control queue until CONTINUE or STOP arrives.
+            while True:
+                m = control_queue.get()  # blocking
+                if m == "CONTINUE":
+                    paused = False
+                    break
+                if m == "STOP":
+                    env.close()
+                    return
+                # ignore other messages while paused
+            # fall through to the weight drain so we pick up new weights
+            # broadcast during the pause window
+ 
+        # Apply latest weights (non-blocking drain, keep last)
+        latest = _drain_latest(weight_queue)
+        if latest is not None:
+            policy.load_state_dict(latest)
+ 
+        # Run a simulation 
         for _ in range(steps_per_batch):
             td = orch.step(td)
             if td["next", "done"].item():
                 td = orch.reset()
             else:
                 td = step_mdp(td)
-
-        # drain the orchestrator's transitions and ship them.
-        if orch.agent_transitions:
-            agent_td = torch.stack(orch.agent_transitions).contiguous()
-            transition_queue.put(("agent", agent_td))
-            orch.agent_transitions.clear()
-
-        if orch.global_transitions:
-            global_td = torch.stack(orch.global_transitions).contiguous()
-            transition_queue.put(("global", global_td))
-            orch.global_transitions.clear()
-
-    env.close()
+ 
+        agent_td = (
+            torch.stack(orch.agent_transitions).contiguous()
+            if orch.agent_transitions else None
+        )
+        global_td = (
+            torch.stack(orch.global_transitions).contiguous()
+            if orch.global_transitions else None
+        )
+        transition_queue.put((agent_td, global_td))
+        orch.agent_transitions.clear()
+        orch.global_transitions.clear()

@@ -285,7 +285,7 @@ class Drone(IProtocol):
         target_col = max(0, min(raw_target_col, self.MAP_HEIGHT - 1))
         
         self._log.info(f"Drone {self.provider.get_id()} going to cell ({target_row}, {target_col}).")
-        print(f"Drone {self.provider.get_id()} going to cell ({target_row}, {target_col}).")
+        #print(f"Drone {self.provider.get_id()} going to cell ({target_row}, {target_col}).")
         #### Setting the speed
         speed = SetSpeedMobilityCommand(self.speed_command)
         self.provider.send_mobility_command(speed)
@@ -299,7 +299,7 @@ class Drone(IProtocol):
 
         #### Now, broadcast this information to any other drone in the communication range
         self.send_broadcast_destination()
-        print(f"Drone {self.provider.get_id()} broadcasted its destination {self.goto_command} to other drones.") 
+        #print(f"Drone {self.provider.get_id()} broadcasted its destination {self.goto_command} to other drones.") 
 
         ##### Now, realease the mobility command buffer, so the drone can receive new commands from the encounters until it reaches the destination.
         self.mobility_command_buffer['flag'] = FlagMessage.NONE.value
@@ -416,6 +416,7 @@ class Drone(IProtocol):
                     #### In this case the drone needs to update its current goal.
                     #### This will be called in the RL framework
                     self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
+                    print(f"Drone {self.provider.get_id()} updated flag.")
 
                 #print(f"Drone {self.provider.get_id()} has a total uncertainty of {self.total_uncertainty} and an accomulated uncertainty of {self.accomulated_uncertainty}")
 
@@ -470,7 +471,8 @@ class Drone(IProtocol):
                 # Update the map and the states of the drones, both will be used in the NN policy
                 self.update_states(data)
                 if self.provider.current_time() - self.last_drone_interaction_time[data['sender']]  > self.TIMEOUT_TO_UPDATE_DESTINATION: # the drone id starts at 0
-                    self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value                    
+                    self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
+                    print(f"Drone {self.provider.get_id()} updated flag.")                    
                     self.last_drone_interaction_time[data['sender']] = self.provider.current_time() 
             
             elif msg_type == MessageType.BROADCAST_DESTINATION_MESSAGE.value:

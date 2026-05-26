@@ -1,58 +1,127 @@
+"""
+main_test_workers.py — smoke test for the patched worker / WorkersOrchestrator.
+
+Sync lifecycle (per iteration):
+    set_weights -> broadcast -> resume -> collect (returns with workers PAUSED)
+    -> train -> next iteration
+
+Workers are bootstrap-paused on startup, so iteration 0 follows the same
+pattern as every other iteration.
+"""
+
+import multiprocessing as mp
+import torch
+from torch import nn
+from torchrl.data import TensorDictReplayBuffer, LazyTensorStorage
+
+from env.mapping_environment import MappingEnvironment, MappingEnvironmentConfig
+from workers_orchestrator import WorkersOrchestrator
+
+
 def make_env():
-    from env.mapping_environment import MappingEnvironment, MappingEnvironmentConfig
-    return MappingEnvironment(MappingEnvironmentConfig(
-        max_num_agents=3, min_num_agents=3, max_episode_length=200,
-    ))
+    config = MappingEnvironmentConfig(
+        render_mode="visual",
+        algorithm_iteration_interval=1.0,
+        min_num_agents=3,
+        max_num_agents=3,
+        map_width=50,
+        map_height=50,
+        observation_map_size=20,
+        max_episode_length=200,
+        agent_death_probability=0.0,
+    )
+    return MappingEnvironment(config)
+
+
+class TinyPolicy(nn.Module):
+    def __init__(self, action_dim: int = 2):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(2, 16),
+            nn.Tanh(),
+            nn.Linear(16, action_dim),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, per_agent_obs_td):
+        pos = per_agent_obs_td["position"].to(torch.float32)
+        return self.net(pos)
+
+class RandomPolicy(nn.Module):
+    """
+    Stateless random policy. Ignores the observation, returns a uniformly
+    random action in [0, 1]^action_dim — matches the env's Bounded action spec.
+
+    No parameters: state_dict() is empty, load_state_dict({}) is a no-op,
+    so the broadcast plumbing still runs cleanly.
+    """
+    def __init__(self, action_dim: int = 2):
+        super().__init__()
+        self.action_dim = action_dim
+
+    def forward(self, per_agent_obs_td):
+        return torch.rand(self.action_dim)
+
 
 def make_policy():
-    # whatever your actor architecture is — built fresh inside each worker
-    return MyActor(...)
-
-# Main process: buffers live here
-agent_buffer  = TensorDictReplayBuffer(storage=LazyTensorStorage(100_000), batch_size=256)
-global_buffer = TensorDictReplayBuffer(storage=LazyTensorStorage(50_000),  batch_size=64)
-
-# Main process: a "trainer-side" copy of the policy and critic for gradient updates
-actor  = make_policy()
-critic = MyCritic(...)
-optim  = torch.optim.Adam(list(actor.parameters()) + list(critic.parameters()), lr=3e-4)
-
-with SystemOrchestrator(
-    num_workers=4,
-    env_fn=make_env,
-    policy_fn=make_policy,
-    agent_buffer=agent_buffer,
-    global_buffer=global_buffer,
-    steps_per_batch=200,
-) as system:
-
-    # initial weights
-    system.broadcast_weights(actor.state_dict())
-
-    for iteration in range(1000):
-        # 1. gather
-        n_new = system.collect(min_new_transitions=2000, timeout=60.0)
-        print(f"iter {iteration}: collected {n_new} agent transitions, "
-              f"buffer size {len(agent_buffer)}")
-
-        # 2. train
-        if len(agent_buffer) >= 5000:
-            for _ in range(50):
-                batch = agent_buffer.sample()
-                # ... SMDP loss with γ^n_sim_steps as discussed earlier ...
-                loss = compute_loss(actor, critic, batch)
-                optim.zero_grad(); loss.backward(); optim.step()
-
-            # 3. ship updated weights to all workers
-            system.broadcast_weights(actor.state_dict())
-
-for it in range(num_iters):
-    system.collect(...)              # collect + pause
-    train(...)
-    system.set_weights(actor.state_dict())
-    system.broadcast()
-    system.resume()  
+    return RandomPolicy(action_dim=2)
 
 
 
-    
+def main():
+    NUM_WORKERS                 = 1
+    STEPS_PER_BATCH             = 50
+    NUM_ITERATIONS              = 3
+    MIN_TRANSITIONS_PER_COLLECT = 25
+    COLLECT_TIMEOUT_S           = 220.0
+
+    agent_buffer  = TensorDictReplayBuffer(storage=LazyTensorStorage(max_size=20_000))
+    global_buffer = TensorDictReplayBuffer(storage=LazyTensorStorage(max_size=20_000))
+
+    trainer_policy = make_policy()
+
+    with WorkersOrchestrator(
+        num_workers=NUM_WORKERS,
+        env_fn=make_env,
+        policy_fn=make_policy,
+        agent_buffer=agent_buffer,
+        global_buffer=global_buffer,
+        steps_per_batch=STEPS_PER_BATCH,
+        base_seed=42,
+        sync=True,
+    ) as orch:
+
+        for it in range(NUM_ITERATIONS):
+            # Same four-step rhythm on every iteration, including the first.
+            orch.set_weights(trainer_policy.state_dict())
+            orch.broadcast()
+            orch.resume()
+            new = orch.collect(
+                min_new_transitions=MIN_TRANSITIONS_PER_COLLECT,
+                timeout=COLLECT_TIMEOUT_S,
+            )
+
+            print(
+                f"[iter {it}] new agent transitions={new}  "
+                f"agent_buffer={len(agent_buffer)}  "
+                f"global_buffer={len(global_buffer)}"
+            )
+
+            with torch.no_grad():
+                for p in trainer_policy.parameters():
+                    p.add_(0.01 * torch.randn_like(p))
+
+        if len(agent_buffer) > 0:
+            sample = agent_buffer.sample(1)
+            print("\nAgent sample keys:", list(sample.keys()))
+            print("  reward      :", sample["reward"].squeeze().tolist())
+            print("  n_sim_steps :", sample["n_sim_steps"].squeeze().tolist())
+            print("  agent_idx   :", sample["agent_idx"].squeeze().tolist())
+            print("  done        :", sample["done"].squeeze().tolist())
+
+    print("\nShutdown complete.")
+
+
+if __name__ == "__main__":
+    mp.set_start_method("spawn", force=True)
+    main()
