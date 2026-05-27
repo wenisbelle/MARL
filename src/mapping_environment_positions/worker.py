@@ -34,6 +34,7 @@ def _worker_loop(
     weight_queue: mp.Queue,
     control_queue: mp.Queue,
     sync: bool = True, # sync or async
+    new_batch_new_simulation: bool = True, # whether to reset the simulation at the start of each batch
 ):
     """One worker process: env + orchestrator + local policy."""
     # Build everything inside the worker — the env/simulator does not pickle.
@@ -44,7 +45,6 @@ def _worker_loop(
     env = env_fn()
     policy = policy_fn()
     policy.eval()
-    SYNC = sync
     
 
     # no training inside the worker; just inference so I need to add the no_grad to the policy callable
@@ -54,52 +54,56 @@ def _worker_loop(
 
     orch = AsyncMARLOrchestrator(env, policy_callable)
     td = orch.reset()
-    paused = False
 
 
     while True:
         # shutdown?
+        if new_batch_new_simulation:
+            # give time to start get the message before keep going in the loop
+            time.sleep(0.1) 
         try:
             msg = control_queue.get_nowait()
-            if msg == "STOP":
+            print(f"[worker {worker_id}] got control msg: {msg!r}", flush=True)
+        except Empty:
+            msg = None
+
+        if msg == "STOP":
                 env.close()
                 return
-            elif msg == "PAUSE":
-                paused = True
-            elif msg == "CONTINUE":
-                paused = False
-        except Empty:
-            pass
 
-
-        # If paused, discard old-policy work and block 
-        if paused:
-            # Drop unshipped transitions — they belong to the old policy.
+        if msg == "PAUSE":
+            # Discard old-policy work + reset, so next chunk starts a clean episode.
+            print(f"worker  >>> entering PAUSE block")
             orch.agent_transitions.clear()
             orch.global_transitions.clear()
-            # Also reset to avoid mixed-policy partial SMDP transitions.
-            # Reset the whole simulation
-            ##### Carefull here, maybe is not the best option
-            td = orch.reset()
- 
-            # Block on the control queue until CONTINUE or STOP arrives.
+            if new_batch_new_simulation:
+                td = orch.reset()
+
+            # Block until CONTINUE (or STOP). This consumes the CONTINUE that
+            # arrived right after PAUSE — the race no longer matters.
             while True:
                 m = control_queue.get()  # blocking
+                print(f"[worker {worker_id}]     (paused) got: {m!r}", flush=True)
                 if m == "CONTINUE":
-                    paused = False
                     break
                 if m == "STOP":
                     env.close()
                     return
-                # ignore other messages while paused
-            # fall through to the weight drain so we pick up new weights
-            # broadcast during the pause window
+                # ignore any other control messages while paused
+
+            # After unpausing, pick up the latest weights for the new iteration.
+            latest = _drain_latest(weight_queue)
+            if latest is not None:
+                policy.load_state_dict(latest)
+            continue  # restart the outer loop cleanly
+            # If paused, discard old-policy work and block 
+        
  
         # Apply latest weights (non-blocking drain, keep last)
         latest = _drain_latest(weight_queue)
         if latest is not None:
             policy.load_state_dict(latest)
- 
+         
         # Run a simulation 
         for _ in range(steps_per_batch):
             td = orch.step(td)

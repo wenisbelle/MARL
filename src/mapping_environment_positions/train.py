@@ -13,6 +13,7 @@ import multiprocessing as mp
 import torch
 from torch import nn
 from torchrl.data import TensorDictReplayBuffer, LazyTensorStorage
+import time
 
 from env.mapping_environment import MappingEnvironment, MappingEnvironmentConfig
 from workers_orchestrator import WorkersOrchestrator
@@ -27,7 +28,7 @@ def make_env():
         map_width=50,
         map_height=50,
         observation_map_size=20,
-        max_episode_length=200,
+        max_episode_length=1000,
         agent_death_probability=0.0,
     )
     return MappingEnvironment(config)
@@ -71,9 +72,9 @@ def make_policy():
 def main():
     NUM_WORKERS                 = 1
     STEPS_PER_BATCH             = 50
-    NUM_ITERATIONS              = 3
-    MIN_TRANSITIONS_PER_COLLECT = 25
-    COLLECT_TIMEOUT_S           = 220.0
+    NUM_ITERATIONS              = 2
+    MIN_TRANSITIONS_PER_COLLECT = 10
+    COLLECT_TIMEOUT_S           = 500.0
 
     agent_buffer  = TensorDictReplayBuffer(storage=LazyTensorStorage(max_size=20_000))
     global_buffer = TensorDictReplayBuffer(storage=LazyTensorStorage(max_size=20_000))
@@ -89,6 +90,7 @@ def main():
         steps_per_batch=STEPS_PER_BATCH,
         base_seed=42,
         sync=True,
+        new_batch_new_simulation=False,
     ) as orch:
 
         for it in range(NUM_ITERATIONS):
@@ -106,6 +108,8 @@ def main():
                 f"agent_buffer={len(agent_buffer)}  "
                 f"global_buffer={len(global_buffer)}"
             )
+            # stop the execution for 100 ms
+            time.sleep(0.1)
 
             with torch.no_grad():
                 for p in trainer_policy.parameters():

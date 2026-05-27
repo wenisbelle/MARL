@@ -129,19 +129,42 @@ class AsyncMARLOrchestrator:
     def _handle_flags(self, obs_td: TensorDict, opening_episode: bool = False):
         flags = self._read_flags(obs_td)
         mask = obs_td["agents", "mask"]
-        any_flag_fired = False
-
+        any_flag_triggered = False
+        number_of_flags_triggered = 0  
+        # First check if any flag is triggered
         for i in range(self.N):
             if not mask[i]:
                 continue
             f = flags[i].item()
             if not f and not opening_episode:
                 continue
-            any_flag_fired = True
+            any_flag_triggered = True
+            number_of_flags_triggered += 1
+            print(f"Agent {i} triggered a flag event. Flag value: {f}")
+
+        # Now update the global transitions in the same number as the number of agents that will transition to a new state
+        if any_flag_triggered:
+            all_agents_pending = all(agent is not None for agent in self.pending_agents)
+            for _ in range(number_of_flags_triggered):
+                # For each flag event we also want to open a global transition, so we have a joint record for the actor and the critic
+                if self.pending_global is not None and all_agents_pending:
+                    self._close_global(obs_td, terminal=False)
+                    print(f"Opening a new global transition. Now there is {len(self.global_transitions)} transitions")
+
+            #reset the global pending transition, so we can open a new one with the updated joint action and global state
+            self.pending_global = None
+        
+        for i in range(self.N):
+            if not mask[i]:
+                continue
+            f = flags[i].item()
+            if not f and not opening_episode:
+                continue
 
             # Close the existing pending (if any), using the current obs as s'.
             if self.pending_agents[i] is not None:
                 self._close_agent(i, obs_td, terminal=False)
+            print(f"Adding a new agent transition. Now there is {len(self.agent_transitions)} transitions")
 
             # Ask the policy for a new action.
             per_agent_obs = self._slice_agent_obs(obs_td, i)
@@ -155,13 +178,14 @@ class AsyncMARLOrchestrator:
                 action=new_action.clone(),
             )
 
-        if any_flag_fired:
-            if self.pending_global is not None:
-                self._close_global(obs_td, terminal=False)
+            
+        # Now, if any flag is triggered, we want to open a new global transition with the updated joint action and global state
+        if any_flag_triggered:   
             self.pending_global = PendingGlobalTransition(
                 global_state=self._snapshot_global(obs_td),
                 joint_action=self.last_committed_action.clone(),
             )
+            
 
     def _close_agent(self, i: int, next_obs_td: TensorDict, terminal: bool):
         p = self.pending_agents[i]
@@ -188,7 +212,7 @@ class AsyncMARLOrchestrator:
             "n_sim_steps": torch.tensor([g.n_sim_steps], dtype=torch.long),
         }, batch_size=[])
         self.global_transitions.append(global_transition)
-        self.pending_global = None
+        
 
     def _close_all_pending(self, next_obs_td: TensorDict, terminal: bool):
         for i in range(self.N):

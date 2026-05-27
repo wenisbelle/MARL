@@ -89,6 +89,7 @@ class Drone(IProtocol):
     }
 
     def initialize(self) -> None:
+        print("Initializing drone .........................................................")
         self._log = logging.getLogger()
         self.drone_position = None
         self.goto_command = np.zeros(3)

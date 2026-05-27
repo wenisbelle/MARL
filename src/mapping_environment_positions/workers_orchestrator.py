@@ -35,6 +35,7 @@ class WorkersOrchestrator:
         steps_per_batch: int = 200,
         base_seed: int = 0,
         sync: bool = True,
+        new_batch_new_simulation: bool = True,
     ):
         # "spawn" is required cross-platform 
         ctx = mp.get_context("spawn")
@@ -51,6 +52,7 @@ class WorkersOrchestrator:
         self.agent_buffer = agent_buffer
         self.global_buffer = global_buffer
         self.num_workers = num_workers
+        self.new_batch_new_simulation = new_batch_new_simulation
 
         self.workers = []
         for i in range(num_workers):
@@ -66,6 +68,7 @@ class WorkersOrchestrator:
                     self.weight_queues[i],
                     self.control_queues[i],
                     self.sync,
+                    self.new_batch_new_simulation,
                 ),
                 daemon=False, # in trainning it should be False
             )
@@ -128,9 +131,11 @@ class WorkersOrchestrator:
                 new_count += agent_td.batch_size[0]
             if global_td is not None:
                 self.global_buffer.extend(global_td)
+            print(f"Collected {new_count} transitions so far...")
 
         if self.sync:
             self.pause()
+            print(f"Workers paused")
 
         return new_count
 
