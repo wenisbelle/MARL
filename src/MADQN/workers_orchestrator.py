@@ -30,11 +30,10 @@ class WorkersOrchestrator:
         num_workers: int,
         env_fn,
         policy_fn,
-        agent_buffer,
-        global_buffer,
+        replay_buffer,
         steps_per_batch: int = 200,
         base_seed: int = 0,
-        sync: bool = True,
+        sync: bool = False,
         new_batch_new_simulation: bool = True,
     ):
         # "spawn" is required cross-platform 
@@ -49,8 +48,7 @@ class WorkersOrchestrator:
         self.policy_fn = policy_fn
         self._pending_state_dict = None  # set by set_weights, consumed by broadcast
 
-        self.agent_buffer = agent_buffer
-        self.global_buffer = global_buffer
+        self.replay_buffer = replay_buffer
         self.num_workers = num_workers
         self.new_batch_new_simulation = new_batch_new_simulation
 
@@ -67,7 +65,6 @@ class WorkersOrchestrator:
                     self.transition_queue,
                     self.weight_queues[i],
                     self.control_queues[i],
-                    self.sync,
                     self.new_batch_new_simulation,
                 ),
                 daemon=False, # in trainning it should be False
@@ -123,15 +120,14 @@ class WorkersOrchestrator:
         deadline = time.time() + timeout
         while new_count < min_new_transitions and time.time() < deadline:
             try:
-                agent_td, global_td = self.transition_queue.get(timeout=0.5)
+                agent_td = self.transition_queue.get(timeout=0.5)
             except Empty:
                 continue
+            
             if agent_td is not None:
-                self.agent_buffer.extend(agent_td)
+                self.replay_buffer.load_transitions(agent_td)
                 new_count += agent_td.batch_size[0]
-            if global_td is not None:
-                self.global_buffer.extend(global_td)
-            print(f"Collected {new_count} transitions so far...")
+            #print(f"Collected {new_count} transitions so far...")
 
         if self.sync:
             self.pause()

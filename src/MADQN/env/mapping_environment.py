@@ -215,7 +215,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         ##### For now just the x, y positions. If I want to use the speed controller it will be 3. 
         M = self.observation_map_size
-        action_dim = M
+        n_actions = M * M # total of discrete actions 
         all_positions_shape = (self.max_num_agents, 2)
         estimated_positions_shape = (self.max_num_agents, self.max_num_agents, 2)
 
@@ -224,7 +224,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         position_shape = (self.max_num_agents, 2)
         uncertainty_shape = (self.max_num_agents, 1)
         mask_shape = (self.max_num_agents,)
-        action_shape = (self.max_num_agents, action_dim, action_dim)
+        action_shape = (self.max_num_agents,1)
         reward_shape = (self.max_num_agents, 1)
         done_shape = (self.max_num_agents, 1)
 
@@ -339,11 +339,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             {
                 "agents": Composite(
                     {
-                        "action": Bounded(
-                            torch.zeros(action_shape, device=device), 
-                            torch.ones(action_shape, device=device),
-                            action_shape,
-                            dtype=torch.float32,
+                        "action": Categorical(
+                            n=n_actions,  # Generates ints from 0 to (M^2 - 1)
+                            shape=action_shape,
+                            dtype=torch.int64,
                             device=device,
                         )
                     },
@@ -525,8 +524,15 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             ##### No not apply action if there is no Flag for that
             if flag == FlagMessage.NONE.value:
                 continue 
+            
+            # Convert the int to a list of 2 floats - x and y
+            idx = int(actions_cpu[agent.slot_index, 0].item())
+            row, col = idx//self.observation_map_size, idx%self.observation_map_size
+            # 0.5 to help approximation to land in the right cell in the protocol
+            x = (row + 0.5)/self.observation_map_size
+            y = (col + + 0.5)/self.observation_map_size
+            action = [x,y]
 
-            action = actions_cpu[agent.slot_index].tolist()
             protocol.mobility_command(action, self.observation_map_size)
             
 

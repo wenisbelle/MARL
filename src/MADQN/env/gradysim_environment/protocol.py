@@ -89,7 +89,7 @@ class Drone(IProtocol):
     }
 
     def initialize(self) -> None:
-        print("Initializing drone .........................................................")
+        #print("Initializing drone .........................................................")
         self._log = logging.getLogger()
         self.drone_position = None
         self.goto_command = np.zeros(3)
@@ -270,15 +270,17 @@ class Drone(IProtocol):
     ##### Mobility command. When the drone reaches the destination, it calculates the next one #####
     ##### Or after two UAVs meet. The information from the destination of the first UAV will be used in the NN not here #####
     def mobility_command(self, action: list[float], observation_map_size: int):
-       
+        #self._log.info(f"Drone {self.provider.get_id()} received mobility command with action: {action}")
+        #print(f"Drone {self.provider.get_id()} received mobility command with action: {action}")
+        
         map_center_offset = (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2
         ##### receives the x and y varying from [0:1] and transform it to the map coordinates #####
         current_x_cell = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
         current_y_cell = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
         
         x, y = action
-        raw_target_row = int(current_x_cell + (x-observation_map_size)/2)
-        raw_target_col = int(current_y_cell + (y-observation_map_size)/2)
+        raw_target_row = int(current_x_cell + (x-0.5) * observation_map_size)
+        raw_target_col = int(current_y_cell + (y-0.5) * observation_map_size)
         
         target_row = max(0, min(raw_target_row, self.MAP_WIDTH - 1))
         target_col = max(0, min(raw_target_col, self.MAP_HEIGHT - 1))
@@ -415,7 +417,7 @@ class Drone(IProtocol):
                     #### In this case the drone needs to update its current goal.
                     #### This will be called in the RL framework
                     self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
-                    print(f"Drone {self.provider.get_id()} updated flag.")
+                    #print(f"Drone {self.provider.get_id()} updated flag.")
 
                 #print(f"Drone {self.provider.get_id()} has a total uncertainty of {self.total_uncertainty} and an accomulated uncertainty of {self.accomulated_uncertainty}")
 
@@ -471,7 +473,7 @@ class Drone(IProtocol):
                 self.update_states(data)
                 if self.provider.current_time() - self.last_drone_interaction_time[data['sender']]  > self.TIMEOUT_TO_UPDATE_DESTINATION: # the drone id starts at 0
                     self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
-                    print(f"Drone {self.provider.get_id()} updated flag.")                    
+                    #print(f"Drone {self.provider.get_id()} updated flag.")                    
                     self.last_drone_interaction_time[data['sender']] = self.provider.current_time() 
             
             elif msg_type == MessageType.BROADCAST_DESTINATION_MESSAGE.value:

@@ -7,19 +7,19 @@ from env.mapping_environment import FlagMessage
 
 
 @dataclass
-class PendingAgentTransition:
-    state: TensorDict     # the per-agent slice of the observation at decision time
-    action: torch.Tensor  # shape (action_dim,)
-    reward_sum: float = 0.0
-    n_sim_steps: int = 0  # how many sim steps this macro-action has lasted
-
-
-@dataclass
-class PendingGlobalTransition:
-    global_state: TensorDict  # snapshot of "global_state" subtree
-    joint_action: torch.Tensor  # shape (N, action_dim) — last-committed action per agent
-    reward_sum: float = 0.0
-    n_sim_steps: int = 0
+class PendingTransition:
+    ##### Agent
+    agent_state: TensorDict     # the per-agent slice of the observation at decision time
+    agent_action: torch.Tensor  # shape (action_dim,)
+    ##### Global
+    global_state: TensorDict   # the "global_state" subtree at decision time
+    joint_action: torch.Tensor # shape (N, action_dim) — last-committed action per agent
+    ##### Agent
+    agent_reward_sum: float = 0.0
+    agent_n_sim_steps: int = 0  # how many sim steps this macro-action has lasted
+    ##### Global
+    global_reward_sum: float = 0.0
+    global_n_sim_steps: int = 0  # how many sim steps this macro-action has lasted
 
 
 class AsyncMARLOrchestrator:
@@ -37,15 +37,16 @@ class AsyncMARLOrchestrator:
         self.N = env.max_num_agents
         self.action_dim = env.action_spec["agents", "action"].shape[-1]
 
-        self.pending_agents: list[PendingAgentTransition | None] = [None] * self.N
-        self.pending_global: PendingGlobalTransition | None = None
+        self.pending_transition: list[PendingTransition | None] = [None] * self.N 
         
         # The most recent action each agent committed to. Updated only on flag events.
         self.last_committed_action = torch.zeros(self.N, self.action_dim)
 
         # Output buffers
-        self.agent_transitions: list[dict] = []
-        self.global_transitions: list[dict] = []
+        self.transitions: list[dict] = []
+
+        self.global_reward_sum = 0.0
+        self.global_n_sim_steps = 0
 
 
     @staticmethod
@@ -65,16 +66,13 @@ class AsyncMARLOrchestrator:
     def _snapshot_global(self, obs_td: TensorDict) -> TensorDict:
         return obs_td["global_state"].clone()
 
-
     def reset(self):
         td = self.env.reset()
-        self.pending_agents = [None] * self.N
-        self.pending_global = None
+        self.pending_transition = [None] * self.N
         self.last_committed_action.zero_()
 
         # Output buffers
-        self.agent_transitions: list[dict] = []
-        self.global_transitions: list[dict] = []
+        self.transitions: list[dict] = []
 
         # At reset all real agents are flagged INTERNAL — open transitions for them.
         self._handle_flags(td, opening_episode=True)
@@ -87,8 +85,8 @@ class AsyncMARLOrchestrator:
         # Overwrite the rows where we have a committed action from the policy.
         action = td["agents", "action"]
         for i in range(self.N):
-            if self.pending_agents[i] is not None and self.pending_agents[i].n_sim_steps == 0:
-                action[i] = self.pending_agents[i].action
+            if self.pending_transition[i] is not None and self.pending_transition[i].agent_n_sim_steps == 0:
+                action[i] = self.pending_transition[i].agent_action
 
         # Step.
         td = self.env.step(td)
@@ -99,14 +97,17 @@ class AsyncMARLOrchestrator:
         mask = td["next", "agents", "mask"]
 
         for i in range(self.N):
-            p = self.pending_agents[i]
+            p = self.pending_transition[i]
             if p is not None and mask[i]:
-                p.reward_sum += rewards[i].item()
-                p.n_sim_steps += 1
+                # Avoid reward to explode
+                p.agent_reward_sum += max(-1.0, min(1.0, rewards[i].item()))
+                p.agent_n_sim_steps += 1
 
-        if self.pending_global is not None:
-            self.pending_global.reward_sum += global_reward
-            self.pending_global.n_sim_steps += 1
+        # If any agent has a pending transition, accumulate global reward into it too, and count sim steps.
+        if any(p is not None for p in self.pending_transition):
+            self.global_reward_sum += global_reward
+            self.global_n_sim_steps += 1        
+
 
         # Episode end.
         if td["next", "done"].item():
@@ -116,7 +117,7 @@ class AsyncMARLOrchestrator:
         # Per-agent deaths.
         per_agent_done = td["next", "agents", "done"].squeeze(-1)
         for i in range(self.N):
-            if per_agent_done[i] and self.pending_agents[i] is not None:
+            if per_agent_done[i] and self.pending_transition[i] is not None:
                 self._close_agent(i, td["next"], terminal=True)
 
         # New flags at t+1.
@@ -130,96 +131,61 @@ class AsyncMARLOrchestrator:
         flags = self._read_flags(obs_td)
         mask = obs_td["agents", "mask"]
         any_flag_triggered = False
-        number_of_flags_triggered = 0  
-        # First check if any flag is triggered
+
+        #### Close all pending first, before updating the actions, so the global state gets the latter action
         for i in range(self.N):
-            if not mask[i]:
+            if not mask[i] or (not flags[i].item() and not opening_episode):
                 continue
-            f = flags[i].item()
-            if not f and not opening_episode:
-                continue
-            any_flag_triggered = True
-            number_of_flags_triggered += 1
-            print(f"Agent {i} triggered a flag event. Flag value: {f}")
-
-        # Now update the global transitions in the same number as the number of agents that will transition to a new state
-        if any_flag_triggered:
-            all_agents_pending = all(agent is not None for agent in self.pending_agents)
-            for _ in range(number_of_flags_triggered):
-                # For each flag event we also want to open a global transition, so we have a joint record for the actor and the critic
-                if self.pending_global is not None and all_agents_pending:
-                    self._close_global(obs_td, terminal=False)
-                    print(f"Opening a new global transition. Now there is {len(self.global_transitions)} transitions")
-
-            #reset the global pending transition, so we can open a new one with the updated joint action and global state
-            self.pending_global = None
-        
-        for i in range(self.N):
-            if not mask[i]:
-                continue
-            f = flags[i].item()
-            if not f and not opening_episode:
-                continue
-
-            # Close the existing pending (if any), using the current obs as s'.
-            if self.pending_agents[i] is not None:
+            if self.pending_transition[i] is not None:
+                any_flag_triggered = True
                 self._close_agent(i, obs_td, terminal=False)
-            print(f"Adding a new agent transition. Now there is {len(self.agent_transitions)} transitions")
+    
+        # if any flag was triggered, we need to update the global reward sum and the global n_sim 
+        if any_flag_triggered:
+            self.global_reward_sum = 0.0
+            self.global_n_sim_steps = 0
 
-            # Ask the policy for a new action.
+        for i in range(self.N):
+            if not mask[i] or (not flags[i].item() and not opening_episode):
+                continue
             per_agent_obs = self._slice_agent_obs(obs_td, i)
             new_action = self.policy_fn(per_agent_obs)
-
-            # Just store it. The next call to step() will copy it into the td.
             self.last_committed_action[i] = new_action
 
-            self.pending_agents[i] = PendingAgentTransition(
-                state=per_agent_obs,
-                action=new_action.clone(),
-            )
-
-            
-        # Now, if any flag is triggered, we want to open a new global transition with the updated joint action and global state
-        if any_flag_triggered:   
-            self.pending_global = PendingGlobalTransition(
+            self.pending_transition[i] = PendingTransition(
+                agent_state=per_agent_obs,
+                agent_action=new_action.clone(),
                 global_state=self._snapshot_global(obs_td),
                 joint_action=self.last_committed_action.clone(),
             )
             
 
     def _close_agent(self, i: int, next_obs_td: TensorDict, terminal: bool):
-        p = self.pending_agents[i]
+        p = self.pending_transition[i]
         transition = TensorDict({
-            "obs":         p.state,
+            # agent side
+            "obs":         p.agent_state,
             "next_obs":    self._slice_agent_obs(next_obs_td, i),
-            "action":      p.action,
-            "reward":      torch.tensor([p.reward_sum], dtype=torch.float32),
+            "action":      p.agent_action,
+            "reward":      torch.tensor([p.agent_reward_sum], dtype=torch.float32),
             "done":        torch.tensor([terminal], dtype=torch.bool),
-            "n_sim_steps": torch.tensor([p.n_sim_steps], dtype=torch.long),
+            "n_sim_steps": torch.tensor([p.agent_n_sim_steps], dtype=torch.long),
             "agent_idx":   torch.tensor([i], dtype=torch.long),
+            # global side
+            "global_obs":         p.global_state,
+            "global_next_obs":    self._snapshot_global(next_obs_td),
+            "joint_action":       p.joint_action,
+            "global_reward":      torch.tensor([self.global_reward_sum], dtype=torch.float32),
+            "global_n_sim_steps": torch.tensor([self.global_n_sim_steps], dtype=torch.long),
         }, batch_size=[])
-        self.agent_transitions.append(transition)
-        self.pending_agents[i] = None
-
-    def _close_global(self, next_obs_td: TensorDict, terminal: bool):
-        g = self.pending_global
-        global_transition = TensorDict({
-            "obs": g.global_state,
-            "next_obs": self._snapshot_global(next_obs_td),
-            "joint_action": g.joint_action,
-            "reward": torch.tensor([g.reward_sum], dtype=torch.float32),
-            "done": torch.tensor([terminal], dtype=torch.bool),
-            "n_sim_steps": torch.tensor([g.n_sim_steps], dtype=torch.long),
-        }, batch_size=[])
-        self.global_transitions.append(global_transition)
+        self.transitions.append(transition)
+        self.pending_transition[i] = None
         
 
     def _close_all_pending(self, next_obs_td: TensorDict, terminal: bool):
         for i in range(self.N):
-            if self.pending_agents[i] is not None:
+            if self.pending_transition[i] is not None:
                 self._close_agent(i, next_obs_td, terminal=terminal)
-        if self.pending_global is not None:
-            self._close_global(next_obs_td, terminal=terminal)
 
     def random_policy(per_agent_obs):
         return torch.rand(2)

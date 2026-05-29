@@ -46,22 +46,14 @@ def main():
     print()
 
     for step in range(1000):
-        encounter_flag = td["agents", "observation", "encounter_flag"]   # (N, 4)
+        encounter_flag = td["agents", "observation", "encounter_flag"]   # (N,)
         mask           = td["agents", "mask"]                             # (N,)
-        flag_idx       = encounter_flag.argmax(dim=-1)                    # (N,)
-        has_flag       = (flag_idx != FlagMessage.NONE.value) & mask      # (N,)
+        has_flag       = encounter_flag.squeeze(-1).bool() & mask.bool()      # (N,)
         decision_step  = has_flag.any().item()
 
         # Random actions for everyone first.
         td = env.rand_action(td)
-
-        action_tensor = td["agents", "action"]
-        td["agents", "action"] = torch.randint(
-            low=0,
-            high=11,  # exclusive upper bound, so it generates 0 through 10
-            size=action_tensor.shape,
-            device=action_tensor.device
-        ).to(action_tensor.dtype)
+        print("raw action:", td["agents", "action"].squeeze(-1).tolist(), td["agents", "action"].dtype)
 
         td = env.step(td)
 

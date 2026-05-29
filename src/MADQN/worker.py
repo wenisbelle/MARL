@@ -33,7 +33,6 @@ def _worker_loop(
     transition_queue: mp.Queue,
     weight_queue: mp.Queue,
     control_queue: mp.Queue,
-    sync: bool = True, # sync or async
     new_batch_new_simulation: bool = True, # whether to reset the simulation at the start of each batch
 ):
     """One worker process: env + orchestrator + local policy."""
@@ -63,7 +62,7 @@ def _worker_loop(
             time.sleep(0.1) 
         try:
             msg = control_queue.get_nowait()
-            print(f"[worker {worker_id}] got control msg: {msg!r}", flush=True)
+            #print(f"[worker {worker_id}] got control msg: {msg!r}", flush=True)
         except Empty:
             msg = None
 
@@ -73,9 +72,8 @@ def _worker_loop(
 
         if msg == "PAUSE":
             # Discard old-policy work + reset, so next chunk starts a clean episode.
-            print(f"worker  >>> entering PAUSE block")
-            orch.agent_transitions.clear()
-            orch.global_transitions.clear()
+            #print(f"worker  >>> entering PAUSE block")
+            orch.transitions.clear()
             if new_batch_new_simulation:
                 td = orch.reset()
 
@@ -83,7 +81,7 @@ def _worker_loop(
             # arrived right after PAUSE — the race no longer matters.
             while True:
                 m = control_queue.get()  # blocking
-                print(f"[worker {worker_id}]     (paused) got: {m!r}", flush=True)
+                #print(f"[worker {worker_id}]     (paused) got: {m!r}", flush=True)
                 if m == "CONTINUE":
                     break
                 if m == "STOP":
@@ -113,13 +111,8 @@ def _worker_loop(
                 td = step_mdp(td)
  
         agent_td = (
-            torch.stack(orch.agent_transitions).contiguous()
-            if orch.agent_transitions else None
+            torch.stack(orch.transitions).contiguous()
+            if orch.transitions else None
         )
-        global_td = (
-            torch.stack(orch.global_transitions).contiguous()
-            if orch.global_transitions else None
-        )
-        transition_queue.put((agent_td, global_td))
-        orch.agent_transitions.clear()
-        orch.global_transitions.clear()
+        transition_queue.put((agent_td))
+        orch.transitions.clear()
