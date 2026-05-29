@@ -101,6 +101,7 @@ def _worker_loop(
         latest = _drain_latest(weight_queue)
         if latest is not None:
             policy.load_state_dict(latest)
+            #print(f"[worker {worker_id}] eps={policy.eps.item():.3f}", flush=True)
          
         # Run a simulation 
         for _ in range(steps_per_batch):

@@ -40,15 +40,14 @@ class DQNPolicy(nn.Module):
             uncertainty_key=uncertainty_key,
             estimated_positions_key=estimated_positions_key,
         )
-
-        self.eps = eps_init
+        self.register_buffer("eps", torch.tensor(eps_init, dtype=torch.float32))
 
     def forward(self, per_agent_obs_td):
-        if torch.rand(()).item() < self.eps:
+        if torch.rand(()).item() < self.eps.item():
             return torch.randint(0, self.actor.action_dim, (1,), dtype=torch.int64)
         with torch.no_grad():
             q_values = self.actor(per_agent_obs_td)
         return q_values.argmax(dim=-1, keepdim=True)
 
     def update_epsilon(self, new_eps):
-        self.eps = new_eps
+        self.eps.fill_(new_eps)

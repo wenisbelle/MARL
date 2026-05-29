@@ -40,19 +40,19 @@ POSITION_KEY = "position"
 UNCERTAINTY_KEY = "individual_map_uncertainty"
 ESTIMATED_POSITIONS_KEY = "estimated_positions"
 EPS_INIT = 1.0
-EPS_DECAY = 0.99
-EPS_MIN = 0.1
-N_WORKERS = 2
+EPS_DECAY = 0.9999
+EPS_MIN = 0.05
+N_WORKERS = 4
 STEPS_PER_BATCH = 100
 NUM_ITERATIONS = 10000
-MIN_TRANSITIONS_PER_COLLECT = 500
-COLLECT_TIMEOUT_S = 500.0
+MIN_TRANSITIONS_PER_COLLECT = 200
+COLLECT_TIMEOUT_S = 10.0
 SYNC = False
 NEW_BATCH_NEW_SIMULATION = False
 TRAIN_FREQUENCY = 4
 
 BATCH_SIZE = 128
-BUFFERSIZE = 2000
+BUFFERSIZE = 10000
 VALUE_NETWORK_UPDATES_PER_ITERATION = 4
 
 GAMMA       = 0.99
@@ -113,7 +113,7 @@ def main():
         checkpoint_dir=CHECKPOINT_DIR,
         reward_window=REWARD_WINDOW,
         checkpoint_every=CHECKPOINT_EVERY,
-        live_plot=True,
+        live_plot=False,
         plot_every=1,
         )
 
@@ -208,8 +208,7 @@ def main():
                     )
 
                 # Update EPS
-                trainer_policy.update_epsilon(max(trainer_policy.eps * EPS_DECAY, EPS_MIN))
-                #if (it + 1) % TARGET_SYNC == 0:
+                trainer_policy.update_epsilon(max(trainer_policy.eps.item() * EPS_DECAY, EPS_MIN))                #if (it + 1) % TARGET_SYNC == 0:
                 #    target_actor.load_state_dict(trainer_policy.actor.state_dict())
 
                 logger.log_iteration(
