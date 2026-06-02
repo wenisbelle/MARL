@@ -74,6 +74,7 @@ class MappingEnvironmentConfig:
     reward: str = 'punish'  # Fixed reward mode: punish
     speed_action: bool = False
     agent_death_probability: float = 0.0
+    normalize_time: float = 60.0
 
 
 class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
@@ -116,6 +117,11 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         self.speed_action = config.speed_action
         self.agent_death_probability = config.agent_death_probability
 
+        ###########################################
+        # IMPORTANT PARAMETER CHANGES THE BEHAVIOR#
+        ###########################################
+        self.NORMALIZE_TIME = config.normalize_time
+
         self.possible_agents = [f"drone{i}" for i in range(self.max_num_agents)]
         self.group_map = {"agents": self.possible_agents}
 
@@ -127,9 +133,12 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         self.max_global_reward = -math.inf
         self.max_individual_reward = -math.inf
 
+        
+
         self._metrics_spec: EnvironmentMetricsSpec = make_data_collection_metrics_spec()
         self._info_keys = self._metrics_spec.info_keys
         self._all_info_keys = self._info_keys 
+
 
         self._simulation_configuration = SimulationConfiguration(
             debug=False,
@@ -217,7 +226,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         M = self.observation_map_size
         n_actions = M * M # total of discrete actions 
         all_positions_shape = (self.max_num_agents, 2)
-        estimated_positions_shape = (self.max_num_agents, self.max_num_agents, 2)
+        estimated_positions_and_time_shape = (self.max_num_agents, self.max_num_agents-1, 3) # It will not store its own data
+        # For each agent, an estimate of every other agent's position and time since last update
+        # The time will vary from 0 to 1, where 0 means the information is fresh and 1 means the information is as old as the vanishing_update_time - Hoping the system can learn
+        # to give more importance to fresher information
 
         map_patch_shape = (self.max_num_agents, M, M)
         complete_map_shape = (self.map_width, self.map_height)
@@ -257,10 +269,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 dtype=torch.float32,
                 device=device,
             ),
-            "estimated_positions": Bounded(
-                torch.zeros(estimated_positions_shape, device=device),       #### In some cases this will not be used 
-                torch.ones(estimated_positions_shape, device=device),        #### normalized to [0,1]
-                estimated_positions_shape,
+            "estimated_positions_and_time": Bounded(
+                torch.zeros(estimated_positions_and_time_shape, device=device),       #### In some cases this will not be used 
+                torch.ones(estimated_positions_and_time_shape, device=device),        #### normalized to [0,1]
+                estimated_positions_and_time_shape,
                 dtype=torch.float32,
                 device=device,
             ),
@@ -568,11 +580,26 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
         return protocol.drone_position[:2]
     
-    def get_estimated_positions_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
+    def get_estimated_positions_and_time_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-        return np.array([state['position'][:2] for state in protocol.drone_states],
-                        dtype=np.float32,)    
-    
+        current_time = self.simulator._current_timestamp
+        out = np.zeros((self.max_num_agents - 1, 3), dtype=np.float32)
+
+        row = 0
+        for i in range(self.max_num_agents):
+            if i == agent.node_id:
+                continue
+            state = protocol.drone_states[i]
+            position = state['position'][:2]
+            dt = current_time - state['time_of_last_update']
+            
+            out[row, 0] = position[0]
+            out[row, 1] = position[1]
+            out[row, 2] = dt
+            row += 1
+
+        return out
+
     def get_global_positions_from_simulation(self, agents: list[EpisodeAgentState]) -> list[np.ndarray]:
         positions = []
         for agent in agents:
@@ -657,14 +684,14 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             agent_patch_map = self.get_individual_patch_map_from_simulation(agent)
             agent_uncertainty = self.get_individual_agent_uncertainty_from_simulation(agent)
             agent_position = self.get_individual_position_from_simulation(agent)
-            estimated_positions = self.get_estimated_positions_from_simulation(agent)
+            estimated_positions_and_time = self.get_estimated_positions_and_time_from_simulation(agent)
             flag = self.get_flag_from_simulation(agent)
             
             individual_state[agent.name] = {
                 "map_patch": agent_patch_map,
                 "individual_map_uncertainty": agent_uncertainty,
                 "position": agent_position,
-                "estimated_positions": estimated_positions,
+                "estimated_positions_and_time": estimated_positions_and_time,
                 "encounter_flag": flag
             }
         global_state = {}
@@ -697,7 +724,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         agent_map_patch                  = agent_obs_td.get("map_patch")
         agent_individual_map_uncertainty = agent_obs_td.get("individual_map_uncertainty")
         agent_position                   = agent_obs_td.get("position")
-        estimated_positions_t            = agent_obs_td.get("estimated_positions") 
+        estimated_positions_and_time_t   = agent_obs_td.get("estimated_positions_and_time") 
         agent_encounter_flag             = agent_obs_td.get("encounter_flag")
 
         global_td               = td.get("global_state")
@@ -712,7 +739,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         agent_map_patch.zero_()
         agent_individual_map_uncertainty.zero_()
         agent_position.zero_()
-        estimated_positions_t.fill_(-1.0)
+        estimated_positions_and_time_t.fill_(-1.0)
         agent_encounter_flag.zero_()
 
         global_full_map.zero_()
@@ -732,6 +759,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         half_h = self.map_height * self.distance_between_cells / 2.0
         uncertainty_norm = 2.0 * self.map_width * self.map_height  # matches the spec's comment
         M = self.observation_map_size
+        
 
         def _normalize_xy(p):
             # world [-half_w, +half_w] x [-half_h, +half_h]  ->  [0, 1] x [0, 1]
@@ -766,16 +794,20 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 _normalize_xy(obs["position"]), device=self.device, dtype=agent_position.dtype
             )
 
-            # partner_position / partner_destination
-            raw_estimates = obs.get("estimated_positions")  # shape (max_num_agents, 2)
+            # estimated_positions_and_time 
+            raw_estimates = obs.get("estimated_positions_and_time")  # shape (max_num_agents-1, 3) - x, y, normalized time
             if raw_estimates is not None:
-                for j in range(self.max_num_agents):
-                    xy = raw_estimates[j]
-                    estimated_positions_t[slot, j] = torch.as_tensor(
-                        _normalize_xy(xy), device=self.device, dtype=estimated_positions_t.dtype
-                    )
+                for j in range(self.max_num_agents-1):
+                    row = raw_estimates[j]
+                    xy_norm = _normalize_xy(row[:2])
+                    dt_norm = min(float(row[2])/self.NORMALIZE_TIME, 1.0)  
+                    estimated_positions_and_time_t[slot, j] = torch.as_tensor(
+                        np.array([xy_norm[0], xy_norm[1], dt_norm], dtype=np.float32),
+                        device=self.device,
+                        dtype=estimated_positions_and_time_t.dtype,
+                        )
             
-            # encounter_flag (int) -> one-hot of length 4
+            # encounter_flag (int) -> one-hot 
             agent_encounter_flag[slot, 0] = bool(obs["encounter_flag"])
 
 

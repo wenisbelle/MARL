@@ -1,0 +1,1184 @@
+[--------- Simulation started ---------]
+server listening on 127.0.0.1:5678
+connection rejected (426 Upgrade Required)
+opening handshake failed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/websockets/asyncio/server.py", line 356, in conn_handler
+    await connection.handshake(
+  File "/usr/local/lib/python3.10/dist-packages/websockets/asyncio/server.py", line 207, in handshake
+    raise self.protocol.handshake_exc
+  File "/usr/local/lib/python3.10/dist-packages/websockets/server.py", line 140, in accept
+    ) = self.process_request(request)
+  File "/usr/local/lib/python3.10/dist-packages/websockets/server.py", line 235, in process_request
+    raise InvalidUpgrade(
+websockets.exceptions.InvalidUpgrade: invalid Connection header: keep-alive
+connection open
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 1, node 1 map has total uncertainty of 2496.0
+At time: 1, node 1 map has a accomulated uncertainty of 2496.0
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 1, node 0 map has total uncertainty of 2491.0
+At time: 1, node 0 map has a accomulated uncertainty of 2491.0
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 1, node 2 map has total uncertainty of 2494.0
+At time: 1, node 2 map has a accomulated uncertainty of 2494.0
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 2.0, node 2 map has total uncertainty of 2487.0
+At time: 2.0, node 2 map has a accomulated uncertainty of 4981.0
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 2.0, node 0 map has total uncertainty of 2485.0
+At time: 2.0, node 0 map has a accomulated uncertainty of 4976.0
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 2.0, node 1 map has total uncertainty of 2492.0
+At time: 2.0, node 1 map has a accomulated uncertainty of 4988.0
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 3.0, node 0 map has total uncertainty of 2482.0
+At time: 3.0, node 0 map has a accomulated uncertainty of 7458.0
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 3.0, node 2 map has total uncertainty of 2484.0
+At time: 3.0, node 2 map has a accomulated uncertainty of 7465.0
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 3.0, node 1 map has total uncertainty of 2485.0
+At time: 3.0, node 1 map has a accomulated uncertainty of 7473.0
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 4.0, node 0 map has total uncertainty of 2476.0
+At time: 4.0, node 0 map has a accomulated uncertainty of 9934.0
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 4.0, node 1 map has total uncertainty of 2475.0
+At time: 4.0, node 1 map has a accomulated uncertainty of 9948.0
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 4.0, node 2 map has total uncertainty of 2475.0
+At time: 4.0, node 2 map has a accomulated uncertainty of 9940.0
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 5.0, node 0 map has total uncertainty of 2471.0
+At time: 5.0, node 0 map has a accomulated uncertainty of 12405.0
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 5.0, node 2 map has total uncertainty of 2470.0
+At time: 5.0, node 2 map has a accomulated uncertainty of 12410.0
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 5.0, node 1 map has total uncertainty of 2466.0
+At time: 5.0, node 1 map has a accomulated uncertainty of 12414.0
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 6.0, node 0 map has total uncertainty of 2464.0
+At time: 6.0, node 0 map has a accomulated uncertainty of 14869.0
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 6.0, node 1 map has total uncertainty of 2465.0
+At time: 6.0, node 1 map has a accomulated uncertainty of 14879.0
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 6.0, node 2 map has total uncertainty of 2461.0
+At time: 6.0, node 2 map has a accomulated uncertainty of 14871.0
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 7.0, node 1 map has total uncertainty of 2461.0
+At time: 7.0, node 1 map has a accomulated uncertainty of 17340.0
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 7.0, node 2 map has total uncertainty of 2461.0
+At time: 7.0, node 2 map has a accomulated uncertainty of 17332.0
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 7.0, node 0 map has total uncertainty of 2460.0
+At time: 7.0, node 0 map has a accomulated uncertainty of 17329.0
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 8.0, node 2 map has total uncertainty of 2455.0
+At time: 8.0, node 2 map has a accomulated uncertainty of 19787.0
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 8.0, node 1 map has total uncertainty of 2454.0
+At time: 8.0, node 1 map has a accomulated uncertainty of 19794.0
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 8.0, node 0 map has total uncertainty of 2456.0
+At time: 8.0, node 0 map has a accomulated uncertainty of 19785.0
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 9.0, node 0 map has total uncertainty of 2454.0
+At time: 9.0, node 0 map has a accomulated uncertainty of 22239.0
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 9.0, node 2 map has total uncertainty of 2449.0
+At time: 9.0, node 2 map has a accomulated uncertainty of 22236.0
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 9.0, node 1 map has total uncertainty of 2449.0
+At time: 9.0, node 1 map has a accomulated uncertainty of 22243.0
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 10.0, the node 1 has 2447.0 unvisited cells
+At time: 10.0, the node 2 has 2447.0 unvisited cells
+At time: 10.0, the node 0 has 2454.0 unvisited cells
+At time: 10.0, node 0 map has total uncertainty of 2476.94
+At time: 10.0, node 0 map has a accomulated uncertainty of 24715.94
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 10.0, node 1 map has total uncertainty of 2469.94
+At time: 10.0, node 1 map has a accomulated uncertainty of 24712.94
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 10.0, node 2 map has total uncertainty of 2471.96
+At time: 10.0, node 2 map has a accomulated uncertainty of 24707.96
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 11.0, node 2 map has total uncertainty of 2465.86
+At time: 11.0, node 2 map has a accomulated uncertainty of 27173.82
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 11.0, node 1 map has total uncertainty of 2467.88
+At time: 11.0, node 1 map has a accomulated uncertainty of 27180.82
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 11.0, node 0 map has total uncertainty of 2473.91
+At time: 11.0, node 0 map has a accomulated uncertainty of 27189.85
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(119.8189815646593), np.float64(110.81959058272014), np.float64(24.23695525197541)) and is going to cell (31, 34).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(78.52922419956215), np.float64(141.83101945685038), np.float64(30.694020043748246)) and is going to cell (29, 36).
+At time: 12.0, node 1 map has total uncertainty of 2461.8199999999997
+At time: 12.0, node 1 map has a accomulated uncertainty of 29642.64
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 12.0, node 0 map has total uncertainty of 2471.8900000000003
+At time: 12.0, node 0 map has a accomulated uncertainty of 29661.739999999998
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 12.0, node 2 map has total uncertainty of 2462.83
+At time: 12.0, node 2 map has a accomulated uncertainty of 29636.65
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 13.0, node 1 map has total uncertainty of 2459.8
+At time: 13.0, node 1 map has a accomulated uncertainty of 32102.44
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 13.0, node 0 map has total uncertainty of 2469.87
+At time: 13.0, node 0 map has a accomulated uncertainty of 32131.609999999997
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 13.0, node 2 map has total uncertainty of 2458.79
+At time: 13.0, node 2 map has a accomulated uncertainty of 32095.440000000002
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 14.0, node 1 map has total uncertainty of 2455.76
+At time: 14.0, node 1 map has a accomulated uncertainty of 34558.2
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 14.0, node 2 map has total uncertainty of 2454.75
+At time: 14.0, node 2 map has a accomulated uncertainty of 34550.19
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 14.0, node 0 map has total uncertainty of 2467.8500000000004
+At time: 14.0, node 0 map has a accomulated uncertainty of 34599.46
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 15.0, node 1 map has total uncertainty of 2451.7200000000003
+At time: 15.0, node 1 map has a accomulated uncertainty of 37009.92
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 15.0, node 0 map has total uncertainty of 2464.82
+At time: 15.0, node 0 map has a accomulated uncertainty of 37064.28
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 15.0, node 2 map has total uncertainty of 2449.7
+At time: 15.0, node 2 map has a accomulated uncertainty of 36999.89
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 16.0, node 2 map has total uncertainty of 2447.68
+At time: 16.0, node 2 map has a accomulated uncertainty of 39447.57
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 16.0, node 1 map has total uncertainty of 2446.67
+At time: 16.0, node 1 map has a accomulated uncertainty of 39456.59
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(120.0), np.float64(180.0), np.float64(50.0)) and is going to cell (32, 38).
+At time: 16.0, node 0 map has total uncertainty of 2462.8
+At time: 16.0, node 0 map has a accomulated uncertainty of 39527.08
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 17.0, node 2 map has total uncertainty of 2443.64
+At time: 17.0, node 2 map has a accomulated uncertainty of 41891.21
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 17.0, node 0 map has total uncertainty of 2460.7799999999997
+At time: 17.0, node 0 map has a accomulated uncertainty of 41987.86
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(80.0), np.float64(220.0), np.float64(50.0)) and is going to cell (30, 40).
+At time: 17.0, node 1 map has total uncertainty of 2444.65
+At time: 17.0, node 1 map has a accomulated uncertainty of 41901.24
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 18.0, node 0 map has total uncertainty of 2458.76
+At time: 18.0, node 0 map has a accomulated uncertainty of 44446.62
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 18.0, node 1 map has total uncertainty of 2441.62
+At time: 18.0, node 1 map has a accomulated uncertainty of 44342.86
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 18.0, node 2 map has total uncertainty of 2441.62
+At time: 18.0, node 2 map has a accomulated uncertainty of 44332.83
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 19.0, node 1 map has total uncertainty of 2438.59
+At time: 19.0, node 1 map has a accomulated uncertainty of 46781.45
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 19.0, node 0 map has total uncertainty of 2456.74
+At time: 19.0, node 0 map has a accomulated uncertainty of 46903.36
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 19.0, node 2 map has total uncertainty of 2439.6
+At time: 19.0, node 2 map has a accomulated uncertainty of 46772.43
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 20.0, the node 1 has 2413.0 unvisited cells
+At time: 20.0, node 2 map has total uncertainty of 2435.56
+At time: 20.0, node 2 map has a accomulated uncertainty of 49207.99
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 20.0, the node 2 has 2411.0 unvisited cells
+At time: 20.0, node 1 map has total uncertainty of 2459.479999999999
+At time: 20.0, node 1 map has a accomulated uncertainty of 49240.92999999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 20.0, node 0 map has total uncertainty of 2453.71
+At time: 20.0, node 0 map has a accomulated uncertainty of 49357.07
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 20.0, the node 0 has 2429.0 unvisited cells
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 21.0, node 0 map has total uncertainty of 2476.6199999999994
+At time: 21.0, node 0 map has a accomulated uncertainty of 51833.69
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 21.0, node 2 map has total uncertainty of 2454.359999999999
+At time: 21.0, node 2 map has a accomulated uncertainty of 51662.35
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 21.0, node 1 map has total uncertainty of 2455.419999999999
+At time: 21.0, node 1 map has a accomulated uncertainty of 51696.34999999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 22.0, node 1 map has total uncertainty of 2451.2999999999993
+At time: 22.0, node 1 map has a accomulated uncertainty of 54147.649999999994
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 22.0, node 0 map has total uncertainty of 2474.5799999999995
+At time: 22.0, node 0 map has a accomulated uncertainty of 54308.270000000004
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 22.0, node 2 map has total uncertainty of 2450.2799999999993
+At time: 22.0, node 2 map has a accomulated uncertainty of 54112.63
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(140.0), np.float64(260.0), np.float64(50.0)) and is going to cell (33, 42).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(140.0), np.float64(260.0), np.float64(50.0)) and is going to cell (33, 42).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(98.15379153396982), np.float64(292.6151661358786), np.float64(50.0)) and is going to cell (30, 43).
+At time: 23.0, node 1 map has total uncertainty of 2448.2399999999993
+At time: 23.0, node 1 map has a accomulated uncertainty of 56595.88999999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 23.0, node 0 map has total uncertainty of 2472.5399999999995
+At time: 23.0, node 0 map has a accomulated uncertainty of 56780.810000000005
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 23.0, node 2 map has total uncertainty of 2447.2199999999993
+At time: 23.0, node 2 map has a accomulated uncertainty of 56559.85
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 24.0, node 1 map has total uncertainty of 2445.1799999999994
+At time: 24.0, node 1 map has a accomulated uncertainty of 59041.06999999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 24.0, node 2 map has total uncertainty of 2443.1399999999994
+At time: 24.0, node 2 map has a accomulated uncertainty of 59002.99
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 24.0, node 0 map has total uncertainty of 2469.4799999999996
+At time: 24.0, node 0 map has a accomulated uncertainty of 59250.29000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 25.0, node 1 map has total uncertainty of 2440.079999999999
+At time: 25.0, node 1 map has a accomulated uncertainty of 61481.149999999994
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 25.0, node 0 map has total uncertainty of 2467.4399999999996
+At time: 25.0, node 0 map has a accomulated uncertainty of 61717.73000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 25.0, node 2 map has total uncertainty of 2441.0999999999995
+At time: 25.0, node 2 map has a accomulated uncertainty of 61444.09
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 26.0, node 1 map has total uncertainty of 2435.999999999999
+At time: 26.0, node 1 map has a accomulated uncertainty of 63917.149999999994
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 26.0, node 0 map has total uncertainty of 2466.419999999999
+At time: 26.0, node 0 map has a accomulated uncertainty of 64184.15000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 26.0, node 2 map has total uncertainty of 2435.999999999999
+At time: 26.0, node 2 map has a accomulated uncertainty of 63880.09
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 27.0, node 1 map has total uncertainty of 2430.899999999999
+At time: 27.0, node 1 map has a accomulated uncertainty of 66348.04999999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 27.0, node 2 map has total uncertainty of 2430.899999999999
+At time: 27.0, node 2 map has a accomulated uncertainty of 66310.98999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 27.0, node 0 map has total uncertainty of 2463.3599999999997
+At time: 27.0, node 0 map has a accomulated uncertainty of 66647.51000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(100.0), np.float64(360.0), np.float64(50.0)) and is going to cell (31, 47).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 28.0, node 2 map has total uncertainty of 2427.8399999999992
+At time: 28.0, node 2 map has a accomulated uncertainty of 68738.82999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(160.0), np.float64(340.0), np.float64(50.0)) and is going to cell (34, 46).
+At time: 28.0, node 1 map has total uncertainty of 2426.8199999999993
+At time: 28.0, node 1 map has a accomulated uncertainty of 68774.86999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 28.0, node 0 map has total uncertainty of 2460.2999999999993
+At time: 28.0, node 0 map has a accomulated uncertainty of 69107.81000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 29.0, node 2 map has total uncertainty of 2424.7799999999993
+At time: 29.0, node 2 map has a accomulated uncertainty of 71163.60999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 29.0, node 1 map has total uncertainty of 2424.7799999999993
+At time: 29.0, node 1 map has a accomulated uncertainty of 71199.64999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 29.0, node 0 map has total uncertainty of 2459.279999999999
+At time: 29.0, node 0 map has a accomulated uncertainty of 71567.09000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 30.0, the node 1 has 2375.0 unvisited cells
+At time: 30.0, the node 2 has 2375.0 unvisited cells
+Drone 0 is at position (np.float64(7.119704527314354), np.float64(-437.6286036889878), np.float64(50.0)) and is going to cell (26, 7).
+At time: 30.0, node 1 map has total uncertainty of 2447.69
+At time: 30.0, node 1 map has a accomulated uncertainty of 73647.33999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 30.0, the node 0 has 2410.0 unvisited cells
+At time: 30.0, node 2 map has total uncertainty of 2446.66
+At time: 30.0, node 2 map has a accomulated uncertainty of 73610.26999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 30.0, node 0 map has total uncertainty of 2482.17
+At time: 30.0, node 0 map has a accomulated uncertainty of 74049.26000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 31.0, node 2 map has total uncertainty of 2442.5
+At time: 31.0, node 2 map has a accomulated uncertainty of 76052.76999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 31.0, node 0 map has total uncertainty of 2482.15
+At time: 31.0, node 0 map has a accomulated uncertainty of 76531.41
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 31.0, node 1 map has total uncertainty of 2443.53
+At time: 31.0, node 1 map has a accomulated uncertainty of 76090.86999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 32.0, node 0 map has total uncertainty of 2482.15
+At time: 32.0, node 0 map has a accomulated uncertainty of 79013.56
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 32.0, node 1 map has total uncertainty of 2437.3500000000004
+At time: 32.0, node 1 map has a accomulated uncertainty of 78528.21999999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 32.0, node 2 map has total uncertainty of 2438.38
+At time: 32.0, node 2 map has a accomulated uncertainty of 78491.15
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 33.0, node 0 map has total uncertainty of 2480.07
+At time: 33.0, node 0 map has a accomulated uncertainty of 81493.63
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 33.0, node 1 map has total uncertainty of 2433.23
+At time: 33.0, node 1 map has a accomulated uncertainty of 80961.44999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 33.0, node 2 map has total uncertainty of 2433.23
+At time: 33.0, node 2 map has a accomulated uncertainty of 80924.37999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(120.0), np.float64(440.0), np.float64(50.0)) and is going to cell (32, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(178.19017187772667), np.float64(412.7606875109075), np.float64(50.0)) and is going to cell (34, 49).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(120.0), np.float64(440.0), np.float64(50.0)) and is going to cell (32, 49).
+At time: 34.0, node 0 map has total uncertainty of 2480.05
+At time: 34.0, node 0 map has a accomulated uncertainty of 83973.68000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 34.0, node 1 map has total uncertainty of 2429.11
+At time: 34.0, node 1 map has a accomulated uncertainty of 83390.55999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 34.0, node 2 map has total uncertainty of 2430.1400000000003
+At time: 34.0, node 2 map has a accomulated uncertainty of 83354.51999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 35.0, node 0 map has total uncertainty of 2479.01
+At time: 35.0, node 0 map has a accomulated uncertainty of 86452.69
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 35.0, node 1 map has total uncertainty of 2424.9900000000002
+At time: 35.0, node 1 map has a accomulated uncertainty of 85815.54999999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 35.0, node 2 map has total uncertainty of 2426.02
+At time: 35.0, node 2 map has a accomulated uncertainty of 85780.54
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(140.0), np.float64(480.0), np.float64(50.0)) and is going to cell (33, 49).
+At time: 36.0, node 1 map has total uncertainty of 2422.9300000000003
+At time: 36.0, node 1 map has a accomulated uncertainty of 88238.47999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 0 is at position (np.float64(20.0), np.float64(-360.0), np.float64(50.0)) and is going to cell (27, 11).
+At time: 36.0, node 2 map has total uncertainty of 2422.9300000000003
+At time: 36.0, node 2 map has a accomulated uncertainty of 88203.47
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 36.0, node 0 map has total uncertainty of 2477.9700000000003
+At time: 36.0, node 0 map has a accomulated uncertainty of 88930.66
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 37.0, node 1 map has total uncertainty of 2420.87
+At time: 37.0, node 1 map has a accomulated uncertainty of 90659.34999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 37.0, node 2 map has total uncertainty of 2421.9
+At time: 37.0, node 2 map has a accomulated uncertainty of 90625.37
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 37.0, node 0 map has total uncertainty of 2477.96
+At time: 37.0, node 0 map has a accomulated uncertainty of 91408.62000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 38.0, node 1 map has total uncertainty of 2420.87
+At time: 38.0, node 1 map has a accomulated uncertainty of 93080.21999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 38.0, node 0 map has total uncertainty of 2476.9300000000003
+At time: 38.0, node 0 map has a accomulated uncertainty of 93885.55000000002
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(180.0), np.float64(480.0), np.float64(50.0)) and is going to cell (35, 49).
+Drone 2 is at position (np.float64(160.0), np.float64(480.0), np.float64(50.0)) and is going to cell (34, 49).
+At time: 38.0, node 2 map has total uncertainty of 2420.87
+At time: 38.0, node 2 map has a accomulated uncertainty of 93046.23999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 39.0, node 1 map has total uncertainty of 2419.84
+At time: 39.0, node 1 map has a accomulated uncertainty of 95500.05999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 39.0, node 2 map has total uncertainty of 2420.87
+At time: 39.0, node 2 map has a accomulated uncertainty of 95467.10999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 39.0, node 0 map has total uncertainty of 2475.8900000000003
+At time: 39.0, node 0 map has a accomulated uncertainty of 96361.44000000002
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 40.0, the node 1 has 2347.0 unvisited cells
+Drone 2 is at position (np.float64(180.0), np.float64(480.0), np.float64(50.0)) and is going to cell (35, 49).
+At time: 40.0, the node 2 has 2347.0 unvisited cells
+Drone 1 is at position (np.float64(200.0), np.float64(480.0), np.float64(50.0)) and is going to cell (36, 49).
+At time: 40.0, node 1 map has total uncertainty of 2443.75
+At time: 40.0, node 1 map has a accomulated uncertainty of 97943.80999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 40.0, node 2 map has total uncertainty of 2444.7799999999997
+At time: 40.0, node 2 map has a accomulated uncertainty of 97911.88999999998
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 40.0, node 0 map has total uncertainty of 2473.81
+At time: 40.0, node 0 map has a accomulated uncertainty of 98835.25000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 40.0, the node 0 has 2400.0 unvisited cells
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 41.0, node 1 map has total uncertainty of 2442.6899999999996
+At time: 41.0, node 1 map has a accomulated uncertainty of 100386.49999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 41.0, node 2 map has total uncertainty of 2443.7299999999996
+At time: 41.0, node 2 map has a accomulated uncertainty of 100355.61999999998
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 41.0, node 0 map has total uncertainty of 2496.6799999999994
+At time: 41.0, node 0 map has a accomulated uncertainty of 101331.93000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(200.0), np.float64(480.0), np.float64(50.0)) and is going to cell (36, 49).
+Drone 1 is at position (np.float64(220.0), np.float64(480.0), np.float64(50.0)) and is going to cell (37, 49).
+Drone 0 is at position (np.float64(40.0), np.float64(-280.0), np.float64(50.0)) and is going to cell (28, 15).
+At time: 42.0, node 0 map has total uncertainty of 2495.6099999999997
+At time: 42.0, node 0 map has a accomulated uncertainty of 103827.54000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 42.0, node 1 map has total uncertainty of 2441.6499999999996
+At time: 42.0, node 1 map has a accomulated uncertainty of 102828.14999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 42.0, node 2 map has total uncertainty of 2442.6899999999996
+At time: 42.0, node 2 map has a accomulated uncertainty of 102798.30999999998
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 43.0, node 2 map has total uncertainty of 2442.6899999999996
+At time: 43.0, node 2 map has a accomulated uncertainty of 105240.99999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 43.0, node 1 map has total uncertainty of 2440.6099999999997
+At time: 43.0, node 1 map has a accomulated uncertainty of 105268.75999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 43.0, node 0 map has total uncertainty of 2494.5699999999997
+At time: 43.0, node 0 map has a accomulated uncertainty of 106322.11000000002
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(220.0), np.float64(480.0), np.float64(50.0)) and is going to cell (37, 49).
+At time: 44.0, node 2 map has total uncertainty of 2440.6099999999997
+At time: 44.0, node 2 map has a accomulated uncertainty of 107681.60999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 44.0, node 0 map has total uncertainty of 2493.5299999999997
+At time: 44.0, node 0 map has a accomulated uncertainty of 108815.64000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(240.0), np.float64(480.0), np.float64(50.0)) and is going to cell (38, 49).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(220.0), np.float64(480.0), np.float64(50.0)) and is going to cell (37, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(240.0), np.float64(480.0), np.float64(50.0)) and is going to cell (38, 49).
+At time: 44.0, node 1 map has total uncertainty of 2439.5699999999997
+At time: 44.0, node 1 map has a accomulated uncertainty of 107708.32999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 45.0, node 1 map has total uncertainty of 2438.5299999999997
+At time: 45.0, node 1 map has a accomulated uncertainty of 110146.85999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 45.0, node 2 map has total uncertainty of 2440.6099999999997
+At time: 45.0, node 2 map has a accomulated uncertainty of 110122.21999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 45.0, node 0 map has total uncertainty of 2491.45
+At time: 45.0, node 0 map has a accomulated uncertainty of 111307.09000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 46.0, node 2 map has total uncertainty of 2438.5299999999997
+At time: 46.0, node 2 map has a accomulated uncertainty of 112560.74999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(240.0), np.float64(480.0), np.float64(50.0)) and is going to cell (38, 49).
+At time: 46.0, node 1 map has total uncertainty of 2437.49
+At time: 46.0, node 1 map has a accomulated uncertainty of 112584.34999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 46.0, node 0 map has total uncertainty of 2488.33
+At time: 46.0, node 0 map has a accomulated uncertainty of 113795.42000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(260.0), np.float64(480.0), np.float64(50.0)) and is going to cell (39, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 47.0, node 2 map has total uncertainty of 2437.49
+At time: 47.0, node 2 map has a accomulated uncertainty of 114998.23999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 47.0, node 1 map has total uncertainty of 2436.45
+At time: 47.0, node 1 map has a accomulated uncertainty of 115020.79999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 47.0, node 0 map has total uncertainty of 2486.25
+At time: 47.0, node 0 map has a accomulated uncertainty of 116281.67000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 48.0, node 2 map has total uncertainty of 2436.45
+At time: 48.0, node 2 map has a accomulated uncertainty of 117434.68999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 48.0, node 1 map has total uncertainty of 2435.41
+At time: 48.0, node 1 map has a accomulated uncertainty of 117456.20999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 0 is at position (np.float64(60.0), np.float64(-200.0), np.float64(50.0)) and is going to cell (29, 19).
+At time: 48.0, node 0 map has total uncertainty of 2484.17
+At time: 48.0, node 0 map has a accomulated uncertainty of 118765.84000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(260.0), np.float64(480.0), np.float64(50.0)) and is going to cell (39, 49).
+Drone 1 is at position (np.float64(280.0), np.float64(480.0), np.float64(50.0)) and is going to cell (40, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 49.0, node 2 map has total uncertainty of 2435.41
+At time: 49.0, node 2 map has a accomulated uncertainty of 119870.09999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 49.0, node 1 map has total uncertainty of 2434.37
+At time: 49.0, node 1 map has a accomulated uncertainty of 119890.57999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 49.0, node 0 map has total uncertainty of 2483.1299999999997
+At time: 49.0, node 0 map has a accomulated uncertainty of 121248.97000000002
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 50.0, the node 1 has 2337.0 unvisited cells
+At time: 50.0, node 2 map has total uncertainty of 2434.37
+At time: 50.0, node 2 map has a accomulated uncertainty of 122304.46999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 50.0, the node 2 has 2337.0 unvisited cells
+Drone 1 is at position (np.float64(300.0), np.float64(480.0), np.float64(50.0)) and is going to cell (41, 49).
+At time: 50.0, node 1 map has total uncertainty of 2458.2700000000004
+At time: 50.0, node 1 map has a accomulated uncertainty of 122348.84999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 50.0, node 0 map has total uncertainty of 2482.0899999999997
+At time: 50.0, node 0 map has a accomulated uncertainty of 123731.06000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 50.0, the node 0 has 2384.0 unvisited cells
+Drone 2 is at position (np.float64(280.0), np.float64(480.0), np.float64(50.0)) and is going to cell (40, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 51.0, node 2 map has total uncertainty of 2458.2700000000004
+At time: 51.0, node 2 map has a accomulated uncertainty of 124762.73999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 51.0, node 1 map has total uncertainty of 2457.2200000000003
+At time: 51.0, node 1 map has a accomulated uncertainty of 124806.06999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 51.0, node 0 map has total uncertainty of 2504.9500000000003
+At time: 51.0, node 0 map has a accomulated uncertainty of 126236.01000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(320.0), np.float64(480.0), np.float64(50.0)) and is going to cell (42, 49).
+At time: 52.0, node 0 map has total uncertainty of 2501.8
+At time: 52.0, node 0 map has a accomulated uncertainty of 128737.81000000001
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 52.0, node 1 map has total uncertainty of 2456.17
+At time: 52.0, node 1 map has a accomulated uncertainty of 127262.23999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 52.0, node 2 map has total uncertainty of 2457.2200000000003
+At time: 52.0, node 2 map has a accomulated uncertainty of 127219.95999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(300.0), np.float64(480.0), np.float64(50.0)) and is going to cell (41, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 53.0, node 0 map has total uncertainty of 2499.7000000000003
+At time: 53.0, node 0 map has a accomulated uncertainty of 131237.51
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 53.0, node 2 map has total uncertainty of 2456.17
+At time: 53.0, node 2 map has a accomulated uncertainty of 129676.12999999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 53.0, node 1 map has total uncertainty of 2455.12
+At time: 53.0, node 1 map has a accomulated uncertainty of 129717.35999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 54.0, node 0 map has total uncertainty of 2497.6000000000004
+At time: 54.0, node 0 map has a accomulated uncertainty of 133735.11000000002
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(340.0), np.float64(480.0), np.float64(50.0)) and is going to cell (43, 49).
+Drone 0 is at position (np.float64(80.0), np.float64(-120.0), np.float64(50.0)) and is going to cell (30, 23).
+At time: 54.0, node 2 map has total uncertainty of 2455.12
+At time: 54.0, node 2 map has a accomulated uncertainty of 132131.25
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 54.0, node 1 map has total uncertainty of 2454.07
+At time: 54.0, node 1 map has a accomulated uncertainty of 132171.42999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(320.0), np.float64(480.0), np.float64(50.0)) and is going to cell (42, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 55.0, node 0 map has total uncertainty of 2496.55
+At time: 55.0, node 0 map has a accomulated uncertainty of 136231.66
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 55.0, node 1 map has total uncertainty of 2453.0200000000004
+At time: 55.0, node 1 map has a accomulated uncertainty of 134624.44999999995
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 55.0, node 2 map has total uncertainty of 2454.07
+At time: 55.0, node 2 map has a accomulated uncertainty of 134585.32
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(334.9999999999977), np.float64(480.0), np.float64(50.0)) and is going to cell (42, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(354.9999999999977), np.float64(480.0), np.float64(50.0)) and is going to cell (43, 49).
+Drone 1 is at position (np.float64(360.0), np.float64(480.0), np.float64(50.0)) and is going to cell (44, 49).
+Drone 2 is at position (np.float64(340.0), np.float64(480.0), np.float64(50.0)) and is going to cell (43, 49).
+At time: 56.0, node 1 map has total uncertainty of 2451.9700000000003
+At time: 56.0, node 1 map has a accomulated uncertainty of 137076.41999999995
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 56.0, node 2 map has total uncertainty of 2453.0200000000004
+At time: 56.0, node 2 map has a accomulated uncertainty of 137038.34
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 56.0, node 0 map has total uncertainty of 2495.5
+At time: 56.0, node 0 map has a accomulated uncertainty of 138727.16
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 57.0, node 1 map has total uncertainty of 2450.92
+At time: 57.0, node 1 map has a accomulated uncertainty of 139527.33999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 57.0, node 2 map has total uncertainty of 2451.9700000000003
+At time: 57.0, node 2 map has a accomulated uncertainty of 139490.31
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 57.0, node 0 map has total uncertainty of 2493.4
+At time: 57.0, node 0 map has a accomulated uncertainty of 141220.56
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(360.0), np.float64(480.0), np.float64(50.0)) and is going to cell (44, 49).
+At time: 58.0, node 2 map has total uncertainty of 2450.92
+At time: 58.0, node 2 map has a accomulated uncertainty of 141941.23
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 58.0, node 0 map has total uncertainty of 2490.25
+At time: 58.0, node 0 map has a accomulated uncertainty of 143710.81
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 58.0, node 1 map has total uncertainty of 2449.87
+At time: 58.0, node 1 map has a accomulated uncertainty of 141977.20999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(380.0), np.float64(480.0), np.float64(50.0)) and is going to cell (45, 49).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 59.0, node 0 map has total uncertainty of 2488.15
+At time: 59.0, node 0 map has a accomulated uncertainty of 146198.96
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 59.0, node 2 map has total uncertainty of 2449.87
+At time: 59.0, node 2 map has a accomulated uncertainty of 144391.1
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 59.0, node 1 map has total uncertainty of 2448.82
+At time: 59.0, node 1 map has a accomulated uncertainty of 144426.02999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 0 is at position (np.float64(100.0), np.float64(-40.0), np.float64(50.0)) and is going to cell (31, 27).
+At time: 60.0, the node 1 has 2327.0 unvisited cells
+At time: 60.0, node 0 map has total uncertainty of 2486.05
+At time: 60.0, node 0 map has a accomulated uncertainty of 148685.00999999998
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 60.0, node 1 map has total uncertainty of 2472.710000000001
+At time: 60.0, node 1 map has a accomulated uncertainty of 146898.73999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 60.0, node 2 map has total uncertainty of 2448.82
+At time: 60.0, node 2 map has a accomulated uncertainty of 146839.92
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 60.0, the node 2 has 2327.0 unvisited cells
+Drone 2 is at position (np.float64(380.0), np.float64(480.0), np.float64(50.0)) and is going to cell (45, 49).
+Drone 1 is at position (np.float64(400.0), np.float64(480.0), np.float64(50.0)) and is going to cell (46, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 60.0, the node 0 has 2364.0 unvisited cells
+At time: 61.0, node 0 map has total uncertainty of 2509.930000000001
+At time: 61.0, node 0 map has a accomulated uncertainty of 151194.93999999997
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 61.0, node 1 map has total uncertainty of 2471.650000000001
+At time: 61.0, node 1 map has a accomulated uncertainty of 149370.38999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 61.0, node 2 map has total uncertainty of 2472.710000000001
+At time: 61.0, node 2 map has a accomulated uncertainty of 149312.63
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(420.0), np.float64(480.0), np.float64(50.0)) and is going to cell (47, 49).
+Drone 2 is at position (np.float64(400.0), np.float64(480.0), np.float64(50.0)) and is going to cell (46, 49).
+At time: 62.0, node 2 map has total uncertainty of 2471.650000000001
+At time: 62.0, node 2 map has a accomulated uncertainty of 151784.28
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 62.0, node 1 map has total uncertainty of 2470.590000000001
+At time: 62.0, node 1 map has a accomulated uncertainty of 151840.97999999995
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 62.0, node 0 map has total uncertainty of 2508.870000000001
+At time: 62.0, node 0 map has a accomulated uncertainty of 153703.80999999997
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 63.0, node 0 map has total uncertainty of 2506.750000000001
+At time: 63.0, node 0 map has a accomulated uncertainty of 156210.55999999997
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 63.0, node 2 map has total uncertainty of 2470.590000000001
+At time: 63.0, node 2 map has a accomulated uncertainty of 154254.87
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 63.0, node 1 map has total uncertainty of 2469.5300000000007
+At time: 63.0, node 1 map has a accomulated uncertainty of 154310.50999999995
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(440.0), np.float64(480.0), np.float64(50.0)) and is going to cell (48, 49).
+At time: 64.0, node 0 map has total uncertainty of 2503.570000000001
+At time: 64.0, node 0 map has a accomulated uncertainty of 158714.12999999998
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 64.0, node 1 map has total uncertainty of 2468.4700000000007
+At time: 64.0, node 1 map has a accomulated uncertainty of 156778.97999999995
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 64.0, node 2 map has total uncertainty of 2469.5300000000007
+At time: 64.0, node 2 map has a accomulated uncertainty of 156724.4
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(420.0), np.float64(480.0), np.float64(50.0)) and is going to cell (47, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 65.0, node 0 map has total uncertainty of 2501.4500000000007
+At time: 65.0, node 0 map has a accomulated uncertainty of 161215.58
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 65.0, node 1 map has total uncertainty of 2467.4100000000008
+At time: 65.0, node 1 map has a accomulated uncertainty of 159246.38999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 65.0, node 2 map has total uncertainty of 2468.4700000000007
+At time: 65.0, node 2 map has a accomulated uncertainty of 159192.87
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(440.0), np.float64(480.0), np.float64(50.0)) and is going to cell (48, 49).
+Drone 1 is at position (np.float64(460.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 0 is at position (np.float64(120.0), np.float64(40.0), np.float64(50.0)) and is going to cell (32, 31).
+At time: 66.0, node 2 map has total uncertainty of 2467.4100000000008
+At time: 66.0, node 2 map has a accomulated uncertainty of 161660.28
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 66.0, node 1 map has total uncertainty of 2466.350000000001
+At time: 66.0, node 1 map has a accomulated uncertainty of 161712.73999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 66.0, node 0 map has total uncertainty of 2500.330000000001
+At time: 66.0, node 0 map has a accomulated uncertainty of 163715.90999999997
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(460.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(440.0), np.float64(480.0), np.float64(50.0)) and is going to cell (48, 49).
+At time: 67.0, node 0 map has total uncertainty of 2499.270000000001
+At time: 67.0, node 0 map has a accomulated uncertainty of 166215.17999999996
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 67.0, node 2 map has total uncertainty of 2466.350000000001
+At time: 67.0, node 2 map has a accomulated uncertainty of 164126.63
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 67.0, node 1 map has total uncertainty of 2466.350000000001
+At time: 67.0, node 1 map has a accomulated uncertainty of 164179.08999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(460.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 68.0, node 0 map has total uncertainty of 2498.210000000001
+At time: 68.0, node 0 map has a accomulated uncertainty of 168713.38999999996
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 68.0, node 1 map has total uncertainty of 2466.350000000001
+At time: 68.0, node 1 map has a accomulated uncertainty of 166645.43999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 68.0, node 2 map has total uncertainty of 2466.350000000001
+At time: 68.0, node 2 map has a accomulated uncertainty of 166592.98
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 69.0, node 1 map has total uncertainty of 2466.350000000001
+At time: 69.0, node 1 map has a accomulated uncertainty of 169111.78999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 69.0, node 2 map has total uncertainty of 2466.350000000001
+At time: 69.0, node 2 map has a accomulated uncertainty of 169059.33000000002
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 69.0, node 0 map has total uncertainty of 2496.090000000001
+At time: 69.0, node 0 map has a accomulated uncertainty of 171209.47999999995
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 70.0, the node 1 has 2320.0 unvisited cells
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 70.0, node 2 map has total uncertainty of 2466.350000000001
+At time: 70.0, node 2 map has a accomulated uncertainty of 171525.68000000002
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 70.0, node 0 map has total uncertainty of 2492.9100000000008
+At time: 70.0, node 0 map has a accomulated uncertainty of 173702.38999999996
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 70.0, the node 0 has 2347.0 unvisited cells
+At time: 70.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 70.0, node 1 map has a accomulated uncertainty of 171603.09999999998
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 70.0, the node 2 has 2320.0 unvisited cells
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 71.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 71.0, node 1 map has a accomulated uncertainty of 174094.40999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 71.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 71.0, node 2 map has a accomulated uncertainty of 174016.99000000002
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 71.0, node 0 map has total uncertainty of 2515.7200000000003
+At time: 71.0, node 0 map has a accomulated uncertainty of 176218.10999999996
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 72.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 72.0, node 1 map has a accomulated uncertainty of 176585.71999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 0 is at position (np.float64(140.0), np.float64(120.0), np.float64(50.0)) and is going to cell (33, 35).
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 72.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 72.0, node 2 map has a accomulated uncertainty of 176508.30000000002
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 72.0, node 0 map has total uncertainty of 2513.58
+At time: 72.0, node 0 map has a accomulated uncertainty of 178731.68999999994
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 73.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 73.0, node 1 map has a accomulated uncertainty of 179077.02999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 73.0, node 0 map has total uncertainty of 2512.51
+At time: 73.0, node 0 map has a accomulated uncertainty of 181244.19999999995
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 73.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 73.0, node 2 map has a accomulated uncertainty of 178999.61000000002
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 74.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 74.0, node 1 map has a accomulated uncertainty of 181568.33999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 74.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 74.0, node 2 map has a accomulated uncertainty of 181490.92
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 74.0, node 0 map has total uncertainty of 2511.44
+At time: 74.0, node 0 map has a accomulated uncertainty of 183755.63999999996
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 75.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 75.0, node 1 map has a accomulated uncertainty of 184059.64999999997
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 75.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 75.0, node 2 map has a accomulated uncertainty of 183982.23
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 75.0, node 0 map has total uncertainty of 2509.3
+At time: 75.0, node 0 map has a accomulated uncertainty of 186264.93999999994
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 76.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 76.0, node 1 map has a accomulated uncertainty of 186550.95999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 76.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 76.0, node 2 map has a accomulated uncertainty of 186473.54
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 76.0, node 0 map has total uncertainty of 2506.09
+At time: 76.0, node 0 map has a accomulated uncertainty of 188771.02999999994
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 77.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 77.0, node 1 map has a accomulated uncertainty of 189042.26999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 77.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 77.0, node 2 map has a accomulated uncertainty of 188964.85
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 77.0, node 0 map has total uncertainty of 2503.9500000000003
+At time: 77.0, node 0 map has a accomulated uncertainty of 191274.97999999995
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 78.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 78.0, node 1 map has a accomulated uncertainty of 191533.57999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 0 is at position (np.float64(160.0), np.float64(200.0), np.float64(50.0)) and is going to cell (34, 39).
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 78.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 78.0, node 2 map has a accomulated uncertainty of 191456.16
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 78.0, node 0 map has total uncertainty of 2501.8100000000004
+At time: 78.0, node 0 map has a accomulated uncertainty of 193776.78999999995
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 79.0, node 1 map has total uncertainty of 2491.3100000000004
+At time: 79.0, node 1 map has a accomulated uncertainty of 194024.88999999996
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 79.0, node 0 map has total uncertainty of 2500.7400000000002
+At time: 79.0, node 0 map has a accomulated uncertainty of 196277.52999999994
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 79.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 79.0, node 2 map has a accomulated uncertainty of 193947.47
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 80.0, the node 0 has 2331.0 unvisited cells
+At time: 80.0, node 2 map has total uncertainty of 2491.3100000000004
+At time: 80.0, node 2 map has a accomulated uncertainty of 196438.78
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 80.0, the node 1 has 2320.0 unvisited cells
+At time: 80.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 80.0, node 1 map has a accomulated uncertainty of 196541.15999999995
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 80.0, the node 2 has 2320.0 unvisited cells
+At time: 80.0, node 0 map has total uncertainty of 2524.62
+At time: 80.0, node 0 map has a accomulated uncertainty of 198802.14999999994
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 81.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 81.0, node 2 map has a accomulated uncertainty of 198955.05
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 81.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 81.0, node 1 map has a accomulated uncertainty of 199057.42999999993
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 81.0, node 0 map has total uncertainty of 2522.46
+At time: 81.0, node 0 map has a accomulated uncertainty of 201324.60999999993
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 82.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 82.0, node 1 map has a accomulated uncertainty of 201573.69999999992
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 82.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 82.0, node 2 map has a accomulated uncertainty of 201471.31999999998
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 82.0, node 0 map has total uncertainty of 2519.2200000000003
+At time: 82.0, node 0 map has a accomulated uncertainty of 203843.82999999993
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 83.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 83.0, node 1 map has a accomulated uncertainty of 204089.9699999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 83.0, node 0 map has total uncertainty of 2517.0600000000004
+At time: 83.0, node 0 map has a accomulated uncertainty of 206360.88999999993
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 83.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 83.0, node 2 map has a accomulated uncertainty of 203987.58999999997
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 84.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 84.0, node 1 map has a accomulated uncertainty of 206606.2399999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 84.0, node 0 map has total uncertainty of 2514.9
+At time: 84.0, node 0 map has a accomulated uncertainty of 208875.78999999992
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 84.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 84.0, node 2 map has a accomulated uncertainty of 206503.85999999996
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 0 is at position (np.float64(180.0), np.float64(280.0), np.float64(50.0)) and is going to cell (35, 43).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 85.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 85.0, node 1 map has a accomulated uncertainty of 209122.5099999999
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 85.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 85.0, node 2 map has a accomulated uncertainty of 209020.12999999995
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 85.0, node 0 map has total uncertainty of 2513.82
+At time: 85.0, node 0 map has a accomulated uncertainty of 211389.60999999993
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 86.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 86.0, node 1 map has a accomulated uncertainty of 211638.77999999988
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 86.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 86.0, node 2 map has a accomulated uncertainty of 211536.39999999994
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 86.0, node 0 map has total uncertainty of 2512.7400000000002
+At time: 86.0, node 0 map has a accomulated uncertainty of 213902.34999999992
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 87.0, node 0 map has total uncertainty of 2510.58
+At time: 87.0, node 0 map has a accomulated uncertainty of 216412.9299999999
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 87.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 87.0, node 1 map has a accomulated uncertainty of 214155.04999999987
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 87.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 87.0, node 2 map has a accomulated uncertainty of 214052.66999999993
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 88.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 88.0, node 1 map has a accomulated uncertainty of 216671.31999999986
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 88.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 88.0, node 2 map has a accomulated uncertainty of 216568.93999999992
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 88.0, node 0 map has total uncertainty of 2507.34
+At time: 88.0, node 0 map has a accomulated uncertainty of 218920.2699999999
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 89.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 89.0, node 2 map has a accomulated uncertainty of 219085.2099999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 89.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 89.0, node 1 map has a accomulated uncertainty of 219187.58999999985
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 89.0, node 0 map has total uncertainty of 2505.1800000000003
+At time: 89.0, node 0 map has a accomulated uncertainty of 221425.4499999999
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 90.0, the node 0 has 2312.0 unvisited cells
+At time: 90.0, node 0 map has total uncertainty of 2527.9300000000003
+At time: 90.0, node 0 map has a accomulated uncertainty of 223953.3799999999
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+Drone 0 is at position (np.float64(200.0), np.float64(360.0), np.float64(50.0)) and is going to cell (36, 47).
+At time: 90.0, node 1 map has total uncertainty of 2516.2700000000004
+At time: 90.0, node 1 map has a accomulated uncertainty of 221703.85999999984
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+At time: 90.0, node 2 map has total uncertainty of 2516.2700000000004
+At time: 90.0, node 2 map has a accomulated uncertainty of 221601.4799999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 90.0, the node 2 has 2320.0 unvisited cells
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+At time: 90.0, the node 1 has 2320.0 unvisited cells
+Drone 2 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 91.0, node 0 map has total uncertainty of 2526.84
+At time: 91.0, node 0 map has a accomulated uncertainty of 226480.21999999988
+Could not update map for drone 0: cannot unpack non-iterable NoneType object
+At time: 91.0, node 2 map has total uncertainty of 2541.23
+At time: 91.0, node 2 map has a accomulated uncertainty of 224142.7099999999
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+Drone 1 is at position (np.float64(480.0), np.float64(480.0), np.float64(50.0)) and is going to cell (49, 49).
+At time: 91.0, node 1 map has total uncertainty of 2541.23
+At time: 91.0, node 1 map has a accomulated uncertainty of 224245.08999999985
+Could not update map for drone 1: cannot unpack non-iterable NoneType object
+Could not update map for drone 2: cannot unpack non-iterable NoneType object
+server closing
+server closed
