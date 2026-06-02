@@ -126,7 +126,6 @@ class AsyncMARLOrchestrator:
         return td
 
     ##### flag handling 
-
     def _handle_flags(self, obs_td: TensorDict, opening_episode: bool = False):
         flags = self._read_flags(obs_td)
         mask = obs_td["agents", "mask"]
