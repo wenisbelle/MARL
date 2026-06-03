@@ -152,7 +152,7 @@ class Actor(nn.Module):
         map_key: str = "map_patch",
         position_key: str = "position",
         uncertainty_key: str = "individual_map_uncertainty",
-        estimated_positions_key: str = "estimated_positions",
+        estimated_positions_key: str = "estimated_positions_and_time",
     ):
         super().__init__()
         self.action_dim = action_dim
@@ -199,7 +199,7 @@ class Actor(nn.Module):
         """
         pos = obs_td[self.position_key]            # unbatched (2,)     | batched (B, 2)
         unc = obs_td[self.uncertainty_key]         # unbatched (1,)     | batched (B, 1)
-        ep = obs_td[self.estimated_positions_key]  # unbatched (N-1, 3) | batched (B, N, 2)
+        ep = obs_td[self.estimated_positions_key]  # unbatched (N-1, 3) | batched (B, N-1, 3)
         mp = obs_td[self.map_key]                  # unbatched (H, W)   | batched (B, H, W)
 
         # Detect batching from `position` (1-D = single sample, 2-D = batched).

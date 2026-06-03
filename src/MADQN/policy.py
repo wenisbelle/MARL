@@ -25,7 +25,7 @@ class DQNPolicy(nn.Module):
                  map_key: str = "map_patch",
                  position_key: str = "position",
                  uncertainty_key: str = "individual_map_uncertainty",
-                 estimated_positions_key: str = "estimated_positions",
+                 estimated_positions_key: str = "estimated_positions_and_time",
                  eps_init = 1.0,
                  ):
         super().__init__()
