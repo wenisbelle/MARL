@@ -1,0 +1,278 @@
+================================================================================
+MADQN ARCHITECTURE ANALYSIS — CONVERSATION TRANSCRIPT
+Date: 2026-06-02
+================================================================================
+
+--------------------------------------------------------------------------------
+USER
+--------------------------------------------------------------------------------
+
+In my current MADQN approach I have this asynchronous environment where I am
+trying to apply an Independent Deep Q learning. But the system is not having
+good results, always having rewards close to zero. You can also check the
+metrics.csv to see some data, but it is a very big file so I will just give a
+little part of it. And as you could see the reward is very low, even though the
+system is running for a large number of generations and, moreover, the loss is
+still high and overall the system is not able to learn.
+
+Could you please analyse the architecture and propose what I could do to
+improve it?
+
+[User provided CSV snippet: iterations 2456–2621]
+Key values observed:
+  - loss:            ~0.87 – 1.93  (not converging)
+  - q_mean:          ~50 – 58      (very high)
+  - action_entropy:  0.0 almost always (major red flag)
+  - reward:          ~0.02 – 0.73  (near zero)
+  - global_reward:   ~ -4 to -0.1  (net negative — team losing ground)
+  - eps:             ~0.086 – 0.073
+
+--------------------------------------------------------------------------------
+ASSISTANT — ANALYSIS
+--------------------------------------------------------------------------------
+
+After reading all source files (actor.py, policy.py, train.py,
+simulation_orchestrator.py, workers_orchestrator.py, worker.py,
+replay_buffer.py, train_logs.py, env/mapping_environment.py,
+env/gradysim_environment/protocol.py), the following diagnosis was produced.
+
+════════════════════════════════════════════════════════════════════════════════
+ROOT CAUSE: Policy Collapse → Degenerate Feedback Loop
+════════════════════════════════════════════════════════════════════════════════
+
+The system is trapped in a vicious cycle:
+
+  1. action_entropy ≈ 0 for almost every training step — the Q-network outputs
+     nearly identical Q-values for all states in the batch, so argmax always
+     picks the SAME action (likely the center cell of the 20×20 patch =
+     "stay near current position").
+
+  2. The drone flies to ~where it already is, re-observes already-explored
+     cells (uncertainty ≈ 0), and gets near-zero reward.
+
+  3. The training batch reinforces: "action X is worth ~Q, regardless of state"
+     → Q-values diverge upward via bootstrapping while actual performance
+     stays flat.
+
+  4. SMOKING GUN (visible in early metrics):
+       Iteration 0:  reward = 4.99  (random policy, eps=1.0)
+       Iteration 2600: reward = 0.26  (learned policy, eps=0.07)
+     The network learned something WORSE than random. A uniform random policy
+     naturally spreads drones across the map (covering new cells). The learned
+     policy collapses to one action, re-observing the same area.
+
+Key signal table:
+  ┌──────────────────┬────────┬──────────────────────────────────────────┐
+  │ Symptom          │ Value  │ Meaning                                  │
+  ├──────────────────┼────────┼──────────────────────────────────────────┤
+  │ action_entropy   │ ≈ 0.0  │ All 128 batch states pick same action    │
+  │ q_mean           │ 52     │ Q-values diverged ~170× above real return│
+  │ Reward trend     │ 5→0.3  │ Learned policy is worse than random      │
+  └──────────────────┴────────┴──────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════════════════════
+SPECIFIC PROBLEMS AND FIXES (ordered by priority)
+════════════════════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────────────────────────────
+[CRITICAL] 1. Per-step reward clipping destroys the signal
+──────────────────────────────────────────────────────────────────────────────
+File: simulation_orchestrator.py, line 103
+
+  CURRENT:
+      p.agent_reward_sum += max(-1.0, min(1.0, rewards[i].item()))
+
+  PROBLEM:
+    The raw step reward is `uncertainty_before - uncertainty_after` across the
+    full 50×50 map (total uncertainty ≈ 2500). Positive moves (observing new
+    cells) give rewards of ~5–30 per step; the vanishing timer fires a −25
+    penalty every 10 steps. Clipping each of these to ±1 before SMDP
+    accumulation destroys scale information: the network cannot distinguish
+    "observed 1 cell" from "observed 50 cells."
+
+  FIX:
+    Normalize by map area instead of hard-clipping:
+        scale = self.env.map_width * self.env.map_height  # 2500
+        p.agent_reward_sum += rewards[i].item() / scale
+    This gives per-step rewards naturally in a small range, making the
+    signal proportional to actual uncertainty reduction.
+
+──────────────────────────────────────────────────────────────────────────────
+[CRITICAL] 2. SMDP discount penalizes exploring far cells
+──────────────────────────────────────────────────────────────────────────────
+File: train.py, line 187
+
+  CURRENT:
+      y = reward + (GAMMA ** n_steps) * next_q_target * (1.0 - done)
+
+  PROBLEM:
+    With GAMMA = 0.99 per sim step, the discount for a long flight is:
+      10 steps  → 0.99^10 = 0.90
+      30 steps  → 0.99^30 = 0.74
+      50 steps  → 0.99^50 = 0.61
+    Short macro-actions (picking the center cell ≈ 1–2 steps, discount ≈ 0.98)
+    are intrinsically favored over long ones. The network is trained to be
+    myopic.
+
+  FIX OPTION A (simplest):
+    Treat each macro-action as a single timestep — use a per-macro-action gamma:
+        y = reward + GAMMA * next_q_target * (1.0 - done)
+
+  FIX OPTION B:
+    Keep SMDP discounting but raise GAMMA (e.g., 0.995) to reduce the penalty
+    on longer actions.
+
+──────────────────────────────────────────────────────────────────────────────
+[CRITICAL] 3. Network collapse — add Dueling DQN + LayerNorm
+──────────────────────────────────────────────────────────────────────────────
+File: actor.py, lines 181–188
+
+  PROBLEM:
+    The trunk feeds directly into a single Q-head. With large action spaces
+    (400 actions = 20×20), the network can trivially "solve" the Bellman
+    equation by outputting one large Q-value for one action and a constant
+    small value for all others, regardless of state.
+
+  FIX — Dueling DQN:
+    Split the head into V(s) (scalar) and A(s, a) (vector):
+        Q(s,a) = V(s) + A(s,a) − mean_a(A(s,a))
+    This forces the network to learn state-dependent action preferences.
+
+    # In Actor.__init__:
+    self.trunk = nn.Sequential(
+        nn.Linear(fused_dim, hidden_dim),
+        nn.LayerNorm(hidden_dim),
+        nn.ReLU(inplace=True),
+        nn.Linear(hidden_dim, hidden_dim),
+        nn.LayerNorm(hidden_dim),
+        nn.ReLU(inplace=True),
+    )
+    self.value_head     = nn.Linear(hidden_dim, 1)
+    self.advantage_head = nn.Linear(hidden_dim, action_dim)
+
+    # In Actor.forward:
+    h, is_unbatched = self._features(obs_td)
+    v = self.value_head(h)                        # (B, 1)
+    a = self.advantage_head(h)                    # (B, action_dim)
+    q = v + a - a.mean(dim=-1, keepdim=True)      # (B, action_dim)
+    return q.squeeze(0) if is_unbatched else q
+
+  LayerNorm in the trunk prevents hidden activations from collapsing to a
+  constant vector (the immediate cause of action_entropy = 0).
+
+──────────────────────────────────────────────────────────────────────────────
+[HIGH] 4. Learning rate too low
+──────────────────────────────────────────────────────────────────────────────
+File: train.py, line 59
+
+  CURRENT:  LR = 1e-5
+  FIX:      LR = 3e-4    (standard DQN range: 1e-4 to 3e-4)
+
+  At 1e-5 the optimizer cannot correct diverging Q-values quickly enough.
+
+──────────────────────────────────────────────────────────────────────────────
+[MEDIUM] 5. Gradient clipping constant is defined but never applied
+──────────────────────────────────────────────────────────────────────────────
+File: train.py, lines 62 and 197
+
+  CURRENT:
+    GRAD_CLIP = 1.0    ← defined but never used
+    ...
+    torch.nn.utils.clip_grad_norm_(..., max_norm=10.0)  ← too loose
+
+  FIX:
+    torch.nn.utils.clip_grad_norm_(
+        trainer_policy.actor.parameters(), max_norm=GRAD_CLIP
+    )
+
+──────────────────────────────────────────────────────────────────────────────
+[MEDIUM] 6. Replay buffer size
+──────────────────────────────────────────────────────────────────────────────
+File: train.py, line 56
+
+  CURRENT:  BUFFERSIZE = 10000
+  CONTEXT:  ~200 new transitions are added per iteration (total from all 12
+            workers combined — MIN_TRANSITIONS_PER_COLLECT = 200).
+            Buffer fills after ~50 iterations.
+  FIX:      BUFFERSIZE = 200000
+  REASON:   Larger buffer retains more diverse historical transitions and
+            reduces correlation between training samples. This is especially
+            important once exploration is working correctly.
+
+──────────────────────────────────────────────────────────────────────────────
+[MEDIUM] 7. Prioritized Experience Replay (recommended upgrade)
+──────────────────────────────────────────────────────────────────────────────
+With uniform sampling, early bad transitions (from the collapsed policy) keep
+being re-sampled indefinitely. PER samples proportional to TD error, naturally
+prioritizing under-learned transitions. TorchRL's PrioritizedReplayBuffer is
+a drop-in replacement for TensorDictReplayBuffer.
+
+──────────────────────────────────────────────────────────────────────────────
+[LOW] 8. Minor bug in replay_buffer.py
+──────────────────────────────────────────────────────────────────────────────
+File: replay_buffer.py, line 33
+
+  CURRENT:  if transitions is None and transitions.batch_size[0] == 0:
+  FIX:      if transitions is None or transitions.batch_size[0] == 0:
+
+  With `and`, the batch_size == 0 guard is never checked when transitions
+  is not None but has an empty batch.
+
+════════════════════════════════════════════════════════════════════════════════
+SUMMARY TABLE
+════════════════════════════════════════════════════════════════════════════════
+
+  ┌────────────────────────────────────────┬──────────┬──────────────────────┐
+  │ Issue                                  │ Priority │ Fix                  │
+  ├────────────────────────────────────────┼──────────┼──────────────────────┤
+  │ Per-step reward hard-clip              │ Critical │ Normalize / map area │
+  │ SMDP discount penalizes exploration    │ Critical │ Per-macro-action γ   │
+  │ Action collapse (no Dueling/LayerNorm) │ Critical │ Dueling DQN + LN     │
+  │ Learning rate too low (1e-5)           │ High     │ 3e-4                 │
+  │ Gradient clip constant ignored         │ Medium   │ Use GRAD_CLIP = 1.0  │
+  │ Replay buffer size (10k)               │ Medium   │ 200k                 │
+  │ Prioritized experience replay          │ Medium   │ PrioritizedRB        │
+  │ Replay buffer logic bug (and vs or)    │ Low      │ Fix to `or`          │
+  └────────────────────────────────────────┴──────────┴──────────────────────┘
+
+The four Critical + High items applied together should break the collapse.
+Monitor that action_entropy rises above 0 and q_mean stays in a range
+consistent with actual returns (~5–20, not 52+).
+
+--------------------------------------------------------------------------------
+USER (follow-up)
+--------------------------------------------------------------------------------
+
+About the first point. With 12 workers × ~200 transitions/iteration, the
+buffer turns over every 4 iterations. But these transitions are not the total
+number of transitions to all workers? So it is actually 200 to all of them.
+
+--------------------------------------------------------------------------------
+ASSISTANT (correction)
+--------------------------------------------------------------------------------
+
+You are correct. MIN_TRANSITIONS_PER_COLLECT = 200 is the total drain threshold
+across all workers combined — the collect() loop stops as soon as new_count
+reaches 200 from the shared transition_queue, regardless of how many workers
+contributed.
+
+Corrected turnover estimate:
+  10,000 buffer ÷ 200 per iteration ≈ fills after ~50 iterations
+  After that, each iteration overwrites ~2% of the buffer.
+
+That is a reasonable buffer regime — not the catastrophic "every 4 iterations"
+stated initially. The error was in treating MIN_TRANSITIONS_PER_COLLECT as a
+per-worker value.
+
+The buffer size concern remains valid (10k is small by typical DQN standards of
+100k–1M, and a larger buffer would help diversity once exploration is working),
+but it is not the acute problem originally described.
+
+The genuinely critical issues remain:
+  1. Reward scaling (per-step clip to ±1 before SMDP accumulation)
+  2. Policy collapse (action_entropy = 0; Dueling DQN + LayerNorm)
+  3. SMDP discount (GAMMA^n_steps penalizes far targets)
+
+================================================================================
+END OF CONVERSATION
+================================================================================
