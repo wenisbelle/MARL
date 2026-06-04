@@ -35,9 +35,10 @@ class MapVisualizer:
             plt.show()
             
         except Exception as e:
-            # If this triggers, your drone maps will not work!
-            logging.error(f"Error initializing visualizer: {e}")
-            raise # It's usually better to raise the error so you know it failed
+            pass
+        #    # If this triggers, your drone maps will not work!
+        #    #logging.error(f"Error initializing visualizer: {e}")
+        #    raise # It's usually better to raise the error so you know it failed
 
     def update_map(self, drone_id: int, map_data: np.ndarray, drone_position: tuple = None):
         """
@@ -60,7 +61,8 @@ class MapVisualizer:
             self.drone_markers[plot_index].set_data([scaled_x], [scaled_y])
             
         except Exception as e:
-            logging.warning(f"Could not update map for drone {drone_id}: {e}")
+            pass
+        #    logging.warning(f"Could not update map for drone {drone_id}: {e}")
         
     def close(self):
         """Closes the Matplotlib window."""

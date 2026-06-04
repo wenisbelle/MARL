@@ -41,7 +41,7 @@ def create_and_run_simulation():
         number_of_drones=NUMBER_OF_DRONES,
         map_width=MAP_WIDTH,
         map_height=MAP_HEIGHT,
-        observation_map_size=20,
+        observation_map_size=10,
         results_aggregator=results_aggregator
     )
 
@@ -53,12 +53,6 @@ def create_and_run_simulation():
     simulation = builder.build()
     simulation.start_simulation()
 
-    medium_uncertainty = 0
-    for i in range(NUMBER_OF_DRONES):
-        medium_uncertainty += 0.01*results_aggregator[i]['accomulated_uncertainty']/NUMBER_OF_DRONES
-
-    print(f"Variable to be minimized: {medium_uncertainty}")    
-    return medium_uncertainty
 
 
 def main():
@@ -69,7 +63,7 @@ def main():
         #format='%(asctime)s - %(levelname)s - %(message)s'
         format='%(message)s'  
     )
-    for _ in range(20):
+    for _ in range(1):
         create_and_run_simulation()
     
 

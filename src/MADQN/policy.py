@@ -43,8 +43,14 @@ class DQNPolicy(nn.Module):
         self.register_buffer("eps", torch.tensor(eps_init, dtype=torch.float32))
 
     def forward(self, per_agent_obs_td):
+        valid_mask = per_agent_obs_td["valid_actions"].bool()    # (action_dim,)
+
         if torch.rand(()).item() < self.eps.item():
-            return torch.randint(0, self.actor.action_dim, (1,), dtype=torch.int64)
+            valid_indices = valid_mask.nonzero(as_tuple=True)[0]
+            pick = torch.randint(0, valid_indices.numel(), (1,))
+            
+            return valid_indices[pick].to(torch.int64).reshape(1)
+
         with torch.no_grad():
             q_values = self.actor(per_agent_obs_td)
         return q_values.argmax(dim=-1, keepdim=True)

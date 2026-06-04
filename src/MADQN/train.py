@@ -29,7 +29,7 @@ MAX_NUM_AGENTS = 3
 MIN_NUM_AGENTS = 3   
 MAP_WIDTH = 50
 MAP_HEIGHT = 50
-OBSERVATION_MAP_SIZE = 20
+OBSERVATION_MAP_SIZE = 10
 MAX_EPISODE_LENGTH = 2000
 AGENT_DEATH_PROBABILITY = 0.0
 MAP_CHANNELS = 1
@@ -41,7 +41,7 @@ UNCERTAINTY_KEY = "individual_map_uncertainty"
 ESTIMATED_POSITIONS_KEY = "estimated_positions_and_time"
 EPS_INIT = 1.0
 EPS_DECAY = 0.999
-EPS_MIN = 0.05
+EPS_MIN = 0.2
 N_WORKERS = 12
 STEPS_PER_BATCH = 100
 NUM_ITERATIONS = 10000
@@ -51,17 +51,17 @@ SYNC = False
 NEW_BATCH_NEW_SIMULATION = False
 TRAIN_FREQUENCY = 4
 
-BATCH_SIZE = 128
-BUFFERSIZE = 10000
+BATCH_SIZE = 256
+BUFFERSIZE = 20000
 VALUE_NETWORK_UPDATES_PER_ITERATION = 4
 
 GAMMA       = 0.99
-LR = 1e-5
+LR = 1e-4
 TARGET_SYNC = 10 
 GRAD_CLIP = 1.0
 TAU = 0.005 
 
-CHECKPOINT_EVERY    = 1000              # save every K iterations (set ≤ NUM_ITERATIONS)
+CHECKPOINT_EVERY    = 500              # save every K iterations (set ≤ NUM_ITERATIONS)
 CHECKPOINT_DIR      = "checkpoints"
 LOG_EVERY           = 1                # print every iter; raise for long runs
 REWARD_WINDOW       = 10               # rolling-average window for "is it improving?"
@@ -142,6 +142,7 @@ def main():
         steps_per_batch=STEPS_PER_BATCH,
         base_seed=42,
         sync=SYNC,
+        reward_scale = MAP_WIDTH,
         new_batch_new_simulation=NEW_BATCH_NEW_SIMULATION,
     ) as orch:
 
@@ -184,7 +185,7 @@ def main():
                         a_next = next_q_value_online.argmax(dim=-1, keepdim=True)  # (B, 1)
                         next_q_target = target_actor(next_obs).gather(-1, a_next) #  B, 1)
 
-                        y = reward + (GAMMA ** n_steps) * next_q_target * (1.0 - done) 
+                        y = reward + GAMMA * next_q_target * (1.0 - done) 
 
                     q_pred_all = trainer_policy.actor(obs)  # (B, action_dim)
                     q_pred = q_pred_all.gather(-1, action)  # (B, 1)
@@ -194,7 +195,7 @@ def main():
                     optimizer.zero_grad()
                     loss.backward()
                     # For stability:
-                    torch.nn.utils.clip_grad_norm_(trainer_policy.actor.parameters(), max_norm=10.0)
+                    torch.nn.utils.clip_grad_norm_(trainer_policy.actor.parameters(), max_norm=GRAD_CLIP)
                     optimizer.step()
 
                     # soft update

@@ -122,7 +122,13 @@ class TrainingLogger:
         """Record metrics from one gradient step."""
         self._losses.append(loss)
         with torch.no_grad():
-            self._q_means.append(q_values_all.abs().mean().item())
+            
+            finite = torch.isfinite(q_values_all)
+            if finite.any():
+                self._q_means.append(q_values_all[finite].abs().mean().item())
+            else:
+                self._q_means.append(float("nan"))
+
             self._td_errors.append(td_error)
 
             action_dim = q_values_all.shape[-1]

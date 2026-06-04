@@ -33,6 +33,7 @@ def _worker_loop(
     transition_queue: mp.Queue,
     weight_queue: mp.Queue,
     control_queue: mp.Queue,
+    reward_scale: int, 
     new_batch_new_simulation: bool = True, # whether to reset the simulation at the start of each batch
 ):
     """One worker process: env + orchestrator + local policy."""
@@ -51,7 +52,7 @@ def _worker_loop(
         with torch.no_grad(): 
             return policy(per_agent_obs_td)
 
-    orch = AsyncMARLOrchestrator(env, policy_callable)
+    orch = AsyncMARLOrchestrator(env, policy_callable, reward_scale)
     td = orch.reset()
 
 

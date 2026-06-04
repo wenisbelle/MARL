@@ -152,7 +152,7 @@ class Actor(nn.Module):
         map_key: str = "map_patch",
         position_key: str = "position",
         uncertainty_key: str = "individual_map_uncertainty",
-        estimated_positions_key: str = "estimated_positions",
+        estimated_positions_and_time_key: str = "estimated_positions_and_time",
     ):
         super().__init__()
         self.action_dim = action_dim
@@ -161,12 +161,12 @@ class Actor(nn.Module):
         self.map_key = map_key
         self.position_key = position_key
         self.uncertainty_key = uncertainty_key
-        self.estimated_positions_key = estimated_positions_key
+        self.estimated_positions_and_time_key = estimated_positions_and_time_key
 
-        # Vector input dim = position(2) + uncertainty(1) + estimated(N*2).
+        # Vector input dim = position(2) + uncertainty(1) + estimated((N-1)*3).
         # If you later add or remove obs fields, update this number and the
         # corresponding concatenation inside `_features`.
-        self.vector_in_dim = 2 + 1 + (max_num_agents * 2)
+        self.vector_in_dim = 2 + 1 + ((max_num_agents-1) * 3)
 
         ##### Inputs
         self.map_encoder = MapCNN(
@@ -197,10 +197,10 @@ class Actor(nn.Module):
             is_unbatched: True if caller passed a single sample, so we know
                           to squeeze the leading dim out of the output later.
         """
-        pos = obs_td[self.position_key]            # unbatched (2,)   | batched (B, 2)
-        unc = obs_td[self.uncertainty_key]         # unbatched (1,)   | batched (B, 1)
-        ep = obs_td[self.estimated_positions_key]  # unbatched (N, 2) | batched (B, N, 2)
-        mp = obs_td[self.map_key]                  # unbatched (H, W) | batched (B, H, W)
+        pos = obs_td[self.position_key]                     # unbatched (2,)      | batched (B, 2)
+        unc = obs_td[self.uncertainty_key]                  # unbatched (1,)      | batched (B, 1)
+        ep = obs_td[self.estimated_positions_and_time_key]  # unbatched (N-1, 23) | batched (B, N, 2)
+        mp = obs_td[self.map_key]                           # unbatched (H, W)    | batched (B, H, W)
 
         # Detect batching from `position` (1-D = single sample, 2-D = batched).
         is_unbatched = pos.dim() == 1
@@ -222,9 +222,9 @@ class Actor(nn.Module):
         ep = ep.float()
         mp = mp.float()
 
-        # Flatten `estimated_positions` from (B, N, 2) to (B, N*2) so it can
+        # Flatten `estimated_positions` from (B, N-1, 3) to (B, (N-1)*3) so it can
         # be concatenated with the other 1-D vectors.
-        ep_flat = ep.flatten(start_dim=1)          # (B, N*2)
+        ep_flat = ep.flatten(start_dim=1)          #  (B, (N-1)*3
 
         # Encode each modality and concatenate 
         map_feat = self.map_encoder(mp)                  # (B, map_feature_dim)
@@ -246,6 +246,14 @@ class Actor(nn.Module):
         """
         h, is_unbatched = self._features(obs_td)
         q_values = self.q_head(h)                  # (B, action_dim) — pre-squash mean
+
+        try:
+            valid = obs_td["valid_actions"]
+            if is_unbatched and valid.dim() == 1:
+                valid = valid.unsqueeze(0)
+            q_values = q_values.masked_fill(~valid.bool(), float("-inf"))
+        except KeyError:
+            pass       
 
         return q_values.squeeze(0) if is_unbatched else q_values
 

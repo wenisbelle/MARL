@@ -83,7 +83,7 @@ class Drone(IProtocol):
         "number_of_drones": 3,
         "map_width": 10,
         "map_height": 10,
-        "observation_map_size": 20,
+        "observation_map_size": 10,
     }
 
     def initialize(self) -> None:
@@ -102,6 +102,8 @@ class Drone(IProtocol):
         self.MAP_HEIGHT = self._config["map_height"]
         self.OBSERVATION_MAP_SIZE = self._config["observation_map_size"]
         self.results_aggregator = self._config.get("results_aggregator", {})
+
+        self.NORMALIZE_TIME = 60.0
         
         self.DRONE_ALTITUDE = 50.0
         self.DISTANCE_BETWEEN_CELLS = 20
@@ -154,7 +156,7 @@ class Drone(IProtocol):
         ##### The drone will use this same list to his neural network policy, so there is no need for creating multiple conditions. 
         ##### Besides, the drone no longer need to receive the data from the other drone to update its destination. It knows the current state
         ##### and has the same network policy, so it update it locally, no need to more messages passing. 
-        self.drone_states = [{'position': np.zeros(2), 'time_since_last_update': self.provider.current_time()} for _ in range(self.NUMBER_OF_DRONES)]
+        self.drone_states = [{'position': np.zeros(2), 'time_of_last_update': self.provider.current_time()} for _ in range(self.NUMBER_OF_DRONES)]
 
 
         # For debugging process
@@ -174,7 +176,7 @@ class Drone(IProtocol):
         self.MAP_KEY = 'map_patch'
         self.POSITION_KEY = 'position'
         self.UNCERTAINTY_KEY = 'individual_map_uncertainty'
-        self.ESTIMATED_POSITIONS_KEY = 'estimated_positions'
+        self.ESTIMATED_POSITIONS_AND_TIME_KEY = 'estimated_positions_and_time'
       
         self.actor = Actor(
             max_num_agents=self.NUMBER_OF_DRONES,
@@ -185,7 +187,7 @@ class Drone(IProtocol):
             map_key=self.MAP_KEY,
             position_key=self.POSITION_KEY,
             uncertainty_key=self.UNCERTAINTY_KEY,
-            estimated_positions_key=self.ESTIMATED_POSITIONS_KEY,
+            estimated_positions_and_time_key=self.ESTIMATED_POSITIONS_AND_TIME_KEY,
             )
         checkpoint = torch.load('best.pt', map_location="cpu")
         # print(checkpoint.keys())
@@ -229,10 +231,10 @@ class Drone(IProtocol):
                     self.is_cell_visited[x, y] = 1
         
         self.total_uncertainty = self.map[:,:,0].sum()
-        self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has total uncertainty of {self.total_uncertainty}")   
+        #self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has total uncertainty of {self.total_uncertainty}")   
 
         self.accomulated_uncertainty += self.total_uncertainty
-        self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has a accomulated uncertainty of {self.accomulated_uncertainty}")
+        #self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has a accomulated uncertainty of {self.accomulated_uncertainty}")
         
         if self.visualizer:
             self.visualizer.update_map(self.provider.get_id(), self.map[:,:,0])
@@ -286,7 +288,25 @@ class Drone(IProtocol):
         ##### Importante parameter. If there are unviseted cells, there will be penalizations in the algorithm #####
         self.is_cell_visited[self.map[:, :, 1] > 0.0] = 1
 
-        self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
+        #self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
+
+
+    def _compute_valid_action_mask(self) -> torch.Tensor:
+        """Return a (M*M,) bool tensor — True for in-bounds target cells."""
+        M = self.OBSERVATION_MAP_SIZE
+        current_x_cell = int((self.drone_position[0] + (self.MAP_WIDTH  * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        current_y_cell = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+
+        mask = torch.zeros(M * M, dtype=torch.bool)
+        for idx in range(M * M):
+            row, col = idx // M, idx % M
+            x = (row + 0.5) / M
+            y = (col + 0.5) / M
+            target_row = int(current_x_cell + (x - 0.5) * M)
+            target_col = int(current_y_cell + (y - 0.5) * M)
+            if 0 <= target_row < self.MAP_WIDTH and 0 <= target_col < self.MAP_HEIGHT:
+                mask[idx] = True
+        return mask
 
 
 
@@ -313,20 +333,25 @@ class Drone(IProtocol):
         pos_y = (self.drone_position[1] + world_h / 2) / world_h
         position = torch.tensor([pos_x, pos_y], dtype=torch.float32)
 
-        # estimated_positions: (N, 2) — other drones' last known positions, normalized
+        # estimated_positions: (N-1, 3) — other drones' last known positions, normalized
         est = []
-        for s in self.drone_states:
+        for i, s in enumerate(self.drone_states):
+            if i == self.provider.get_id():
+                continue
             px = (s['position'][0] + world_w / 2) / world_w
             py = (s['position'][1] + world_h / 2) / world_h
-            est.append([px, py])
-        estimated_positions = torch.tensor(est, dtype=torch.float32)  # (N, 2)
+            dt_norm = min(float(self.provider.current_time() - s['time_of_last_update']) / self.NORMALIZE_TIME, 1.0)
+            est.append([px, py, dt_norm])
+
+        estimated_positions_and_time = torch.tensor(est, dtype=torch.float32)  # (N, 2)
 
         return TensorDict(
             {
-                self.MAP_KEY:                   map_patch,
-                self.UNCERTAINTY_KEY:           uncertainty,
-                self.POSITION_KEY:              position,
-                self.ESTIMATED_POSITIONS_KEY:   estimated_positions,
+                self.MAP_KEY:                            map_patch,
+                self.UNCERTAINTY_KEY:                    uncertainty,
+                self.POSITION_KEY:                       position,
+                self.ESTIMATED_POSITIONS_AND_TIME_KEY:   estimated_positions_and_time,
+                "valid_actions":                         self._compute_valid_action_mask()
             },
             batch_size=[],   # unbatched — matches Actor's single-sample path
         )
@@ -417,7 +442,7 @@ class Drone(IProtocol):
     def send_states_message(self, destination_id: int):
         # Update the drone own state before sending 
         self.drone_states[self.provider.get_id()]['position'] = np.array(self.drone_position[0:2]) # only x and y
-        self.drone_states[self.provider.get_id()]['time_since_last_update'] = self.provider.current_time()
+        self.drone_states[self.provider.get_id()]['time_of_last_update'] = self.provider.current_time()
         message: ShareStateMessage = {
                 'message_type': MessageType.SHARE_STATE_MESSAGE.value,
                 'map': self.map.tolist(),
@@ -425,7 +450,7 @@ class Drone(IProtocol):
                 'drone_position': np.array(self.drone_position).tolist(),
                 'list_drone_states': [
                     {'position': s['position'].tolist(),
-                     'time_since_last_update': s['time_since_last_update']}
+                     'time_of_last_update': s['time_of_last_update']}
                     for s in self.drone_states
                 ],
             }
@@ -451,10 +476,10 @@ class Drone(IProtocol):
             
     def compare_states(self, incoming_state: list) -> list:
         for i in range(self.NUMBER_OF_DRONES):
-            if incoming_state[i]['time_since_last_update'] > self.drone_states[i]['time_since_last_update']:
+            if incoming_state[i]['time_of_last_update'] > self.drone_states[i]['time_of_last_update']:
                 self.drone_states[i] = {
                     'position': np.array(incoming_state[i]['position'], dtype=np.float32),
-                    'time_since_last_update': incoming_state[i]['time_since_last_update'],
+                    'time_of_last_update': incoming_state[i]['time_of_last_update'],
             }
 
     def update_states(self, data: dict):
@@ -557,7 +582,7 @@ class Drone(IProtocol):
                 sender_id = data['sender']
                 destination = np.array(data['destination'])
                 self.drone_states[sender_id]['position'] = destination[0:2] # only x and y
-                self.drone_states[sender_id]['time_since_last_update'] = self.provider.current_time()
+                self.drone_states[sender_id]['time_of_last_update'] = self.provider.current_time()
                 #print(f"Drone {self.provider.get_id()} received broadcasted destination {destination} from drone {sender_id}.") 
             else:
                 self._log.warning(f"Received message with unknown type: {msg_type}")

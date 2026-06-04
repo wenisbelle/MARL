@@ -30,7 +30,7 @@ class ReplayBuffer:
     def load_transitions(self, transitions: TensorDict):
         # `transitions` is a STACKED TD with batch_size=[K] (K rows from one collect).
         # `extend` inserts each row separately -> per-transition sampling works.        
-        if transitions is None and transitions.batch_size[0] == 0:
+        if transitions is None or transitions.batch_size[0] == 0:
             return 
         
         self.buffer.extend(transitions)

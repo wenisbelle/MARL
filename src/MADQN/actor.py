@@ -153,6 +153,7 @@ class Actor(nn.Module):
         position_key: str = "position",
         uncertainty_key: str = "individual_map_uncertainty",
         estimated_positions_key: str = "estimated_positions_and_time",
+        valid_actions_key: str = "valid_actions", 
     ):
         super().__init__()
         self.action_dim = action_dim
@@ -162,6 +163,7 @@ class Actor(nn.Module):
         self.position_key = position_key
         self.uncertainty_key = uncertainty_key
         self.estimated_positions_key = estimated_positions_key
+        self.valid_actions_key = valid_actions_key
 
         # Vector input dim = position(2) + uncertainty(1) + estimated((N-1)*3). -> For each of the other agents (x, y, time_of_last_observation)
         # If you later add or remove obs fields, update this number and the
@@ -247,6 +249,14 @@ class Actor(nn.Module):
         h, is_unbatched = self._features(obs_td)
         q_values = self.q_head(h)                  # (B, action_dim) — pre-squash mean
 
+        try:
+            valid = obs_td[self.valid_actions_key]
+            if is_unbatched and valid.dim() == 1:
+                valid = valid.unsqueeze(0)
+            q_values = q_values.masked_fill(~valid.bool(), float("-inf"))
+        except KeyError:
+            pass
+        
         return q_values.squeeze(0) if is_unbatched else q_values
 
 """

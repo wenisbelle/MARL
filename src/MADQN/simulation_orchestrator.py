@@ -31,11 +31,12 @@ class AsyncMARLOrchestrator:
     for agents that are actually making a decision this step.
     """
 
-    def __init__(self, env, policy_fn: Callable[[TensorDict], torch.Tensor]):
+    def __init__(self, env, policy_fn: Callable[[TensorDict], torch.Tensor], scale: int):
         self.env = env
         self.policy_fn = policy_fn
         self.N = env.max_num_agents
         self.action_dim = env.action_spec["agents", "action"].shape[-1]
+        self.REWARD_SCALE = scale
 
         self.pending_transition: list[PendingTransition | None] = [None] * self.N 
         
@@ -100,7 +101,7 @@ class AsyncMARLOrchestrator:
             p = self.pending_transition[i]
             if p is not None and mask[i]:
                 # Avoid reward to explode
-                p.agent_reward_sum += max(-1.0, min(1.0, rewards[i].item()))
+                p.agent_reward_sum += (rewards[i].item() / (self.REWARD_SCALE/5))
                 p.agent_n_sim_steps += 1
 
         # If any agent has a pending transition, accumulate global reward into it too, and count sim steps.

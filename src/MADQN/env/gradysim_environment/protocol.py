@@ -264,7 +264,13 @@ class Drone(IProtocol):
 
         self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
 
-         
+    def get_current_cell(self):
+        current_x = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+
+        return current_x, current_y
+
+
     ##### Mobility command. When the drone reaches the destination, it calculates the next one #####
     ##### Or after two UAVs meet. The information from the destination of the first UAV will be used in the NN not here #####
     def mobility_command(self, action: list[float], observation_map_size: int):
@@ -273,8 +279,7 @@ class Drone(IProtocol):
         
         map_center_offset = (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2
         ##### receives the x and y varying from [0:1] and transform it to the map coordinates #####
-        current_x_cell = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
-        current_y_cell = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        current_x_cell, current_y_cell = self.get_current_cell()
         
         x, y = action
         raw_target_row = int(current_x_cell + (x-0.5) * observation_map_size)

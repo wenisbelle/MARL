@@ -65,8 +65,8 @@ class MappingEnvironmentConfig:
     observation_map_size: int = 10 # Observe a square of side 10 cells centered on the drone. 
     drone_altitude: float = 25.0
     distance_between_cells: float = 20
-    uncertainty_rate: float = 0.01
-    vanishing_update_time: float = 10.0
+    uncertainty_rate: float = 0.001
+    vanishing_update_time: float = 1.0
 
     max_episode_length: int = 500
     communication_range: float = 100
@@ -281,7 +281,14 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 shape=(self.max_num_agents, 1),
                 device=device,
                 dtype=torch.bool,
-            )
+            ),
+            "valid_actions": Bounded(
+                torch.zeros((self.max_num_agents, M * M), device=device),
+                torch.ones((self.max_num_agents, M * M), device=device),
+                (self.max_num_agents, M * M),
+                dtype=torch.bool,
+                device=device,
+            ),
         }
 
         ##### For critics, it will observe the position of all drones and the full map, with lowest uncertainty in each cell from all individual observations.
@@ -542,8 +549,11 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             row, col = idx//self.observation_map_size, idx%self.observation_map_size
             # 0.5 to help approximation to land in the right cell in the protocol
             x = (row + 0.5)/self.observation_map_size
-            y = (col + + 0.5)/self.observation_map_size
+            y = (col + 0.5)/self.observation_map_size
             action = [x,y]
+
+            mask = self._compute_valid_action_mask(agent)
+            assert mask[idx], f"Agent {agent.slot_index} picked invalid action {idx} despite masking!"
 
             protocol.mobility_command(action, self.observation_map_size)
             
@@ -580,6 +590,27 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
         return protocol.drone_position[:2]
     
+    def _compute_valid_action_mask(self, agent: EpisodeAgentState) -> np.ndarray:
+        """
+        Return a (M*M,) bool array — True for actions whose target cell falls
+        inside the map given this agent's current position. Mirrors the same
+        geometry the protocol uses in `mobility_command` (cell-centered xy).
+        """
+        M = self.observation_map_size
+        protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+        current_x_cell, current_y_cell = protocol.get_current_cell()  
+
+        mask = np.zeros(M * M, dtype=bool)
+        for idx in range(M * M):
+            row, col = idx // M, idx % M
+            x = (row + 0.5) / M
+            y = (col + 0.5) / M
+            target_row = int(current_x_cell + (x - 0.5) * M)
+            target_col = int(current_y_cell + (y - 0.5) * M)
+            if 0 <= target_row < self.map_width and 0 <= target_col < self.map_height:
+                mask[idx] = True
+        return mask
+
     def get_estimated_positions_and_time_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
         current_time = self.simulator._current_timestamp
@@ -692,7 +723,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 "individual_map_uncertainty": agent_uncertainty,
                 "position": agent_position,
                 "estimated_positions_and_time": estimated_positions_and_time,
-                "encounter_flag": flag
+                "encounter_flag": flag,
+                "valid_actions": self._compute_valid_action_mask(agent),
             }
         global_state = {}
         global_map = self.get_global_map_from_simulation(existing_agents)
@@ -726,6 +758,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         agent_position                   = agent_obs_td.get("position")
         estimated_positions_and_time_t   = agent_obs_td.get("estimated_positions_and_time") 
         agent_encounter_flag             = agent_obs_td.get("encounter_flag")
+        agent_valid_actions              = agent_obs_td.get("valid_actions")
+
 
         global_td               = td.get("global_state")
         global_full_map         = global_td.get("full_map")
@@ -741,6 +775,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         agent_position.zero_()
         estimated_positions_and_time_t.fill_(-1.0)
         agent_encounter_flag.zero_()
+        agent_valid_actions.zero_()
 
         global_full_map.zero_()
         global_map_uncertainty.zero_()
@@ -809,6 +844,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             
             # encounter_flag (int) -> one-hot 
             agent_encounter_flag[slot, 0] = bool(obs["encounter_flag"])
+
+            agent_valid_actions[slot] = torch.as_tensor(
+                obs["valid_actions"], device=self.device, dtype=agent_valid_actions.dtype
+            )
 
 
         ##### global / critic observation 
