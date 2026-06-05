@@ -62,8 +62,9 @@ class MappingEnvironmentConfig:
     max_num_agents: int = 3
     map_width: int = 50
     map_height: int = 50
-    observation_map_size: int = 10 # Observe a square of side 10 cells centered on the drone. 
-    drone_altitude: float = 25.0
+    observation_map_size: int = 20 # Observe a square of side 20 cells centered on the drone. 
+    action_map_size: int = 10
+    drone_altitude: float = 50.0
     distance_between_cells: float = 20
     uncertainty_rate: float = 0.001
     vanishing_update_time: float = 1.0
@@ -102,6 +103,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         self.map_width = config.map_width
         self.map_height = config.map_height
         self.observation_map_size = config.observation_map_size
+        self.action_map_size = config.action_map_size
         self.drone_altitude = config.drone_altitude
         self.distance_between_cells = config.distance_between_cells
         self.uncertainty_rate = config.uncertainty_rate
@@ -120,8 +122,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         ###########################################
         # IMPORTANT PARAMETER CHANGES THE BEHAVIOR#
         ###########################################
-        self.NORMALIZE_TIME = config.normalize_time
-
+        self.NORMALIZE_TIME               = config.normalize_time
+        # after taking an action an immediate reward is given to the agent based on the action taken
+        self.immediate_reward_from_action = np.zeros(self.max_num_agents)
+        
         self.possible_agents = [f"drone{i}" for i in range(self.max_num_agents)]
         self.group_map = {"agents": self.possible_agents}
 
@@ -224,7 +228,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         ##### For now just the x, y positions. If I want to use the speed controller it will be 3. 
         M = self.observation_map_size
-        n_actions = M * M # total of discrete actions 
+        A = self.action_map_size
+        n_actions = A * A # total of discrete actions 
         all_positions_shape = (self.max_num_agents, 2)
         estimated_positions_and_time_shape = (self.max_num_agents, self.max_num_agents-1, 3) # It will not store its own data
         # For each agent, an estimate of every other agent's position and time since last update
@@ -283,9 +288,9 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 dtype=torch.bool,
             ),
             "valid_actions": Bounded(
-                torch.zeros((self.max_num_agents, M * M), device=device),
-                torch.ones((self.max_num_agents, M * M), device=device),
-                (self.max_num_agents, M * M),
+                torch.zeros((self.max_num_agents, A * A), device=device),
+                torch.ones((self.max_num_agents, A * A), device=device),
+                (self.max_num_agents, A * A),
                 dtype=torch.bool,
                 device=device,
             ),
@@ -546,17 +551,52 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             
             # Convert the int to a list of 2 floats - x and y
             idx = int(actions_cpu[agent.slot_index, 0].item())
-            row, col = idx//self.observation_map_size, idx%self.observation_map_size
+            row, col = idx//self.action_map_size, idx%self.action_map_size
             # 0.5 to help approximation to land in the right cell in the protocol
-            x = (row + 0.5)/self.observation_map_size
-            y = (col + 0.5)/self.observation_map_size
+            x = (row + 0.5)/self.action_map_size
+            y = (col + 0.5)/self.action_map_size
             action = [x,y]
 
             mask = self._compute_valid_action_mask(agent)
             assert mask[idx], f"Agent {agent.slot_index} picked invalid action {idx} despite masking!"
+            protocol.mobility_command(action, self.action_map_size)
 
-            protocol.mobility_command(action, self.observation_map_size)
+            #### Compute the immediate reward from the given action
+            # Positive reward from movint towards cells with higher uncertainty
+            current_x_cell, current_y_cell = protocol.get_current_cell()
+            destination_x_cell = int(current_x_cell + (x - 0.5) * self.action_map_size)
+            destination_y_cell = int(current_y_cell + (y - 0.5) * self.action_map_size)
+            uncertainty_of_destination_cell = protocol.map[destination_x_cell, destination_y_cell, 0]
+
+            # Negative reward from moving to regions where other agents may be presented
+            destination_x_position = destination_x_cell * self.distance_between_cells - self.map_width*self.distance_between_cells/2
+            destination_y_position = destination_y_cell * self.distance_between_cells - self.map_height*self.distance_between_cells/2
+            proximity_penalty = self._compute_reward_comparing_destination_distances(destination_x_position, destination_y_position, agent)
+
+            self.immediate_reward_from_action[agent.slot_index] = 2*(uncertainty_of_destination_cell - proximity_penalty)
+
+    def _compute_reward_comparing_destination_distances(self, destination_x, destination_y, agent):
+        agent_node = self.simulator.get_node(agent.node_id)
+        protocol = agent_node.protocol_encapsulator.protocol
+        penalty = 0.0
+        for agent_id, agent_state in enumerate(protocol.drone_states):
+            if agent_id == agent.node_id:
+                continue  # Skip self            
+
+            time_since_last_update = self.simulator._current_timestamp - agent_state['time_of_last_update']
+            if time_since_last_update > self.NORMALIZE_TIME:
+                continue  # Skip if the information about the other agent is too old to be relevant
+
+            other_x, other_y= agent_state['position'][:2]      
+            distance_to_other = math.sqrt((destination_x - other_x) ** 2 + (destination_y - other_y) ** 2)
+            if distance_to_other > self.communication_range:
+                continue  # It is far way to consider a penalty
+            norm_distance = distance_to_other / (self.action_map_size * self.distance_between_cells)  
             
+            penalty += max(0, 1 - norm_distance)  # Closer means higher penalty, with a hard cutoff at the action map's diagonal distance
+        
+        return penalty  
+
 
     def _sample_dying_agents(self, stepped_agents: list[EpisodeAgentState]) -> list[EpisodeAgentState]:
         if self.agent_death_probability <= 0.0:
@@ -596,17 +636,17 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         inside the map given this agent's current position. Mirrors the same
         geometry the protocol uses in `mobility_command` (cell-centered xy).
         """
-        M = self.observation_map_size
+        A = self.action_map_size
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
         current_x_cell, current_y_cell = protocol.get_current_cell()  
 
-        mask = np.zeros(M * M, dtype=bool)
-        for idx in range(M * M):
-            row, col = idx // M, idx % M
-            x = (row + 0.5) / M
-            y = (col + 0.5) / M
-            target_row = int(current_x_cell + (x - 0.5) * M)
-            target_col = int(current_y_cell + (y - 0.5) * M)
+        mask = np.zeros(A * A, dtype=bool)
+        for idx in range(A * A):
+            row, col = idx // A, idx % A
+            x = (row + 0.5) / A
+            y = (col + 0.5) / A
+            target_row = int(current_x_cell + (x - 0.5) * A)
+            target_col = int(current_y_cell + (y - 0.5) * A)
             if 0 <= target_row < self.map_width and 0 <= target_col < self.map_height:
                 mask[idx] = True
         return mask
@@ -680,10 +720,20 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         self.episode_duration += 1
 
     def _compute_individual_rewards(self, uncertainty_before, uncertainty_after, stepped_agents):
-        return {
-            agent.slot_index: float(before - after)
-            for agent, before, after in zip(stepped_agents, uncertainty_before, uncertainty_after)
-        }
+        rewards = {}
+        for agent, before, after in zip(stepped_agents, uncertainty_before, uncertainty_after):
+            # Positive reward from reducing uncertainty
+            reward = before - after
+
+            # Immediate reward from the action taken
+            if self.immediate_reward_from_action[agent.slot_index] != 0.0:
+                reward += self.immediate_reward_from_action[agent.slot_index]
+                self.immediate_reward_from_action[agent.slot_index] = 0.0  # reset for the next step
+
+            rewards[agent.slot_index] = reward
+
+        return rewards   
+
     
     def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float) -> float:
         """Return the global reward based on the change in global uncertainty."""

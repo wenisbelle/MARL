@@ -41,7 +41,7 @@ Both branches fused: concat(128, 64) = (192,)
   → Linear(256 → action_dim)    ← Q-values, one per cell in the map patch
 ```
 
-`action_dim = M × M`, where M is `observation_map_size` (default 10, giving 100 actions).
+`action_dim = A × A`, where A is the number of cells in each direction that can be selected (default 10, giving 100 actions).
 
 An optional **valid action mask** (provided by the environment) sets the Q-values of out-of-bounds cells to −∞ before the argmax so the agent never selects an unreachable target.
 
@@ -56,7 +56,7 @@ Each agent receives a local observation at each decision point:
 | `position` | `(2,)` | Drone's normalized grid position ∈ [0, 1]². |
 | `estimated_positions_and_time` | `((N-1)×3,)` | For each other agent: estimated [x, y, time since last contact], all normalized. Obtained via ad hoc communication. |
 | `encounter_flag` | `(1,)` | Boolean. True when the drone has reached its macro-action target and a new decision is required. |
-| `valid_actions` | `(M×M,)` | Boolean mask. True for cells inside the map boundaries. |
+| `valid_actions` | `(A×A,)` | Boolean mask. True for cells inside the map boundaries. |
 
 **Global state** (used only for logging and potential CTDE extensions, not fed to the independent policy):
 
@@ -69,7 +69,7 @@ Each agent receives a local observation at each decision point:
 
 ## Actions
 
-The action space is **discrete** with `M × M` options. Each action index maps to a cell coordinate `(row, col)` within the M×M observation patch. The environment converts the selected cell to a world-space coordinate and issues a `GotoCoords` mobility command to the drone. The drone then flies to that cell; the transition is only closed once the drone arrives (SMDP).
+The action space is **discrete** with `A × A` options. Each action index maps to a cell coordinate `(row, col)` within the M×M observation patch. The environment converts the selected cell to a world-space coordinate and issues a `GotoCoords` mobility command to the drone. The drone then flies to that cell; the transition is only closed once the drone arrives (SMDP).
 
 ## Rewards
 
@@ -88,7 +88,8 @@ Rewards are accumulated over the entire duration of a macro-action (potentially 
 | Parameter | Value | Notes |
 |---|---|---|
 | `MAX_NUM_AGENTS` | 3 | Swarm size |
-| `OBSERVATION_MAP_SIZE` (M) | 10 | Gives 100 discrete actions |
+| `OBSERVATION_MAP_SIZE` (M) | 20 | Gives 400 cells to observe |
+| `ACTION_MAP_SIZE` (M) | 10 | Gives 100 discrete actions |
 | `MAP_WIDTH / MAP_HEIGHT` | 50 | Grid dimensions |
 | `MAX_EPISODE_LENGTH` | 2000 | Simulation steps per episode |
 | `N_WORKERS` | 12 | Parallel collection subprocesses |

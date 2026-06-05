@@ -19,7 +19,7 @@ def create_and_run_simulation():
     # Configuring simulation
     config = SimulationConfiguration(
         duration=2000, 
-        real_time=False,
+        real_time=True,
     )
     builder = SimulationBuilder(config)
 

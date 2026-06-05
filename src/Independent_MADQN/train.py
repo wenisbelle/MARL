@@ -29,7 +29,8 @@ MAX_NUM_AGENTS = 3
 MIN_NUM_AGENTS = 3   
 MAP_WIDTH = 50
 MAP_HEIGHT = 50
-OBSERVATION_MAP_SIZE = 10
+OBSERVATION_MAP_SIZE = 20
+ACTION_MAP_SIZE = 10
 MAX_EPISODE_LENGTH = 2000
 AGENT_DEATH_PROBABILITY = 0.0
 MAP_CHANNELS = 1
@@ -83,6 +84,7 @@ def make_env():
         map_width=MAP_WIDTH,
         map_height=MAP_HEIGHT,
         observation_map_size=OBSERVATION_MAP_SIZE,
+        action_map_size=ACTION_MAP_SIZE,
         max_episode_length=MAX_EPISODE_LENGTH,
         agent_death_probability=AGENT_DEATH_PROBABILITY,
     )
@@ -91,7 +93,7 @@ def make_env():
 def make_policy():
     return DQNPolicy(
         max_num_agents=MAX_NUM_AGENTS,
-        action_dim=OBSERVATION_MAP_SIZE * OBSERVATION_MAP_SIZE,
+        action_dim= ACTION_MAP_SIZE * ACTION_MAP_SIZE,  
         map_channels=MAP_CHANNELS,
         vector_feature_dim=VECTOR_FEATURE_DIM,
         hidden_dim=HIDDEN_DIM,
@@ -119,7 +121,7 @@ def main():
 
     target_actor = Actor(
         max_num_agents=MAX_NUM_AGENTS,
-        action_dim=OBSERVATION_MAP_SIZE * OBSERVATION_MAP_SIZE,
+        action_dim=ACTION_MAP_SIZE * ACTION_MAP_SIZE,
         map_channels=MAP_CHANNELS,
         vector_feature_dim=VECTOR_FEATURE_DIM,
         hidden_dim=HIDDEN_DIM,

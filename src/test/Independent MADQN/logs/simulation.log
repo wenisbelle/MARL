@@ -1,0 +1,396 @@
+[--------- Simulation started ---------]
+At time: 1, node 2 map has total uncertainty of 2493.0
+At time: 1, node 2 map has a accomulated uncertainty of 2493.0
+At time: 1, node 1 map has total uncertainty of 2496.0
+At time: 1, node 1 map has a accomulated uncertainty of 2496.0
+At time: 1, node 0 map has total uncertainty of 2494.0
+At time: 1, node 0 map has a accomulated uncertainty of 2494.0
+At time: 2.0, node 2 map has total uncertainty of 2490.0
+At time: 2.0, node 2 map has a accomulated uncertainty of 4983.0
+At time: 2.0, node 0 map has total uncertainty of 2489.0
+At time: 2.0, node 0 map has a accomulated uncertainty of 4983.0
+At time: 2.0, node 1 map has total uncertainty of 2487.0
+At time: 2.0, node 1 map has a accomulated uncertainty of 4983.0
+At time: 3.0, node 0 map has total uncertainty of 2486.0
+At time: 3.0, node 0 map has a accomulated uncertainty of 7469.0
+At time: 3.0, node 2 map has total uncertainty of 2487.0
+At time: 3.0, node 2 map has a accomulated uncertainty of 7470.0
+At time: 3.0, node 1 map has total uncertainty of 2480.0
+At time: 3.0, node 1 map has a accomulated uncertainty of 7463.0
+At time: 4.0, node 1 map has total uncertainty of 2478.0
+At time: 4.0, node 1 map has a accomulated uncertainty of 9941.0
+At time: 4.0, node 0 map has total uncertainty of 2478.0
+At time: 4.0, node 0 map has a accomulated uncertainty of 9947.0
+At time: 4.0, node 2 map has total uncertainty of 2480.0
+At time: 4.0, node 2 map has a accomulated uncertainty of 9950.0
+At time: 5.0, node 2 map has total uncertainty of 2474.0
+At time: 5.0, node 2 map has a accomulated uncertainty of 12424.0
+At time: 5.0, node 0 map has total uncertainty of 2475.0
+At time: 5.0, node 0 map has a accomulated uncertainty of 12422.0
+At time: 5.0, node 1 map has total uncertainty of 2474.0
+At time: 5.0, node 1 map has a accomulated uncertainty of 12415.0
+At time: 6.0, node 2 map has total uncertainty of 2470.0
+At time: 6.0, node 2 map has a accomulated uncertainty of 14894.0
+At time: 6.0, node 1 map has total uncertainty of 2470.0
+At time: 6.0, node 1 map has a accomulated uncertainty of 14885.0
+At time: 6.0, node 0 map has total uncertainty of 2469.0
+At time: 6.0, node 0 map has a accomulated uncertainty of 14891.0
+At time: 7.0, node 1 map has total uncertainty of 2465.0
+At time: 7.0, node 1 map has a accomulated uncertainty of 17350.0
+At time: 7.0, node 2 map has total uncertainty of 2464.0
+At time: 7.0, node 2 map has a accomulated uncertainty of 17358.0
+At time: 7.0, node 0 map has total uncertainty of 2465.0
+At time: 7.0, node 0 map has a accomulated uncertainty of 17356.0
+At time: 8.0, node 2 map has total uncertainty of 2462.0
+At time: 8.0, node 2 map has a accomulated uncertainty of 19820.0
+At time: 8.0, node 1 map has total uncertainty of 2464.0
+At time: 8.0, node 1 map has a accomulated uncertainty of 19814.0
+At time: 8.0, node 0 map has total uncertainty of 2463.0
+At time: 8.0, node 0 map has a accomulated uncertainty of 19819.0
+At time: 9.0, node 1 map has total uncertainty of 2461.0
+At time: 9.0, node 1 map has a accomulated uncertainty of 22275.0
+At time: 9.0, node 2 map has total uncertainty of 2460.0
+At time: 9.0, node 2 map has a accomulated uncertainty of 22280.0
+At time: 9.0, node 0 map has total uncertainty of 2460.0
+At time: 9.0, node 0 map has a accomulated uncertainty of 22279.0
+At time: 10.0, the node 0 has 2459.0 unvisited cells
+At time: 10.0, node 1 map has total uncertainty of 2459.0
+At time: 10.0, node 1 map has a accomulated uncertainty of 24734.0
+At time: 10.0, the node 2 has 2459.0 unvisited cells
+At time: 10.0, node 2 map has total uncertainty of 2481.93
+At time: 10.0, node 2 map has a accomulated uncertainty of 24761.93
+At time: 10.0, the node 1 has 2459.0 unvisited cells
+At time: 10.0, node 0 map has total uncertainty of 2481.9300000000003
+At time: 10.0, node 0 map has a accomulated uncertainty of 24760.93
+At time: 11.0, node 2 map has total uncertainty of 2477.88
+At time: 11.0, node 2 map has a accomulated uncertainty of 27239.81
+At time: 11.0, node 1 map has total uncertainty of 2481.93
+At time: 11.0, node 1 map has a accomulated uncertainty of 27215.93
+At time: 11.0, node 0 map has total uncertainty of 2479.9
+At time: 11.0, node 0 map has a accomulated uncertainty of 27240.83
+Drone 2 is at current cell: 27,32 and is going to cell (25, 34).
+Drone 0 is at current cell: 28,32 and is going to cell (32, 36).
+At time: 12.0, node 1 map has total uncertainty of 2479.91
+At time: 12.0, node 1 map has a accomulated uncertainty of 29695.84
+At time: 12.0, node 0 map has total uncertainty of 2474.85
+At time: 12.0, node 0 map has a accomulated uncertainty of 29715.68
+At time: 12.0, node 2 map has total uncertainty of 2475.8599999999997
+At time: 12.0, node 2 map has a accomulated uncertainty of 29715.670000000002
+At time: 13.0, node 2 map has total uncertainty of 2472.83
+At time: 13.0, node 2 map has a accomulated uncertainty of 32188.5
+At time: 13.0, node 1 map has total uncertainty of 2477.89
+At time: 13.0, node 1 map has a accomulated uncertainty of 32173.73
+At time: 13.0, node 0 map has total uncertainty of 2471.8199999999997
+At time: 13.0, node 0 map has a accomulated uncertainty of 32187.5
+At time: 14.0, node 0 map has total uncertainty of 2467.7799999999997
+At time: 14.0, node 0 map has a accomulated uncertainty of 34655.28
+At time: 14.0, node 2 map has total uncertainty of 2468.79
+At time: 14.0, node 2 map has a accomulated uncertainty of 34657.29
+At time: 14.0, node 1 map has total uncertainty of 2475.87
+At time: 14.0, node 1 map has a accomulated uncertainty of 34649.6
+At time: 15.0, node 1 map has total uncertainty of 2473.85
+At time: 15.0, node 1 map has a accomulated uncertainty of 37123.45
+At time: 15.0, node 2 map has total uncertainty of 2462.73
+At time: 15.0, node 2 map has a accomulated uncertainty of 37120.020000000004
+At time: 15.0, node 0 map has total uncertainty of 2463.74
+At time: 15.0, node 0 map has a accomulated uncertainty of 37119.02
+At time: 16.0, node 2 map has total uncertainty of 2459.7
+At time: 16.0, node 2 map has a accomulated uncertainty of 39579.72
+At time: 16.0, node 0 map has total uncertainty of 2456.67
+At time: 16.0, node 0 map has a accomulated uncertainty of 39575.689999999995
+At time: 16.0, node 1 map has total uncertainty of 2471.83
+At time: 16.0, node 1 map has a accomulated uncertainty of 39595.28
+Drone 2 is at current cell: 25,34 and is going to cell (23, 36).
+At time: 17.0, node 0 map has total uncertainty of 2454.6499999999996
+At time: 17.0, node 0 map has a accomulated uncertainty of 42030.34
+Drone 1 is at current cell: 17,15 and is going to cell (13, 13).
+At time: 17.0, node 1 map has total uncertainty of 2468.8
+At time: 17.0, node 1 map has a accomulated uncertainty of 42064.08
+At time: 17.0, node 2 map has total uncertainty of 2454.6499999999996
+At time: 17.0, node 2 map has a accomulated uncertainty of 42034.37
+Drone 0 is at current cell: 31,35 and is going to cell (35, 39).
+At time: 18.0, node 1 map has total uncertainty of 2466.7799999999997
+At time: 18.0, node 1 map has a accomulated uncertainty of 44530.86
+At time: 18.0, node 0 map has total uncertainty of 2449.6000000000004
+At time: 18.0, node 0 map has a accomulated uncertainty of 44479.939999999995
+At time: 18.0, node 2 map has total uncertainty of 2449.5999999999995
+At time: 18.0, node 2 map has a accomulated uncertainty of 44483.97
+At time: 19.0, node 2 map has total uncertainty of 2444.5499999999997
+At time: 19.0, node 2 map has a accomulated uncertainty of 46928.520000000004
+At time: 19.0, node 0 map has total uncertainty of 2444.5499999999997
+At time: 19.0, node 0 map has a accomulated uncertainty of 46924.49
+At time: 19.0, node 1 map has total uncertainty of 2464.76
+At time: 19.0, node 1 map has a accomulated uncertainty of 46995.62
+At time: 20.0, the node 0 has 2420.0 unvisited cells
+Drone 2 is at current cell: 23,36 and is going to cell (21, 38).
+At time: 20.0, node 1 map has total uncertainty of 2461.73
+At time: 20.0, node 1 map has a accomulated uncertainty of 49457.350000000006
+At time: 20.0, node 2 map has total uncertainty of 2439.5
+At time: 20.0, node 2 map has a accomulated uncertainty of 49368.020000000004
+At time: 20.0, node 0 map has total uncertainty of 2464.419999999999
+At time: 20.0, node 0 map has a accomulated uncertainty of 49388.909999999996
+At time: 20.0, the node 2 has 2415.0 unvisited cells
+At time: 20.0, the node 1 has 2437.0 unvisited cells
+At time: 21.0, node 2 map has total uncertainty of 2464.459999999999
+At time: 21.0, node 2 map has a accomulated uncertainty of 51832.48
+At time: 21.0, node 1 map has total uncertainty of 2484.6399999999994
+At time: 21.0, node 1 map has a accomulated uncertainty of 51941.990000000005
+At time: 21.0, node 0 map has total uncertainty of 2464.419999999999
+At time: 21.0, node 0 map has a accomulated uncertainty of 51853.329999999994
+At time: 22.0, node 2 map has total uncertainty of 2459.359999999999
+At time: 22.0, node 2 map has a accomulated uncertainty of 54291.840000000004
+At time: 22.0, node 0 map has total uncertainty of 2459.3199999999997
+At time: 22.0, node 0 map has a accomulated uncertainty of 54312.649999999994
+At time: 22.0, node 1 map has total uncertainty of 2482.5999999999995
+At time: 22.0, node 1 map has a accomulated uncertainty of 54424.590000000004
+At time: 23.0, node 1 map has total uncertainty of 2479.539999999999
+At time: 23.0, node 1 map has a accomulated uncertainty of 56904.130000000005
+At time: 23.0, node 2 map has total uncertainty of 2459.359999999999
+At time: 23.0, node 2 map has a accomulated uncertainty of 56751.200000000004
+At time: 23.0, node 0 map has total uncertainty of 2457.2799999999997
+At time: 23.0, node 0 map has a accomulated uncertainty of 56769.92999999999
+Drone 0 is at current cell: 35,39 and is going to cell (39, 43).
+At time: 24.0, node 2 map has total uncertainty of 2454.2599999999993
+At time: 24.0, node 2 map has a accomulated uncertainty of 59205.46000000001
+At time: 24.0, node 0 map has total uncertainty of 2454.2199999999993
+At time: 24.0, node 0 map has a accomulated uncertainty of 59224.149999999994
+Drone 2 is at current cell: 21,38 and is going to cell (19, 40).
+Drone 1 is at current cell: 13,13 and is going to cell (9, 11).
+At time: 24.0, node 1 map has total uncertainty of 2477.499999999999
+At time: 24.0, node 1 map has a accomulated uncertainty of 59381.630000000005
+At time: 25.0, node 2 map has total uncertainty of 2454.2599999999993
+At time: 25.0, node 2 map has a accomulated uncertainty of 61659.72000000001
+At time: 25.0, node 1 map has total uncertainty of 2476.4799999999996
+At time: 25.0, node 1 map has a accomulated uncertainty of 61858.11
+At time: 25.0, node 0 map has total uncertainty of 2454.2199999999993
+At time: 25.0, node 0 map has a accomulated uncertainty of 61678.369999999995
+At time: 26.0, node 2 map has total uncertainty of 2449.159999999999
+At time: 26.0, node 2 map has a accomulated uncertainty of 64108.880000000005
+At time: 26.0, node 0 map has total uncertainty of 2449.119999999999
+At time: 26.0, node 0 map has a accomulated uncertainty of 64127.48999999999
+At time: 26.0, node 1 map has total uncertainty of 2474.4399999999996
+At time: 26.0, node 1 map has a accomulated uncertainty of 64332.55
+At time: 27.0, node 0 map has total uncertainty of 2449.119999999999
+At time: 27.0, node 0 map has a accomulated uncertainty of 66576.60999999999
+At time: 27.0, node 1 map has total uncertainty of 2470.359999999999
+At time: 27.0, node 1 map has a accomulated uncertainty of 66802.91
+At time: 27.0, node 2 map has total uncertainty of 2449.159999999999
+At time: 27.0, node 2 map has a accomulated uncertainty of 66558.04000000001
+At time: 28.0, node 2 map has total uncertainty of 2444.0599999999995
+At time: 28.0, node 2 map has a accomulated uncertainty of 69002.1
+Drone 2 is at current cell: 19,40 and is going to cell (17, 42).
+At time: 28.0, node 1 map has total uncertainty of 2469.3399999999992
+At time: 28.0, node 1 map has a accomulated uncertainty of 69272.25
+At time: 28.0, node 0 map has total uncertainty of 2444.0199999999995
+At time: 28.0, node 0 map has a accomulated uncertainty of 69020.62999999999
+At time: 29.0, node 1 map has total uncertainty of 2467.2999999999993
+At time: 29.0, node 1 map has a accomulated uncertainty of 71739.55
+At time: 29.0, node 2 map has total uncertainty of 2444.0599999999995
+At time: 29.0, node 2 map has a accomulated uncertainty of 71446.16
+At time: 29.0, node 0 map has total uncertainty of 2441.9799999999996
+At time: 29.0, node 0 map has a accomulated uncertainty of 71462.60999999999
+At time: 30.0, the node 0 has 2393.0 unvisited cells
+At time: 30.0, node 2 map has total uncertainty of 2438.959999999999
+At time: 30.0, node 2 map has a accomulated uncertainty of 73885.12
+At time: 30.0, node 1 map has total uncertainty of 2463.2199999999993
+At time: 30.0, node 1 map has a accomulated uncertainty of 74202.77
+Drone 1 is at current cell: 9,11 and is going to cell (5, 9).
+At time: 30.0, the node 1 has 2414.0 unvisited cells
+At time: 30.0, node 0 map has total uncertainty of 2463.84
+At time: 30.0, node 0 map has a accomulated uncertainty of 73926.44999999998
+At time: 30.0, the node 2 has 2390.0 unvisited cells
+At time: 31.0, node 1 map has total uncertainty of 2487.14
+At time: 31.0, node 1 map has a accomulated uncertainty of 76689.91
+At time: 31.0, node 2 map has total uncertainty of 2463.92
+At time: 31.0, node 2 map has a accomulated uncertainty of 76349.04
+At time: 31.0, node 0 map has total uncertainty of 2461.78
+At time: 31.0, node 0 map has a accomulated uncertainty of 76388.22999999998
+At time: 32.0, node 0 map has total uncertainty of 2458.6900000000005
+At time: 32.0, node 0 map has a accomulated uncertainty of 78846.91999999998
+Drone 2 is at current cell: 17,42 and is going to cell (15, 44).
+At time: 32.0, node 2 map has total uncertainty of 2458.77
+At time: 32.0, node 2 map has a accomulated uncertainty of 78807.81
+At time: 32.0, node 1 map has total uncertainty of 2485.08
+At time: 32.0, node 1 map has a accomulated uncertainty of 79174.99
+Drone 0 is at current cell: 39,43 and is going to cell (43, 47).
+At time: 33.0, node 2 map has total uncertainty of 2458.77
+At time: 33.0, node 2 map has a accomulated uncertainty of 81266.58
+At time: 33.0, node 1 map has total uncertainty of 2480.96
+At time: 33.0, node 1 map has a accomulated uncertainty of 81655.95000000001
+At time: 33.0, node 0 map has total uncertainty of 2458.6900000000005
+At time: 33.0, node 0 map has a accomulated uncertainty of 81305.60999999999
+At time: 34.0, node 1 map has total uncertainty of 2479.93
+At time: 34.0, node 1 map has a accomulated uncertainty of 84135.88
+At time: 34.0, node 0 map has total uncertainty of 2453.54
+At time: 34.0, node 0 map has a accomulated uncertainty of 83759.14999999998
+At time: 34.0, node 2 map has total uncertainty of 2453.62
+At time: 34.0, node 2 map has a accomulated uncertainty of 83720.2
+At time: 35.0, node 1 map has total uncertainty of 2477.87
+At time: 35.0, node 1 map has a accomulated uncertainty of 86613.75
+At time: 35.0, node 0 map has total uncertainty of 2453.54
+At time: 35.0, node 0 map has a accomulated uncertainty of 86212.68999999997
+At time: 35.0, node 2 map has total uncertainty of 2453.62
+At time: 35.0, node 2 map has a accomulated uncertainty of 86173.81999999999
+Drone 2 is at current cell: 15,44 and is going to cell (13, 46).
+At time: 36.0, node 0 map has total uncertainty of 2448.3900000000003
+At time: 36.0, node 0 map has a accomulated uncertainty of 88661.07999999997
+At time: 36.0, node 1 map has total uncertainty of 2473.75
+At time: 36.0, node 1 map has a accomulated uncertainty of 89087.5
+Drone 1 is at current cell: 5,9 and is going to cell (1, 7).
+At time: 36.0, node 2 map has total uncertainty of 2448.47
+At time: 36.0, node 2 map has a accomulated uncertainty of 88622.29
+At time: 37.0, node 2 map has total uncertainty of 2448.47
+At time: 37.0, node 2 map has a accomulated uncertainty of 91070.76
+At time: 37.0, node 1 map has total uncertainty of 2472.72
+At time: 37.0, node 1 map has a accomulated uncertainty of 91560.22
+At time: 37.0, node 0 map has total uncertainty of 2446.33
+At time: 37.0, node 0 map has a accomulated uncertainty of 91107.40999999997
+At time: 38.0, node 1 map has total uncertainty of 2470.66
+At time: 38.0, node 1 map has a accomulated uncertainty of 94030.88
+At time: 38.0, node 0 map has total uncertainty of 2443.24
+At time: 38.0, node 0 map has a accomulated uncertainty of 93550.64999999998
+At time: 38.0, node 2 map has total uncertainty of 2443.3199999999997
+At time: 38.0, node 2 map has a accomulated uncertainty of 93514.07999999999
+At time: 39.0, node 2 map has total uncertainty of 2443.3199999999997
+At time: 39.0, node 2 map has a accomulated uncertainty of 95957.4
+At time: 39.0, node 0 map has total uncertainty of 2441.1800000000003
+At time: 39.0, node 0 map has a accomulated uncertainty of 95991.82999999999
+At time: 39.0, node 1 map has total uncertainty of 2466.54
+At time: 39.0, node 1 map has a accomulated uncertainty of 96497.42
+At time: 40.0, the node 0 has 2368.0 unvisited cells
+At time: 40.0, node 1 map has total uncertainty of 2465.5099999999998
+At time: 40.0, node 1 map has a accomulated uncertainty of 98962.93
+Drone 2 is at current cell: 13,46 and is going to cell (9, 44).
+Drone 0 is at current cell: 43,47 and is going to cell (45, 44).
+At time: 40.0, node 2 map has total uncertainty of 2438.17
+At time: 40.0, node 2 map has a accomulated uncertainty of 98395.56999999999
+At time: 40.0, node 0 map has total uncertainty of 2463.0
+At time: 40.0, node 0 map has a accomulated uncertainty of 98454.82999999999
+At time: 40.0, the node 2 has 2365.0 unvisited cells
+At time: 40.0, the node 1 has 2392.0 unvisited cells
+At time: 41.0, node 2 map has total uncertainty of 2462.08
+At time: 41.0, node 2 map has a accomulated uncertainty of 100857.65
+At time: 41.0, node 1 map has total uncertainty of 2488.39
+At time: 41.0, node 1 map has a accomulated uncertainty of 101451.31999999999
+At time: 41.0, node 0 map has total uncertainty of 2462.99
+At time: 41.0, node 0 map has a accomulated uncertainty of 100917.81999999999
+Drone 1 is at current cell: 1,7 and is going to cell (3, 4).
+At time: 42.0, node 0 map has total uncertainty of 2459.87
+At time: 42.0, node 0 map has a accomulated uncertainty of 103377.68999999999
+At time: 42.0, node 2 map has total uncertainty of 2460.0
+At time: 42.0, node 2 map has a accomulated uncertainty of 103317.65
+At time: 42.0, node 1 map has total uncertainty of 2484.23
+At time: 42.0, node 1 map has a accomulated uncertainty of 103935.54999999999
+At time: 43.0, node 2 map has total uncertainty of 2455.8399999999997
+At time: 43.0, node 2 map has a accomulated uncertainty of 105773.48999999999
+At time: 43.0, node 1 map has total uncertainty of 2483.1899999999996
+At time: 43.0, node 1 map has a accomulated uncertainty of 106418.73999999999
+At time: 43.0, node 0 map has total uncertainty of 2457.79
+At time: 43.0, node 0 map has a accomulated uncertainty of 105835.47999999998
+At time: 44.0, node 0 map has total uncertainty of 2455.71
+At time: 44.0, node 0 map has a accomulated uncertainty of 108291.18999999999
+At time: 44.0, node 2 map has total uncertainty of 2454.7999999999997
+At time: 44.0, node 2 map has a accomulated uncertainty of 108228.29
+At time: 44.0, node 1 map has total uncertainty of 2480.0699999999997
+At time: 44.0, node 1 map has a accomulated uncertainty of 108898.81
+At time: 45.0, node 2 map has total uncertainty of 2452.72
+At time: 45.0, node 2 map has a accomulated uncertainty of 110681.01
+Drone 0 is at current cell: 45,44 and is going to cell (47, 41).
+At time: 45.0, node 1 map has total uncertainty of 2477.99
+At time: 45.0, node 1 map has a accomulated uncertainty of 111376.8
+At time: 45.0, node 0 map has total uncertainty of 2452.59
+At time: 45.0, node 0 map has a accomulated uncertainty of 110743.77999999998
+Drone 2 is at current cell: 9,44 and is going to cell (5, 42).
+At time: 46.0, node 0 map has total uncertainty of 2451.55
+At time: 46.0, node 0 map has a accomulated uncertainty of 113195.32999999999
+At time: 46.0, node 1 map has total uncertainty of 2475.91
+At time: 46.0, node 1 map has a accomulated uncertainty of 113852.71
+At time: 46.0, node 2 map has total uncertainty of 2448.56
+At time: 46.0, node 2 map has a accomulated uncertainty of 113129.56999999999
+At time: 47.0, node 2 map has total uncertainty of 2447.5199999999995
+At time: 47.0, node 2 map has a accomulated uncertainty of 115577.09
+At time: 47.0, node 0 map has total uncertainty of 2448.4300000000003
+At time: 47.0, node 0 map has a accomulated uncertainty of 115643.75999999998
+At time: 47.0, node 1 map has total uncertainty of 2472.79
+At time: 47.0, node 1 map has a accomulated uncertainty of 116325.5
+Drone 1 is at current cell: 3,4 and is going to cell (7, 8).
+At time: 48.0, node 2 map has total uncertainty of 2445.4399999999996
+At time: 48.0, node 2 map has a accomulated uncertainty of 118022.53
+At time: 48.0, node 0 map has total uncertainty of 2446.35
+At time: 48.0, node 0 map has a accomulated uncertainty of 118090.10999999999
+At time: 48.0, node 1 map has total uncertainty of 2472.79
+At time: 48.0, node 1 map has a accomulated uncertainty of 118798.29
+At time: 49.0, node 0 map has total uncertainty of 2444.27
+At time: 49.0, node 0 map has a accomulated uncertainty of 120534.37999999999
+At time: 49.0, node 1 map has total uncertainty of 2468.63
+At time: 49.0, node 1 map has a accomulated uncertainty of 121266.92
+At time: 49.0, node 2 map has total uncertainty of 2441.2799999999997
+At time: 49.0, node 2 map has a accomulated uncertainty of 120463.81
+At time: 50.0, the node 0 has 2347.0 unvisited cells
+At time: 50.0, node 2 map has total uncertainty of 2440.24
+At time: 50.0, node 2 map has a accomulated uncertainty of 122904.05
+At time: 50.0, node 0 map has total uncertainty of 2466.0600000000004
+At time: 50.0, node 0 map has a accomulated uncertainty of 123000.43999999999
+Drone 0 is at current cell: 47,41 and is going to cell (43, 39).
+At time: 50.0, node 1 map has total uncertainty of 2468.63
+At time: 50.0, node 1 map has a accomulated uncertainty of 123735.55
+At time: 50.0, the node 1 has 2371.0 unvisited cells
+At time: 50.0, the node 2 has 2343.0 unvisited cells
+At time: 51.0, node 2 map has total uncertainty of 2463.1000000000004
+At time: 51.0, node 2 map has a accomulated uncertainty of 125367.15000000001
+At time: 51.0, node 0 map has total uncertainty of 2465.01
+At time: 51.0, node 0 map has a accomulated uncertainty of 125465.44999999998
+At time: 51.0, node 1 map has total uncertainty of 2489.38
+At time: 51.0, node 1 map has a accomulated uncertainty of 126224.93000000001
+At time: 52.0, node 1 map has total uncertainty of 2488.3100000000004
+At time: 52.0, node 1 map has a accomulated uncertainty of 128713.24
+At time: 52.0, node 0 map has total uncertainty of 2462.9100000000003
+At time: 52.0, node 0 map has a accomulated uncertainty of 127928.35999999999
+At time: 52.0, node 2 map has total uncertainty of 2458.9000000000005
+At time: 52.0, node 2 map has a accomulated uncertainty of 127826.05
+Drone 2 is at current cell: 5,42 and is going to cell (1, 40).
+At time: 53.0, node 0 map has total uncertainty of 2458.71
+At time: 53.0, node 0 map has a accomulated uncertainty of 130387.06999999999
+At time: 53.0, node 2 map has total uncertainty of 2457.8500000000004
+At time: 53.0, node 2 map has a accomulated uncertainty of 130283.90000000001
+At time: 53.0, node 1 map has total uncertainty of 2486.1900000000005
+At time: 53.0, node 1 map has a accomulated uncertainty of 131199.43
+At time: 54.0, node 2 map has total uncertainty of 2455.7500000000005
+At time: 54.0, node 2 map has a accomulated uncertainty of 132739.65000000002
+At time: 54.0, node 1 map has total uncertainty of 2485.12
+At time: 54.0, node 1 map has a accomulated uncertainty of 133684.55
+At time: 54.0, node 0 map has total uncertainty of 2457.6600000000003
+At time: 54.0, node 0 map has a accomulated uncertainty of 132844.72999999998
+Drone 1 is at current cell: 7,8 and is going to cell (11, 12).
+At time: 55.0, node 0 map has total uncertainty of 2455.5600000000004
+At time: 55.0, node 0 map has a accomulated uncertainty of 135300.28999999998
+At time: 55.0, node 1 map has total uncertainty of 2484.03
+At time: 55.0, node 1 map has a accomulated uncertainty of 136168.58
+At time: 55.0, node 2 map has total uncertainty of 2451.55
+At time: 55.0, node 2 map has a accomulated uncertainty of 135191.2
+At time: 56.0, node 2 map has total uncertainty of 2450.5000000000005
+At time: 56.0, node 2 map has a accomulated uncertainty of 137641.7
+Drone 0 is at current cell: 43,39 and is going to cell (40, 35).
+At time: 56.0, node 1 map has total uncertainty of 2484.03
+At time: 56.0, node 1 map has a accomulated uncertainty of 138652.61
+At time: 56.0, node 0 map has total uncertainty of 2451.3600000000006
+At time: 56.0, node 0 map has a accomulated uncertainty of 137751.64999999997
+At time: 57.0, node 1 map has total uncertainty of 2481.87
+At time: 57.0, node 1 map has a accomulated uncertainty of 141134.47999999998
+At time: 57.0, node 0 map has total uncertainty of 2451.3600000000006
+At time: 57.0, node 0 map has a accomulated uncertainty of 140203.00999999995
+At time: 57.0, node 2 map has total uncertainty of 2448.4000000000005
+At time: 57.0, node 2 map has a accomulated uncertainty of 140090.1
+At time: 58.0, node 2 map has total uncertainty of 2444.2000000000003
+At time: 58.0, node 2 map has a accomulated uncertainty of 142534.30000000002
+Drone 2 is at current cell: 1,40 and is going to cell (3, 37).
+At time: 58.0, node 0 map has total uncertainty of 2447.16
+At time: 58.0, node 0 map has a accomulated uncertainty of 142650.16999999995
+At time: 58.0, node 1 map has total uncertainty of 2481.87
+At time: 58.0, node 1 map has a accomulated uncertainty of 143616.34999999998
+At time: 59.0, node 0 map has total uncertainty of 2445.0600000000004
+At time: 59.0, node 0 map has a accomulated uncertainty of 145095.22999999995
+At time: 59.0, node 2 map has total uncertainty of 2443.1500000000005
+At time: 59.0, node 2 map has a accomulated uncertainty of 144977.45
+At time: 59.0, node 1 map has total uncertainty of 2480.7200000000003
+At time: 59.0, node 1 map has a accomulated uncertainty of 146097.06999999998

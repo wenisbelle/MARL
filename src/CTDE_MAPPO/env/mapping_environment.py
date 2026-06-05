@@ -62,7 +62,8 @@ class MappingEnvironmentConfig:
     max_num_agents: int = 3
     map_width: int = 50
     map_height: int = 50
-    observation_map_size: int = 10 # Observe a square of side 10 cells centered on the drone. 
+    observation_map_size: int = 20 # Observe a square of side 10 cells centered on the drone. 
+    action_map_size: int = 10 # The action is a target cell in that region
     drone_altitude: float = 25.0
     distance_between_cells: float = 20
     uncertainty_rate: float = 0.01
@@ -101,6 +102,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         self.map_width = config.map_width
         self.map_height = config.map_height
         self.observation_map_size = config.observation_map_size
+        self.action_map_size = config.action_map_size
         self.drone_altitude = config.drone_altitude
         self.distance_between_cells = config.distance_between_cells
         self.uncertainty_rate = config.uncertainty_rate
@@ -216,6 +218,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         ##### For now just the x, y positions. If I want to use the speed controller it will be 3. 
         action_dim = 3 if self.speed_action else 2
         M = self.observation_map_size
+        A = self.action_map_size
         all_positions_shape = (self.max_num_agents, 2)
         estimated_positions_shape = (self.max_num_agents, self.max_num_agents, 2)
 

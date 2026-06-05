@@ -143,7 +143,7 @@ class Actor(nn.Module):
         self,
         *,
         max_num_agents: int = 3,        # affects estimated_positions size
-        action_dim: int = 400,          # size of the action space (M*M for categorical)
+        action_dim: int = 100,          # size of the action space 
         map_channels: int = 1,          # map_patch is single-channel uncertainty
         map_feature_dim: int = 128,
         vector_feature_dim: int = 64,

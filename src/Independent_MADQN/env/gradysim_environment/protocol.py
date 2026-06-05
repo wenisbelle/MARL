@@ -273,7 +273,7 @@ class Drone(IProtocol):
 
     ##### Mobility command. When the drone reaches the destination, it calculates the next one #####
     ##### Or after two UAVs meet. The information from the destination of the first UAV will be used in the NN not here #####
-    def mobility_command(self, action: list[float], observation_map_size: int):
+    def mobility_command(self, action: list[float], action_map_size: int):
         #self._log.info(f"Drone {self.provider.get_id()} received mobility command with action: {action}")
         #print(f"Drone {self.provider.get_id()} received mobility command with action: {action}")
         
@@ -282,8 +282,8 @@ class Drone(IProtocol):
         current_x_cell, current_y_cell = self.get_current_cell()
         
         x, y = action
-        raw_target_row = int(current_x_cell + (x-0.5) * observation_map_size)
-        raw_target_col = int(current_y_cell + (y-0.5) * observation_map_size)
+        raw_target_row = int(current_x_cell + (x-0.5) * action_map_size)
+        raw_target_col = int(current_y_cell + (y-0.5) * action_map_size)
         
         target_row = max(0, min(raw_target_row, self.MAP_WIDTH - 1))
         target_col = max(0, min(raw_target_col, self.MAP_HEIGHT - 1))

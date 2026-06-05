@@ -391,7 +391,7 @@ class Drone(IProtocol):
         target_row = max(0, min(raw_target_row, self.MAP_WIDTH - 1))
         target_col = max(0, min(raw_target_col, self.MAP_HEIGHT - 1))
         
-        self._log.info(f"Drone {self.provider.get_id()} is at position {self.drone_position} and is going to cell ({target_row}, {target_col}).")
+        self._log.info(f"Drone {self.provider.get_id()} is at current cell: ({current_x_cell},{current_y_cell}) and is going to cell ({target_row}, {target_col}).")
         #print(f"Drone {self.provider.get_id()} going to cell ({target_row}, {target_col}).")
         #### Setting the speed
         speed = SetSpeedMobilityCommand(self.speed_command)
