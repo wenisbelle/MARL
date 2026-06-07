@@ -29,7 +29,7 @@ MAX_NUM_AGENTS = 3
 MIN_NUM_AGENTS = 3   
 MAP_WIDTH = 50
 MAP_HEIGHT = 50
-OBSERVATION_MAP_SIZE = 20
+OBSERVATION_MAP_SIZE = 50
 ACTION_MAP_SIZE = 10
 MAX_EPISODE_LENGTH = 2000
 AGENT_DEATH_PROBABILITY = 0.0
@@ -42,7 +42,7 @@ UNCERTAINTY_KEY = "individual_map_uncertainty"
 ESTIMATED_POSITIONS_KEY = "estimated_positions_and_time"
 EPS_INIT = 1.0
 EPS_DECAY = 0.999
-EPS_MIN = 0.2
+EPS_MIN = 0.1
 N_WORKERS = 12
 STEPS_PER_BATCH = 100
 NUM_ITERATIONS = 10000
@@ -144,7 +144,7 @@ def main():
         steps_per_batch=STEPS_PER_BATCH,
         base_seed=42,
         sync=SYNC,
-        reward_scale = MAP_WIDTH,
+        reward_scale = MAP_WIDTH/5,
         new_batch_new_simulation=NEW_BATCH_NEW_SIMULATION,
     ) as orch:
 

@@ -160,10 +160,10 @@ class Drone(IProtocol):
 
 
         # For debugging process
-        #if Drone.visualizer is None:
+        if Drone.visualizer is None:
         #    # We have 3 drones in the simulation.
         #    # I have to think a better way to do this.
-        #   Drone.visualizer = MapVisualizer(num_drones=self.NUMBER_OF_DRONES, map_width=self.MAP_WIDTH, map_height=self.MAP_HEIGHT, distance_between_cells=self.DISTANCE_BETWEEN_CELLS)
+           Drone.visualizer = MapVisualizer(num_drones=self.NUMBER_OF_DRONES, map_width=self.MAP_WIDTH, map_height=self.MAP_HEIGHT, distance_between_cells=self.DISTANCE_BETWEEN_CELLS)
         
         if self.visualizer:
             self.visualizer.update_map(self.provider.get_id(), self.map[:,:,0])
@@ -231,10 +231,10 @@ class Drone(IProtocol):
                     self.is_cell_visited[x, y] = 1
         
         self.total_uncertainty = self.map[:,:,0].sum()
-        self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has total uncertainty of {self.total_uncertainty}")   
+        #self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has total uncertainty of {self.total_uncertainty}")   
 
         self.accomulated_uncertainty += self.total_uncertainty
-        self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has a accomulated uncertainty of {self.accomulated_uncertainty}")
+        #self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has a accomulated uncertainty of {self.accomulated_uncertainty}")
         
         if self.visualizer:
             self.visualizer.update_map(self.provider.get_id(), self.map[:,:,0])
@@ -288,7 +288,7 @@ class Drone(IProtocol):
         ##### Importante parameter. If there are unviseted cells, there will be penalizations in the algorithm #####
         self.is_cell_visited[self.map[:, :, 1] > 0.0] = 1
 
-        self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
+        #self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
 
 
     def _compute_valid_action_mask(self) -> torch.Tensor:

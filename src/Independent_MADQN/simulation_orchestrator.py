@@ -101,7 +101,7 @@ class AsyncMARLOrchestrator:
             p = self.pending_transition[i]
             if p is not None and mask[i]:
                 # Avoid reward to explode
-                p.agent_reward_sum += (rewards[i].item() / (self.REWARD_SCALE/5))
+                p.agent_reward_sum += max(-2.0, min(2.0, rewards[i].item()/self.REWARD_SCALE))         
                 p.agent_n_sim_steps += 1
 
         # If any agent has a pending transition, accumulate global reward into it too, and count sim steps.
