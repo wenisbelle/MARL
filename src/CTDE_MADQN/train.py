@@ -11,6 +11,7 @@ pattern as every other iteration.
 import os
 from collections import deque
 import multiprocessing as mp
+import random
 import torch
 from torch import nn
 from torchrl.data import TensorDictReplayBuffer, LazyTensorStorage
@@ -31,7 +32,7 @@ MAP_WIDTH = 50
 MAP_HEIGHT = 50
 OBSERVATION_MAP_SIZE = 50
 ACTION_MAP_SIZE = 10
-MAX_EPISODE_LENGTH = 2000
+MAX_EPISODE_LENGTH = 10
 AGENT_DEATH_PROBABILITY = 0.0
 MAP_CHANNELS = 1
 VECTOR_FEATURE_DIM = 64
@@ -43,7 +44,7 @@ ESTIMATED_POSITIONS_KEY = "estimated_positions_and_time"
 EPS_INIT = 1.0
 EPS_DECAY = 0.999
 EPS_MIN = 0.1
-N_WORKERS = 12
+N_WORKERS = 1
 STEPS_PER_BATCH = 100
 NUM_ITERATIONS = 10000
 MIN_TRANSITIONS_PER_COLLECT = 200
@@ -77,7 +78,7 @@ best_avg_reward    = float("-inf")
 
 def make_env():
     config = MappingEnvironmentConfig(
-        render_mode= None, #"visual",
+        render_mode= "visual", #"visual",
         algorithm_iteration_interval=ALGORITHM_ITERATION_INTERVAL,
         min_num_agents=MIN_NUM_AGENTS,
         max_num_agents=MAX_NUM_AGENTS,
@@ -142,7 +143,8 @@ def main():
         policy_fn=make_policy,
         replay_buffer=replay_buffer,
         steps_per_batch=STEPS_PER_BATCH,
-        base_seed=42,
+        #base_seed=random.randint(0, 100),
+        base_seed = 42,
         sync=SYNC,
         reward_scale = MAP_WIDTH/5,
         new_batch_new_simulation=NEW_BATCH_NEW_SIMULATION,

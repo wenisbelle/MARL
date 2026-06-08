@@ -71,7 +71,7 @@ class MappingEnvironmentConfig:
 
     max_episode_length: int = 500
     communication_range: float = 100
-    full_random_drone_position: bool = False
+    full_random_drone_position: bool = True
     reward: str = 'punish'  # Fixed reward mode: punish
     speed_action: bool = False
     agent_death_probability: float = 0.0
@@ -189,7 +189,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         builder.add_handler(TimerHandler())
 
         if self.render_mode == "visual":
-            scenario_size = max(self.map_width, self.map_height)*self.distance_between_cells
+            scenario_size = max(self.map_width/2, self.map_height/2)*self.distance_between_cells
             builder.add_handler(VisualizationHandler(VisualizationConfiguration(
                 open_browser=False,
                 x_range=(-scenario_size, scenario_size),
