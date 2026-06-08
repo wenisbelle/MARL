@@ -6,19 +6,15 @@ import numpy as np
 from dataclasses import dataclass
 import json
 import random
-from energy import EnergyComsuption, BatteryError
-import os
+from .energy import EnergyComsuption, BatteryError
 
 from gradysim.protocol.interface import IProtocol
 from gradysim.protocol.messages.telemetry import Telemetry
 from gradysim.protocol.messages.mobility import GotoCoordsMobilityCommand, SetSpeedMobilityCommand
 from gradysim.simulator.extension.camera import CameraHardware, CameraConfiguration
 from gradysim.protocol.messages.communication import SendMessageCommand, BroadcastMessageCommand
-from visualization import MapVisualizer
-from actor import Actor
+from .visualization import MapVisualizer
 
-import torch 
-from tensordict import TensorDict
 
 @dataclass
 class Threat:
@@ -62,6 +58,12 @@ class SendGoToMessage(TypedDict):
     sender: int
     sender_position: list
 
+class FlagMessage(enum.Enum):
+    NONE = 0
+    MOBILITY_COMMAND = 1
+
+class BufferedMobilityCommand(TypedDict):
+    flag: int
 
 class MovementDirection(enum.Enum):
     X = 0
@@ -83,8 +85,6 @@ class Drone(IProtocol):
         "number_of_drones": 3,
         "map_width": 10,
         "map_height": 10,
-        "observation_map_size": 50,
-        "action_map_size": 10, 
     }
 
     def initialize(self) -> None:
@@ -101,15 +101,12 @@ class Drone(IProtocol):
         self.NUMBER_OF_DRONES = self._config["number_of_drones"]
         self.MAP_WIDTH = self._config["map_width"]
         self.MAP_HEIGHT = self._config["map_height"]
-        self.OBSERVATION_MAP_SIZE = self._config["observation_map_size"]
-        self.ACTION_MAP_SIZE = self._config["action_map_size"]
         self.results_aggregator = self._config.get("results_aggregator", {})
-
-        self.NORMALIZE_TIME = 60.0
         
         self.DRONE_ALTITUDE = 50.0
         self.DISTANCE_BETWEEN_CELLS = 20
         self.CAMERA_ANGLE = np.pi/6
+        self.CELLS_EVALUETED_FOR_PRIORITY = 10
 
         
         ##### Initialize map #####
@@ -150,6 +147,9 @@ class Drone(IProtocol):
         self.battery_status = self.energy.get_battery_status() 
         self.provider.schedule_timer("battery", self.provider.current_time() + 1)
 
+        #### Mobility command buffer for RL trainning
+        # The first one is for the internal mobility command, to start the moviment
+        self.mobility_command_buffer = BufferedMobilityCommand(flag=FlagMessage.MOBILITY_COMMAND.value)
         
         ##### Instead of using flags, each drone will have a list with all destinations from the other drones, indexed by the drone ID.
         ##### This model assumes that the drones position will be at their destination 
@@ -161,41 +161,14 @@ class Drone(IProtocol):
         self.drone_states = [{'position': np.zeros(2), 'time_of_last_update': self.provider.current_time()} for _ in range(self.NUMBER_OF_DRONES)]
 
 
-        # For debugging process
-        if Drone.visualizer is None:
+        # FOr debugging process
+        #if Drone.visualizer is None:
         #    # We have 3 drones in the simulation.
         #    # I have to think a better way to do this.
-           Drone.visualizer = MapVisualizer(num_drones=self.NUMBER_OF_DRONES, map_width=self.MAP_WIDTH, map_height=self.MAP_HEIGHT, distance_between_cells=self.DISTANCE_BETWEEN_CELLS)
+        #   Drone.visualizer = MapVisualizer(num_drones=self.NUMBER_OF_DRONES, map_width=self.MAP_WIDTH, map_height=self.MAP_HEIGHT, distance_between_cells=self.DISTANCE_BETWEEN_CELLS)
         
         if self.visualizer:
             self.visualizer.update_map(self.provider.get_id(), self.map[:,:,0])
-
-        ################################ 
-        ### NN Policy Initialization ###
-        ################################
-        VECTOR_FEATURE_DIM = 64
-        HIDDEN_DIM = 256
-        self.MAP_KEY = 'map_patch'
-        self.POSITION_KEY = 'position'
-        self.UNCERTAINTY_KEY = 'individual_map_uncertainty'
-        self.ESTIMATED_POSITIONS_AND_TIME_KEY = 'estimated_positions_and_time'
-        ACTION_DIMENSION = 100
-      
-        self.actor = Actor(
-            max_num_agents=self.NUMBER_OF_DRONES,
-            action_dim=ACTION_DIMENSION,
-            map_channels=1,
-            vector_feature_dim=VECTOR_FEATURE_DIM,
-            hidden_dim=HIDDEN_DIM,
-            map_key=self.MAP_KEY,
-            position_key=self.POSITION_KEY,
-            uncertainty_key=self.UNCERTAINTY_KEY,
-            estimated_positions_and_time_key=self.ESTIMATED_POSITIONS_AND_TIME_KEY,
-            )
-        checkpoint = torch.load('best.pt', map_location="cpu")
-        # print(checkpoint.keys())
-        self.actor.load_state_dict(checkpoint['actor_state_dict'])
-        self.actor.eval()
 
     def camera_routine(self):      
         ##### New Camera Routine is needed. The previous approach was too slow for running large maps.
@@ -234,8 +207,6 @@ class Drone(IProtocol):
                     self.is_cell_visited[x, y] = 1
         
         self.total_uncertainty = self.map[:,:,0].sum()
-        #self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has total uncertainty of {self.total_uncertainty}")   
-
         self.accomulated_uncertainty += self.total_uncertainty
         #self._log.info(f"At time: {self.provider.current_time()}, node {self.provider.get_id()} map has a accomulated uncertainty of {self.accomulated_uncertainty}")
         
@@ -252,39 +223,36 @@ class Drone(IProtocol):
         Cells outside the world are padded with 0.0 (maximum uncertainty), so
         the drone is always at patch[M//2, M//2] regardless of edge proximity.
         """
-        if self.OBSERVATION_MAP_SIZE == self.MAP_WIDTH:
-            return self.map[:,:,0]
-        else:        
-            M = observation_map_size
-            half = M // 2
+        M = observation_map_size
+        half = M // 2
 
-            # Drone's current cell in map coordinates.
-            cx = int((self.drone_position[0] + (self.MAP_WIDTH  * self.DISTANCE_BETWEEN_CELLS) / 2)
-                     / self.DISTANCE_BETWEEN_CELLS)
-            cy = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2)
-                     / self.DISTANCE_BETWEEN_CELLS)
+        # Drone's current cell in map coordinates.
+        cx = int((self.drone_position[0] + (self.MAP_WIDTH  * self.DISTANCE_BETWEEN_CELLS) / 2)
+                 / self.DISTANCE_BETWEEN_CELLS)
+        cy = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2)
+                 / self.DISTANCE_BETWEEN_CELLS)
 
-            # Full desired window in world-cell indices (may extend off the map).
-            x_lo, x_hi = cx - half, cx - half + M
-            y_lo, y_hi = cy - half, cy - half + M
+        # Full desired window in world-cell indices (may extend off the map).
+        x_lo, x_hi = cx - half, cx - half + M
+        y_lo, y_hi = cy - half, cy - half + M
 
-            # Overlap of the desired window with the actual map.
-            src_x_lo = max(0, x_lo)
-            src_x_hi = min(self.MAP_WIDTH,  x_hi)
-            src_y_lo = max(0, y_lo)
-            src_y_hi = min(self.MAP_HEIGHT, y_hi)
+        # Overlap of the desired window with the actual map.
+        src_x_lo = max(0, x_lo)
+        src_x_hi = min(self.MAP_WIDTH,  x_hi)
+        src_y_lo = max(0, y_lo)
+        src_y_hi = min(self.MAP_HEIGHT, y_hi)
 
-            # Pre-fill with 0.0 so off-map cells look maximally uncertain (not "explored").
-            patch = np.full((M, M), 0.0, dtype=np.float32)
+        # Pre-fill with 0.0 so off-map cells look maximally uncertain (not "explored").
+        patch = np.full((M, M), 0.0, dtype=np.float32)
 
-            if src_x_hi > src_x_lo and src_y_hi > src_y_lo:
-                dst_x_lo = src_x_lo - x_lo
-                dst_y_lo = src_y_lo - y_lo
-                dst_x_hi = dst_x_lo + (src_x_hi - src_x_lo)
-                dst_y_hi = dst_y_lo + (src_y_hi - src_y_lo)
-                patch[dst_x_lo:dst_x_hi, dst_y_lo:dst_y_hi] = \
-                    self.map[src_x_lo:src_x_hi, src_y_lo:src_y_hi, 0]
-            return patch
+        if src_x_hi > src_x_lo and src_y_hi > src_y_lo:
+            dst_x_lo = src_x_lo - x_lo
+            dst_y_lo = src_y_lo - y_lo
+            dst_x_hi = dst_x_lo + (src_x_hi - src_x_lo)
+            dst_y_hi = dst_y_lo + (src_y_hi - src_y_lo)
+            patch[dst_x_lo:dst_x_hi, dst_y_lo:dst_y_hi] = \
+                self.map[src_x_lo:src_x_hi, src_y_lo:src_y_hi, 0]
+        return patch
     
     ##### Map updating ##### 
     def vanishing_map_routine(self):
@@ -294,100 +262,24 @@ class Drone(IProtocol):
         ##### Importante parameter. If there are unviseted cells, there will be penalizations in the algorithm #####
         self.is_cell_visited[self.map[:, :, 1] > 0.0] = 1
 
-        #self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
+        self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
 
+    def get_current_cell(self):
+        current_x = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
 
-    def _compute_valid_action_mask(self) -> torch.Tensor:
-        """Return a (M*M,) bool tensor — True for in-bounds target cells."""
-        M = self.ACTION_MAP_SIZE
-        current_x_cell = int((self.drone_position[0] + (self.MAP_WIDTH  * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
-        current_y_cell = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
-
-        mask = torch.zeros(M * M, dtype=torch.bool)
-        for idx in range(M * M):
-            row, col = idx // M, idx % M
-            x = (row + 0.5) / M
-            y = (col + 0.5) / M
-            target_row = int(current_x_cell + (x - 0.5) * M)
-            target_col = int(current_y_cell + (y - 0.5) * M)
-            if 0 <= target_row < self.MAP_WIDTH and 0 <= target_col < self.MAP_HEIGHT:
-                mask[idx] = True
-        return mask
-
-    def _build_obs_td(self) -> TensorDict:
-        """
-        Convert current numpy drone state into the TensorDict that Actor.forward expects.
-        """
-        
-        map_patch = torch.tensor(
-            self.get_patched_map(self.OBSERVATION_MAP_SIZE),
-            dtype=torch.float32
-        )
-
-        # individual_map_uncertainty: (1,) - Try to normalize. But it is still possible that the uncertainty is larger than 1.0
-        norm = 2*self.MAP_WIDTH * self.MAP_HEIGHT
-        uncertainty = torch.tensor(
-            [self.total_uncertainty / norm],
-            dtype=torch.float32
-        )
-
-        # position: (2,) — drone x,y normalized to [0, 1] over the world
-        world_w = self.MAP_WIDTH  * self.DISTANCE_BETWEEN_CELLS
-        world_h = self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS
-        pos_x = (self.drone_position[0] + world_w / 2) / world_w
-        pos_y = (self.drone_position[1] + world_h / 2) / world_h
-        position = torch.tensor([pos_x, pos_y], dtype=torch.float32)
-
-        # estimated_positions: (N-1, 3) — other drones' last known positions, normalized
-        est = []
-        for i, s in enumerate(self.drone_states):
-            if i == self.provider.get_id():
-                continue
-            px = (s['position'][0] + world_w / 2) / world_w
-            py = (s['position'][1] + world_h / 2) / world_h
-            dt_norm = min(float(self.provider.current_time() - s['time_of_last_update']) / self.NORMALIZE_TIME, 1.0)
-            est.append([px, py, dt_norm])
-
-        estimated_positions_and_time = torch.tensor(est, dtype=torch.float32)  # (N, 2)
-
-        return TensorDict(
-            {
-                self.MAP_KEY:                            map_patch,
-                self.UNCERTAINTY_KEY:                    uncertainty,
-                self.POSITION_KEY:                       position,
-                self.ESTIMATED_POSITIONS_AND_TIME_KEY:   estimated_positions_and_time,
-                "valid_actions":                         self._compute_valid_action_mask()
-            },
-            batch_size=[],   # unbatched — matches Actor's single-sample path
-        )
-    
-    @torch.no_grad()
-    def _select_action(self) -> list[float]:
-
-        obs_td   = self._build_obs_td()
-        q_values = self.actor(obs_td)           # shape (action_dim,) = (M*M,)
-        idx      = int(q_values.argmax().item())
-    
-        M   = self.ACTION_MAP_SIZE
-        row = idx // M                          # patch row in [0, M)
-        col = idx % M                           # patch col in [0, M)
-    
-        # mobility_command treats 0.5 as "current cell", so normalize to [0,1]
-        x = (row + 0.5) / M
-        y = (col + 0.5) / M
-        return [x, y]
+        return current_x, current_y
 
 
     ##### Mobility command. When the drone reaches the destination, it calculates the next one #####
     ##### Or after two UAVs meet. The information from the destination of the first UAV will be used in the NN not here #####
-    def mobility_command(self, action: list,  action_map_size: int):
+    def mobility_command(self, action: list[float], action_map_size: int):
         #self._log.info(f"Drone {self.provider.get_id()} received mobility command with action: {action}")
         #print(f"Drone {self.provider.get_id()} received mobility command with action: {action}")
         
         map_center_offset = (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2
         ##### receives the x and y varying from [0:1] and transform it to the map coordinates #####
-        current_x_cell = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
-        current_y_cell = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        current_x_cell, current_y_cell = self.get_current_cell()
         
         x, y = action
         raw_target_row = int(current_x_cell + (x-0.5) * action_map_size)
@@ -396,7 +288,7 @@ class Drone(IProtocol):
         target_row = max(0, min(raw_target_row, self.MAP_WIDTH - 1))
         target_col = max(0, min(raw_target_col, self.MAP_HEIGHT - 1))
         
-        self._log.info(f"Drone {self.provider.get_id()} is at current cell: ({current_x_cell},{current_y_cell}) and is going to cell ({target_row}, {target_col}).")
+        self._log.info(f"Drone {self.provider.get_id()} going to cell ({target_row}, {target_col}).")
         #print(f"Drone {self.provider.get_id()} going to cell ({target_row}, {target_col}).")
         #### Setting the speed
         speed = SetSpeedMobilityCommand(self.speed_command)
@@ -413,6 +305,8 @@ class Drone(IProtocol):
         self.send_broadcast_destination()
         #print(f"Drone {self.provider.get_id()} broadcasted its destination {self.goto_command} to other drones.") 
 
+        ##### Now, realease the mobility command buffer, so the drone can receive new commands from the encounters until it reaches the destination.
+        self.mobility_command_buffer['flag'] = FlagMessage.NONE.value
 
 
     def send_heartbeat(self):
@@ -499,7 +393,8 @@ class Drone(IProtocol):
         self.compare_states(share_state_msg['list_drone_states'])
         #print(f"Drone {self.provider.get_id()} updated the status to {self.drone_states}")
         
-    def handle_timer(self, timer: str) -> None:        
+    def handle_timer(self, timer: str) -> None:
+        
         if timer == "vanishing_map":
                 self.vanishing_map_routine()
                 
@@ -523,8 +418,8 @@ class Drone(IProtocol):
                 if np.linalg.norm(current_pos_array - self.goto_command) < 1:
                     #### In this case the drone needs to update its current goal.
                     #### This will be called in the RL framework
-                    action = self._select_action()
-                    self.mobility_command(action, self.ACTION_MAP_SIZE)
+                    self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
+                    #print(f"Drone {self.provider.get_id()} updated flag.")
 
                 #print(f"Drone {self.provider.get_id()} has a total uncertainty of {self.total_uncertainty} and an accomulated uncertainty of {self.accomulated_uncertainty}")
 
@@ -579,8 +474,8 @@ class Drone(IProtocol):
                 # Update the map and the states of the drones, both will be used in the NN policy
                 self.update_states(data)
                 if self.provider.current_time() - self.last_drone_interaction_time[data['sender']]  > self.TIMEOUT_TO_UPDATE_DESTINATION: # the drone id starts at 0
-                    action = self._select_action()
-                    self.mobility_command(action, self.OBSERVATION_MAP_SIZE)
+                    self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
+                    #print(f"Drone {self.provider.get_id()} updated flag.")                    
                     self.last_drone_interaction_time[data['sender']] = self.provider.current_time() 
             
             elif msg_type == MessageType.BROADCAST_DESTINATION_MESSAGE.value:
@@ -594,7 +489,6 @@ class Drone(IProtocol):
 
     def handle_telemetry(self, telemetry: Telemetry) -> None:
         self.drone_position = telemetry.current_position
-        #self._log.info(f"Drone {self.provider.get_id()} position updated to {self.drone_position}")
         self.ready = True 
 
     def die(self) -> None:
@@ -610,8 +504,6 @@ def drone_protocol_factory(
     number_of_drones: int,
     map_width: int,
     map_height: int,
-    observation_map_size: int,
-    action_map_size: int,
     results_aggregator: dict
 ) -> Type[Drone]:
     """
@@ -624,8 +516,6 @@ def drone_protocol_factory(
         "number_of_drones": number_of_drones,
         "map_width": map_width,
         "map_height": map_height,
-        "observation_map_size": observation_map_size,
-        "action_map_size": action_map_size,
         "results_aggregator": results_aggregator
     }
 

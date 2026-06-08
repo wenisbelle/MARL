@@ -5,15 +5,16 @@ from gradysim.simulator.handler.mobility import MobilityHandler
 from gradysim.simulator.handler.timer import TimerHandler
 from gradysim.simulator.handler.visualization import VisualizationHandler
 from gradysim.simulator.simulation import SimulationConfiguration, SimulationBuilder
-from protocol import drone_protocol_factory
+from .protocol import drone_protocol_factory
 from gradysim.simulator.handler.communication import CommunicationHandler, CommunicationMedium
 
+from deap import algorithms, base, creator, tools
 import numpy as np
 
 
 #### Objective function using simulation execution ####
 #### GradySim function #######
-def create_and_run_simulation():
+def create_and_run_simulation(individual):
     ##### Creating the fuzzy lookup tables
     
     # Configuring simulation
@@ -41,8 +42,8 @@ def create_and_run_simulation():
         number_of_drones=NUMBER_OF_DRONES,
         map_width=MAP_WIDTH,
         map_height=MAP_HEIGHT,
-        observation_map_size=50,
-        action_map_size=10,
+        distance_norm=individual[0],
+        distance_between_drone_norm=individual[1],
         results_aggregator=results_aggregator
     )
 
@@ -52,42 +53,27 @@ def create_and_run_simulation():
   
     # Building & starting
     simulation = builder.build()
+    simulation.start_simulation()
 
-    def get_global_map():
-        agents_maps = []
-        for i in range(NUMBER_OF_DRONES):
-            agent_node = simulation.get_node(i)
-            protocol = agent_node.protocol_encapsulator.protocol
-            agents_maps.append(protocol.map[:,:,0])
+    medium_uncertainty = 0
+    for i in range(NUMBER_OF_DRONES):
+        medium_uncertainty += 0.01*results_aggregator[i]['accomulated_uncertainty']/NUMBER_OF_DRONES
 
-        return np.min(agents_maps, axis=0)
-
-
-    STEP_INTERVAL = 1.0         
-    next_checkpoint = STEP_INTERVAL
-    running = True
-
-    while running:
-        while simulation._current_timestamp < next_checkpoint:
-            running = simulation.step_simulation()
-            if not running:
-                break
-        if running:
-            global_map = get_global_map()
-            sum = global_map.sum()
-            print(f"At time: {simulation._current_timestamp} the global map: {sum}")
-        next_checkpoint += STEP_INTERVAL
+    print(f"Variable to be minimized: {medium_uncertainty}")    
+    return medium_uncertainty
 
 
 def main():
     logging.basicConfig(
         level=logging.INFO,  
-        filename=f'logs/simulation.log', 
+        filename=f'definitive_system/coordination_only/3_drones/test/logs/analytical_2000/simulation.log', 
         filemode='w', 
+        #format='%(asctime)s - %(levelname)s - %(message)s'
         format='%(message)s'  
     )
-    for _ in range(1):
-        create_and_run_simulation()
+    for _ in range(20):
+        individual =  [3611.5, 3563.1]
+        create_and_run_simulation(individual)
     
 
 if __name__ == "__main__":
