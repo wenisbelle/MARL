@@ -11,7 +11,6 @@ pattern as every other iteration.
 import os
 from collections import deque
 import multiprocessing as mp
-import random
 import torch
 from torch import nn
 from torchrl.data import TensorDictReplayBuffer, LazyTensorStorage
@@ -32,7 +31,7 @@ MAP_WIDTH = 50
 MAP_HEIGHT = 50
 OBSERVATION_MAP_SIZE = 50
 ACTION_MAP_SIZE = 10
-MAX_EPISODE_LENGTH = 10
+MAX_EPISODE_LENGTH = 2000
 AGENT_DEATH_PROBABILITY = 0.0
 MAP_CHANNELS = 1
 VECTOR_FEATURE_DIM = 64
@@ -44,7 +43,7 @@ ESTIMATED_POSITIONS_KEY = "estimated_positions_and_time"
 EPS_INIT = 1.0
 EPS_DECAY = 0.999
 EPS_MIN = 0.1
-N_WORKERS = 1
+N_WORKERS = 12
 STEPS_PER_BATCH = 100
 NUM_ITERATIONS = 10000
 MIN_TRANSITIONS_PER_COLLECT = 200
@@ -57,7 +56,8 @@ BATCH_SIZE = 256
 BUFFERSIZE = 20000
 VALUE_NETWORK_UPDATES_PER_ITERATION = 4
 
-GAMMA       = 0.99
+GAMMA        = 0.99
+REWARD_DECAY = 0.99
 LR = 1e-4
 TARGET_SYNC = 10 
 GRAD_CLIP = 1.0
@@ -66,7 +66,7 @@ TAU = 0.005
 CHECKPOINT_EVERY    = 500              # save every K iterations (set ≤ NUM_ITERATIONS)
 CHECKPOINT_DIR      = "checkpoints"
 LOG_EVERY           = 1                # print every iter; raise for long runs
-REWARD_WINDOW       = 10               # rolling-average window for "is it improving?"
+REWARD_WINDOW       = 100               # rolling-average window for "is it improving?"
 
 
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
@@ -78,7 +78,7 @@ best_avg_reward    = float("-inf")
 
 def make_env():
     config = MappingEnvironmentConfig(
-        render_mode= "visual", #"visual",
+        render_mode= None, #"visual",
         algorithm_iteration_interval=ALGORITHM_ITERATION_INTERVAL,
         min_num_agents=MIN_NUM_AGENTS,
         max_num_agents=MAX_NUM_AGENTS,
@@ -143,10 +143,10 @@ def main():
         policy_fn=make_policy,
         replay_buffer=replay_buffer,
         steps_per_batch=STEPS_PER_BATCH,
-        #base_seed=random.randint(0, 100),
-        base_seed = 42,
+        base_seed=42,
         sync=SYNC,
         reward_scale = MAP_WIDTH/5,
+        reward_decay = REWARD_DECAY,
         new_batch_new_simulation=NEW_BATCH_NEW_SIMULATION,
     ) as orch:
 
@@ -181,7 +181,6 @@ def main():
                     action = batch["action"]
                     reward = batch["reward"].float()
                     done = batch["done"].float()
-                    n_steps = batch["n_sim_steps"].float()  
 
                     with torch.no_grad():
                         #### Double DQN target calculation
@@ -221,9 +220,8 @@ def main():
                     new_count=new_count,
                     buffer_size=len(replay_buffer),
                     eps=trainer_policy.eps,
-                    reward_sample=batch["reward"] if batch is not None else None,
-                    global_reward_sample=batch.get("global_reward") if batch is not None else None,
-                )
+                    reward_sample=batch["reward"] if batch is not None else None
+                    )
 
                 logger.maybe_checkpoint(it, trainer_policy.actor, target_actor, optimizer,
                                          eps=trainer_policy.eps)

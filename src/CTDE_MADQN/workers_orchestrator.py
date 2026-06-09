@@ -35,6 +35,7 @@ class WorkersOrchestrator:
         base_seed: int = 0,
         sync: bool = False,
         reward_scale: int = 100,
+        reward_decay: float = 0.99,
         new_batch_new_simulation: bool = True,
     ):
         # "spawn" is required cross-platform 
@@ -52,6 +53,7 @@ class WorkersOrchestrator:
         self.replay_buffer = replay_buffer
         self.num_workers = num_workers
         self.reward_scale = reward_scale
+        self.reward_decay = reward_decay
         self.new_batch_new_simulation = new_batch_new_simulation
 
         self.workers = []
@@ -68,6 +70,7 @@ class WorkersOrchestrator:
                     self.weight_queues[i],
                     self.control_queues[i],
                     self.reward_scale,
+                    self.reward_decay,
                     self.new_batch_new_simulation,
                 ),
                 daemon=False, # in trainning it should be False

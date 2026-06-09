@@ -65,7 +65,7 @@ TAU = 0.005
 CHECKPOINT_EVERY    = 500              # save every K iterations (set ≤ NUM_ITERATIONS)
 CHECKPOINT_DIR      = "checkpoints"
 LOG_EVERY           = 1                # print every iter; raise for long runs
-REWARD_WINDOW       = 10               # rolling-average window for "is it improving?"
+REWARD_WINDOW       = 100               # rolling-average window for "is it improving?"
 
 
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)

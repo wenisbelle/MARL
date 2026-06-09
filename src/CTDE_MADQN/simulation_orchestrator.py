@@ -17,9 +17,7 @@ class PendingTransition:
     ##### Agent
     agent_reward_sum: float = 0.0
     agent_n_sim_steps: int = 0  # how many sim steps this macro-action has lasted
-    ##### Global
-    global_reward_sum: float = 0.0
-    global_n_sim_steps: int = 0  # how many sim steps this macro-action has lasted
+
 
 
 class AsyncMARLOrchestrator:
@@ -31,12 +29,13 @@ class AsyncMARLOrchestrator:
     for agents that are actually making a decision this step.
     """
 
-    def __init__(self, env, policy_fn: Callable[[TensorDict], torch.Tensor], scale: int):
+    def __init__(self, env, policy_fn: Callable[[TensorDict], torch.Tensor], scale: int, reward_decay: float = 0.99):
         self.env = env
         self.policy_fn = policy_fn
         self.N = env.max_num_agents
         self.action_dim = env.action_spec["agents", "action"].shape[-1]
         self.REWARD_SCALE = scale
+        self.REWARD_DECAY = reward_decay
 
         self.pending_transition: list[PendingTransition | None] = [None] * self.N 
         
@@ -46,8 +45,6 @@ class AsyncMARLOrchestrator:
         # Output buffers
         self.transitions: list[dict] = []
 
-        self.global_reward_sum = 0.0
-        self.global_n_sim_steps = 0
 
 
     @staticmethod
@@ -93,21 +90,17 @@ class AsyncMARLOrchestrator:
         td = self.env.step(td)
 
         # Accumulate rewards into all pending transitions.
-        rewards = td["next", "agents", "reward"].squeeze(-1)
         global_reward = td["next", "global_reward"].item()
         mask = td["next", "agents", "mask"]
+        step_reward = global_reward / self.REWARD_SCALE
 
         for i in range(self.N):
             p = self.pending_transition[i]
             if p is not None and mask[i]:
                 # Avoid reward to explode
-                p.agent_reward_sum += max(-2.0, min(2.0, rewards[i].item()/self.REWARD_SCALE))         
+                temporal_reward = (self.REWARD_DECAY**p.agent_n_sim_steps) * step_reward
+                p.agent_reward_sum += max(-2.0, min(2.0, temporal_reward))         
                 p.agent_n_sim_steps += 1
-
-        # If any agent has a pending transition, accumulate global reward into it too, and count sim steps.
-        if any(p is not None for p in self.pending_transition):
-            self.global_reward_sum += global_reward
-            self.global_n_sim_steps += 1        
 
 
         # Episode end.
@@ -130,24 +123,14 @@ class AsyncMARLOrchestrator:
     def _handle_flags(self, obs_td: TensorDict, opening_episode: bool = False):
         flags = self._read_flags(obs_td)
         mask = obs_td["agents", "mask"]
-        any_flag_triggered = False
 
-        #### Close all pending first, before updating the actions, so the global state gets the latter action
         for i in range(self.N):
             if not mask[i] or (not flags[i].item() and not opening_episode):
                 continue
+            
             if self.pending_transition[i] is not None:
-                any_flag_triggered = True
                 self._close_agent(i, obs_td, terminal=False)
-    
-        # if any flag was triggered, we need to update the global reward sum and the global n_sim 
-        if any_flag_triggered:
-            self.global_reward_sum = 0.0
-            self.global_n_sim_steps = 0
 
-        for i in range(self.N):
-            if not mask[i] or (not flags[i].item() and not opening_episode):
-                continue
             per_agent_obs = self._slice_agent_obs(obs_td, i)
             new_action = self.policy_fn(per_agent_obs)
             self.last_committed_action[i] = new_action
@@ -175,8 +158,6 @@ class AsyncMARLOrchestrator:
             "global_obs":         p.global_state,
             "global_next_obs":    self._snapshot_global(next_obs_td),
             "joint_action":       p.joint_action,
-            "global_reward":      torch.tensor([self.global_reward_sum], dtype=torch.float32),
-            "global_n_sim_steps": torch.tensor([self.global_n_sim_steps], dtype=torch.long),
         }, batch_size=[])
         self.transitions.append(transition)
         self.pending_transition[i] = None

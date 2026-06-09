@@ -561,41 +561,29 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             assert mask[idx], f"Agent {agent.slot_index} picked invalid action {idx} despite masking!"
             protocol.mobility_command(action, self.action_map_size)
 
-            #### Compute the immediate reward from the given action
-            # Positive reward from movint towards cells with higher uncertainty
-            current_x_cell, current_y_cell = protocol.get_current_cell()
-            destination_x_cell = int(current_x_cell + (x - 0.5) * self.action_map_size)
-            destination_y_cell = int(current_y_cell + (y - 0.5) * self.action_map_size)
 
-            # Negative reward from moving to regions where other agents may be presented
-            destination_x_position = destination_x_cell * self.distance_between_cells - self.map_width*self.distance_between_cells/2
-            destination_y_position = destination_y_cell * self.distance_between_cells - self.map_height*self.distance_between_cells/2
-            proximity_penalty = self._compute_reward_comparing_destination_distances(destination_x_position, destination_y_position, agent)
-
-            self.immediate_reward_from_action[agent.slot_index] = -5*(proximity_penalty)
-
-    def _compute_reward_comparing_destination_distances(self, destination_x, destination_y, agent):
-        agent_node = self.simulator.get_node(agent.node_id)
-        protocol = agent_node.protocol_encapsulator.protocol
-        penalty = 0.0
-        for agent_id, agent_state in enumerate(protocol.drone_states):
-            if agent_id == agent.node_id:
-                continue  # Skip self            
-
-            time_since_last_update = self.simulator._current_timestamp - agent_state['time_of_last_update']
-            #print(f"Agent node: {agent.node_id} comparing with {agent_id} with time: {time_since_last_update}")
-            if time_since_last_update > self.NORMALIZE_TIME:
-                continue  # Skip if the information about the other agent is too old to be relevant
-
-            other_x, other_y= agent_state['position'][:2]      
-            distance_to_other = math.sqrt((destination_x - other_x) ** 2 + (destination_y - other_y) ** 2)
-            if distance_to_other > self.communication_range:
-                continue  # It is far way to consider a penalty
-            norm_distance = distance_to_other / (self.action_map_size * self.distance_between_cells)  
-            
-            penalty += max(0, 1 - norm_distance)  # Closer means higher penalty, with a hard cutoff at the action map's diagonal distance
-            #print(penalty)
-        return penalty  
+#    def _compute_reward_comparing_destination_distances(self, destination_x, destination_y, agent):
+#        agent_node = self.simulator.get_node(agent.node_id)
+#        protocol = agent_node.protocol_encapsulator.protocol
+#        penalty = 0.0
+#        for agent_id, agent_state in enumerate(protocol.drone_states):
+#            if agent_id == agent.node_id:
+#                continue  # Skip self            
+#
+#            time_since_last_update = self.simulator._current_timestamp - agent_state['time_of_last_update']
+#            #print(f"Agent node: {agent.node_id} comparing with {agent_id} with time: {time_since_last_update}")
+#            if time_since_last_update > self.NORMALIZE_TIME:
+#                continue  # Skip if the information about the other agent is too old to be relevant
+#
+#            other_x, other_y= agent_state['position'][:2]      
+#            distance_to_other = math.sqrt((destination_x - other_x) ** 2 + (destination_y - other_y) ** 2)
+#            if distance_to_other > self.communication_range:
+#                continue  # It is far way to consider a penalty
+#            norm_distance = distance_to_other / (self.action_map_size * self.distance_between_cells)  
+#            
+#            penalty += max(0, 1 - norm_distance)  # Closer means higher penalty, with a hard cutoff at the action map's diagonal distance
+#            #print(penalty)
+#        return penalty  
 
 
     def _sample_dying_agents(self, stepped_agents: list[EpisodeAgentState]) -> list[EpisodeAgentState]:
@@ -729,9 +717,9 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             reward = before - after
 
             # Immediate reward from the action taken
-            if self.immediate_reward_from_action[agent.slot_index] != 0.0:
-                reward += self.immediate_reward_from_action[agent.slot_index]
-                self.immediate_reward_from_action[agent.slot_index] = 0.0  # reset for the next step
+            #if self.immediate_reward_from_action[agent.slot_index] != 0.0:
+            #    reward += self.immediate_reward_from_action[agent.slot_index]
+            #    self.immediate_reward_from_action[agent.slot_index] = 0.0  # reset for the next step
             
             rewards[agent.slot_index] = reward
             #print(f"The final reward of agent {agent.slot_index} is {reward}")
