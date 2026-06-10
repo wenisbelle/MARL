@@ -124,7 +124,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         ###########################################
         self.NORMALIZE_TIME               = config.normalize_time
         # after taking an action an immediate reward is given to the agent based on the action taken
-        self.immediate_reward_from_action = np.zeros(self.max_num_agents)
+        self.immediate_reward_from_action = 0.0
         
         self.possible_agents = [f"drone{i}" for i in range(self.max_num_agents)]
         self.group_map = {"agents": self.possible_agents}
@@ -442,6 +442,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         pre_step_agents = self._active_episode_agents()
         collected_individual_uncertainty_before = self.get_individual_uncertainty_from_simulation(pre_step_agents)
         collected_global_uncertainty_before = self.get_global_uncertainty_from_simulation(pre_step_agents)
+        extreme_high_cells_before, high_cells_before = self.get_number_of_cells_with_high_uncertainty(pre_step_agents)
 
         self._apply_actions(actions)
         status = self.step_simulation()
@@ -450,11 +451,14 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         ##### Get the individual uncertainty after the step, to compute the reward later
         ##### For now, in this calculation we are considering that the reward is given to the specific agent even if he dies in this step
         collected_individual_uncertainty_after = self.get_individual_uncertainty_from_simulation(pre_step_agents)
-        collected_global_uncertainty_after = self.get_global_uncertainty_from_simulation(pre_step_agents)       
+        collected_global_uncertainty_after = self.get_global_uncertainty_from_simulation(pre_step_agents)
+        extreme_high_cells_after, high_cells_after = self.get_number_of_cells_with_high_uncertainty(pre_step_agents)       
 
         ##### Reward
         individual_rewards = self._compute_individual_rewards(collected_individual_uncertainty_before, collected_individual_uncertainty_after, pre_step_agents)
-        global_reward = self._compute_global_rewards(collected_global_uncertainty_before, collected_global_uncertainty_after)
+        global_reward = self._compute_global_rewards(collected_global_uncertainty_before, collected_global_uncertainty_after,
+                                                     extreme_high_cells_before, high_cells_before,
+                                                     extreme_high_cells_after, high_cells_after)
         
         #"Step reward calculation: individual rewards = {individual_rewards}, global reward = {global_reward:.4f}")
         
@@ -561,6 +565,11 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             assert mask[idx], f"Agent {agent.slot_index} picked invalid action {idx} despite masking!"
             protocol.mobility_command(action, self.action_map_size)
 
+            ##### Destination in the map coordinates
+            destination_x = protocol.drone_position[0] + (x - 0.5)*self.action_map_size*self.distance_between_cells
+            destination_y = protocol.drone_position[1] + (y - 0.5)*self.action_map_size*self.distance_between_cells
+
+            self.immediate_reward_from_action += self.get_immediate_distance_penalty(agent, destination_x, destination_y)
 
     def _sample_dying_agents(self, stepped_agents: list[EpisodeAgentState]) -> list[EpisodeAgentState]:
         if self.agent_death_probability <= 0.0:
@@ -661,6 +670,51 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         global_map = self.get_global_map_from_simulation(agents)
         return global_map.sum()
     
+    def get_number_of_cells_with_high_uncertainty(self, agents: list[EpisodeAgentState]) -> list[int]:
+        individual_maps = []
+        for agent in agents:
+            if agent.active is False:
+                continue
+            protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+            individual_maps.append(protocol.map[:, :, 0])  # shape: (map_width, map_height)
+        
+        if not individual_maps:
+            # No active agents — return a fully uncertain map. The actual values
+            # don't matter because the episode is terminal, but the shape does.
+            return np.ones((self.map_width, self.map_height), dtype=np.float32)
+        
+        ##### Take the lowest uncertainty value for each cell across all drones
+        global_map = np.min(individual_maps, axis=0)
+
+        extreme_high = int(np.sum(global_map >= 1.0))
+        high = int(np.sum(global_map >= 0.75))
+        return [extreme_high, high]
+    
+    def get_immediate_distance_penalty(self, agent: EpisodeAgentState, destination_x: float, destination_y: float) -> float:
+        total_penalty = 0.0
+
+        agent_node = self.simulator.get_node(agent.node_id)
+        protocol = agent_node.protocol_encapsulator.protocol
+
+        for agent_id, agent_state in enumerate(protocol.drone_states):
+            if agent_id == agent.node_id:
+                continue  # Skip self            
+
+            time_since_last_update = self.simulator._current_timestamp - agent_state['time_of_last_update']
+            #print(f"Agent node: {agent.node_id} comparing with {agent_id} with time: {time_since_last_update}")
+            
+            if time_since_last_update > self.NORMALIZE_TIME:
+                continue  # Skip if the information about the other agent is too old to be relevant
+
+            other_x, other_y= agent_state['position'][:2]      
+            distance_to_other = math.sqrt((destination_x - other_x) ** 2 + (destination_y - other_y) ** 2)
+            if distance_to_other > self.communication_range:
+                continue  # It is far way to consider a penalty
+            norm_distance = distance_to_other / (self.action_map_size * self.distance_between_cells)  
+            
+            total_penalty += max(0, 1 - norm_distance)  # Closer means higher penalty, with a hard cutoff at the action map's diagonal distance
+        return total_penalty
+
     def get_global_map_from_simulation(self, agents: list[EpisodeAgentState]) -> np.ndarray:
         individual_maps = []
         for agent in agents:
@@ -692,20 +746,25 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             # Positive reward from reducing uncertainty
             reward = before - after
 
-            # Immediate reward from the action taken
-            if self.immediate_reward_from_action[agent.slot_index] != 0.0:
-                reward += self.immediate_reward_from_action[agent.slot_index]
-                self.immediate_reward_from_action[agent.slot_index] = 0.0  # reset for the next step
-                print(f"This should not be activated in this current configuration")
-            
             rewards[agent.slot_index] = reward
             #print(f"The final reward of agent {agent.slot_index} is {reward}")
         return rewards   
 
-    
-    def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float) -> float:
+    def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float,
+                                extreme_high_cells_before: int, high_cells_before: int,
+                                extreme_high_cells_after: int, high_cells_after: int) -> float:
         """Return the global reward based on the change in global uncertainty."""
-        return uncertainty_before - uncertainty_after
+        global_1 = uncertainty_before - uncertainty_after
+        global_2 = 0.5*(high_cells_before-high_cells_after)
+        global_3 = 1.0*(extreme_high_cells_before - extreme_high_cells_after)
+        
+        # reward for distance penalty:
+        global_4 = 0.0
+        if self.immediate_reward_from_action != 0.0:
+            global_4 = self.immediate_reward_from_action
+            self.immediate_reward_from_action = 0.0
+        
+        return global_1 + global_2 + global_3 + global_4
 
 
     def _reward_sum_update(self, individual_rewards: list[float], global_reward: float, stepped_agents: list[EpisodeAgentState]) -> None:
