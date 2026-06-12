@@ -15,11 +15,14 @@ from torchrl.envs.utils import step_mdp
 from simulation_orchestrator import AsyncMARLOrchestrator
 
 def _drain_latest(q: mp.Queue):
-    """Pop everything available on `q` non-blocking; return the last item or None."""
+    """Pop everything available on `q`; safely discard older tensors."""
     latest = None
     try:
         while True:
+            old = latest
             latest = q.get_nowait()
+            if old is not None:
+                del old  # <-- Release the shared memory of skipped weights
     except Empty:
         pass
     return latest

@@ -43,10 +43,10 @@ ESTIMATED_POSITIONS_KEY = "estimated_positions_and_time"
 EPS_INIT = 1.0
 EPS_DECAY = 0.9998
 EPS_MIN = 0.1
-N_WORKERS = 20
+N_WORKERS = 24
 STEPS_PER_BATCH = 100
 NUM_ITERATIONS = 20000
-MIN_TRANSITIONS_PER_COLLECT = 200
+MIN_TRANSITIONS_PER_COLLECT = 500
 COLLECT_TIMEOUT_S = 10.0
 SYNC = False
 NEW_BATCH_NEW_SIMULATION = False
@@ -107,9 +107,10 @@ def make_policy():
 
 
 def main():
-
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(device)
     replay_buffer = ReplayBuffer(buffer_size=BUFFERSIZE, batch_size=BATCH_SIZE, centralized_training=False)
-    trainer_policy = make_policy()
+    trainer_policy = make_policy().to(device)
     optimizer = torch.optim.Adam(trainer_policy.actor.parameters(), lr=LR)
 
     logger = TrainingLogger(
@@ -130,7 +131,7 @@ def main():
         position_key=POSITION_KEY,
         uncertainty_key=UNCERTAINTY_KEY,
         estimated_positions_key=ESTIMATED_POSITIONS_KEY,
-        )
+        ).to(device)
     target_actor.load_state_dict(trainer_policy.actor.state_dict())
     
     for p in target_actor.parameters():
@@ -176,11 +177,11 @@ def main():
                 for _ in range(VALUE_NETWORK_UPDATES_PER_ITERATION):
                     batch = replay_buffer.sample()
 
-                    obs = batch["obs"]
-                    next_obs = batch["next_obs"]
-                    action = batch["action"]
-                    reward = batch["reward"].float()
-                    done = batch["done"].float()
+                    obs = batch["obs"].to(device)
+                    next_obs = batch["next_obs"].to(device)
+                    action = batch["action"].to(device)
+                    reward = batch["reward"].float().to(device)
+                    done = batch["done"].float().to(device)
 
                     with torch.no_grad():
                         #### Double DQN target calculation

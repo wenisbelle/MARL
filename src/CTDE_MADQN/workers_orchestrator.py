@@ -133,6 +133,7 @@ class WorkersOrchestrator:
             if agent_td is not None:
                 self.replay_buffer.load_transitions(agent_td)
                 new_count += agent_td.batch_size[0]
+                del agent_td
             #print(f"Collected {new_count} transitions so far...")
 
         if self.sync:
