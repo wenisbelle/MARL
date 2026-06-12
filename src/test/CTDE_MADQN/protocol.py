@@ -580,7 +580,7 @@ class Drone(IProtocol):
                 self.update_states(data)
                 if self.provider.current_time() - self.last_drone_interaction_time[data['sender']]  > self.TIMEOUT_TO_UPDATE_DESTINATION: # the drone id starts at 0
                     action = self._select_action()
-                    self.mobility_command(action, self.OBSERVATION_MAP_SIZE)
+                    self.mobility_command(action, self.ACTION_MAP_SIZE)
                     self.last_drone_interaction_time[data['sender']] = self.provider.current_time() 
             
             elif msg_type == MessageType.BROADCAST_DESTINATION_MESSAGE.value:

@@ -27,7 +27,7 @@ def create_and_run_simulation():
     builder.add_handler(MobilityHandler())
     #builder.add_handler(VisualizationHandler())
     builder.add_handler(CommunicationHandler(CommunicationMedium(
-        transmission_range=200
+        transmission_range=100
     )))
 
     MAP_WIDTH = 50
