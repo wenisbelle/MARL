@@ -220,7 +220,7 @@ class Drone(IProtocol):
     def get_patched_map(self, observation_map_size: int) -> np.ndarray:
         """
         Return an (M, M) patch of the uncertainty map centered on the drone.
-        Cells outside the world are padded with 0.0 (maximum uncertainty), so
+        Cells outside the world are padded with 0.0 (minimum uncertainty), so
         the drone is always at patch[M//2, M//2] regardless of edge proximity.
         """
         M = observation_map_size
@@ -242,7 +242,7 @@ class Drone(IProtocol):
         src_y_lo = max(0, y_lo)
         src_y_hi = min(self.MAP_HEIGHT, y_hi)
 
-        # Pre-fill with 0.0 so off-map cells look maximally uncertain (not "explored").
+        # Pre-fill with 0.0 so off-map cells look minimal uncertain (no need to "explore").
         patch = np.full((M, M), 0.0, dtype=np.float32)
 
         if src_x_hi > src_x_lo and src_y_hi > src_y_lo:
@@ -254,9 +254,43 @@ class Drone(IProtocol):
                 self.map[src_x_lo:src_x_hi, src_y_lo:src_y_hi, 0]
         return patch
     
+    def get_spatial_distance_map(self, observation_map_size: int) -> np.ndarray:
+        """
+        Returns a 2D matrix where each cell contains its normalized Euclidean 
+        distance to the drone's current position.
+        """
+        if observation_map_size == self.MAP_WIDTH:
+            # Generating for the full global map
+            w, h = self.MAP_WIDTH, self.MAP_HEIGHT
+            cx, cy = self.get_current_cell()
+            # Max possible distance is the diagonal of the map
+            max_dist = math.sqrt(w**2 + h**2)
+        else:
+            # Generating for the ego-centric patch map
+            w = h = observation_map_size
+            # In the patched map, the drone is always perfectly in the center
+            cx = cy = observation_map_size // 2
+            # Max distance in the patch is from the center to a corner
+            max_dist = math.sqrt(cx**2 + cy**2)
+
+        # Create coordinate grids for fast vectorized broadcasting
+        # x will have shape (w, 1) and y will have shape (1, h)
+        x, y = np.ogrid[:w, :h]
+        
+        # Calculate Euclidean distance from the center coordinates
+        distances = np.sqrt((x - cx)**2 + (y - cy)**2)
+        
+        # Normalize to [0.0, 1.0] to maintain stable training gradients
+        # Avoid division by zero in the extreme edge case where max_dist is 0
+        normalized_distances = (distances / max(1e-5, max_dist)).astype(np.float32)
+        return normalized_distances
+        
+        
+    
     ##### Map updating ##### 
     def vanishing_map_routine(self):
         self.map[:, :, 0] = self.map[:, :, 0] + self.UNCERTAINTY_RATE
+        distance_map = self.get_spatial_distance_map(20)
         
         ##### Checking if the cell was visited #####
         ##### Importante parameter. If there are unviseted cells, there will be penalizations in the algorithm #####

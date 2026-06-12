@@ -236,7 +236,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         # The time will vary from 0 to 1, where 0 means the information is fresh and 1 means the information is as old as the vanishing_update_time - Hoping the system can learn
         # to give more importance to fresher information
 
-        map_patch_shape = (self.max_num_agents, M, M)
+        map_patch_shape = (self.max_num_agents, 2, M, M) # 1 for uncertainty and 1 for the norm distances
         complete_map_shape = (self.map_width, self.map_height)
         position_shape = (self.max_num_agents, 2)
         uncertainty_shape = (self.max_num_agents, 1)
@@ -597,6 +597,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             return protocol.map[:,:,0]
         else:
             return protocol.get_patched_map(self.observation_map_size)
+        
+    def get_individual_distances_from_map(self, agent:EpisodeAgentState) -> np.ndarray:
+        protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
+        return protocol.get_spatial_distance_map(self.observation_map_size)
     
     def get_individual_agent_uncertainty_from_simulation(self, agent: EpisodeAgentState) -> float:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
@@ -789,7 +793,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         individual_state = {}
         for agent_index, agent in enumerate(existing_agents):
-            agent_patch_map = self.get_individual_patch_map_from_simulation(agent)
+            agent_patch_map = np.stack((self.get_individual_patch_map_from_simulation(agent), self.get_individual_distances_from_map(agent)), axis = 0)
             agent_uncertainty = self.get_individual_agent_uncertainty_from_simulation(agent)
             agent_position = self.get_individual_position_from_simulation(agent)
             estimated_positions_and_time = self.get_estimated_positions_and_time_from_simulation(agent)
@@ -889,9 +893,9 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
             # map_patch -> take uncertainty channel, pad to (M, M)
             raw_patch = obs["map_patch"]
-            assert raw_patch.shape == (M, M), (
-                f"Expected patch shape ({M}, {M}) from protocol, got {raw_patch.shape}"
-                )
+            assert raw_patch.shape == (2, M, M), (
+                f"Expected patch shape (2, {M}, {M}) from protocol, got {raw_patch.shape}"
+            )
             agent_map_patch[slot] = torch.as_tensor(
                 raw_patch, device=self.device, dtype=agent_map_patch.dtype
             )
