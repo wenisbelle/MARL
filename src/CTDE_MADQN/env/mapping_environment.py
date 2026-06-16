@@ -694,6 +694,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         high = int(np.sum(global_map >= 0.75))
         return [extreme_high, high]
     
+    
     def get_immediate_distance_penalty(self, agent: EpisodeAgentState, destination_x: float, destination_y: float) -> float:
         total_penalty = 0.0
 

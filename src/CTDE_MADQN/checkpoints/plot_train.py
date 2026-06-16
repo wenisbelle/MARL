@@ -35,11 +35,17 @@ from matplotlib.ticker import MaxNLocator
 # ── helpers ──────────────────────────────────────────────────────────────────
 
 def parse_tensor(value):
-    """Convert 'tensor(0.9990)' strings (or plain floats) to float."""
+    """Convert 'tensor(0.9990, device=...)' strings (or plain floats) to float."""
     s = str(value).strip()
     if s.startswith("tensor("):
+        # Strip 'tensor(' from start and ')' from end
         inner = s[len("tensor("):-1]
-        return float(inner)
+        
+        # Split by comma and grab the first part (the actual number)
+        # E.g., "0.9998, device='cuda:0'" -> "0.9998"
+        value_str = inner.split(',')[0].strip()
+        
+        return float(value_str)
     return float(s)
 
 

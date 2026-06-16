@@ -58,19 +58,24 @@ class MapCNN(nn.Module):
         changes.
     """
 
-    def __init__(self, in_channels: int = 1, feature_dim: int = 128):
+    def __init__(self, in_channels: int = 2, feature_dim: int = 256):
         super().__init__()
         self.conv = nn.Sequential(
-            nn.Conv2d(in_channels, 16, kernel_size=3, padding=1),
+            nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(16, 32, kernel_size=3, padding=1),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),                       # 20x20 -> 10x10 (default)
+            nn.MaxPool2d(2),                    # 50 -> 25
             nn.Conv2d(32, 64, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.AdaptiveAvgPool2d(1),               # always (B, 64, 1, 1)
+            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2),                    # 25 -> 12
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
         )
-        self.proj = nn.Linear(64, feature_dim)
+        # 128 channels × 12 × 12 = 18432 — flatten
+        self.proj = nn.Linear(128 * 12 * 12, feature_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """

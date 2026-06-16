@@ -81,8 +81,8 @@ class Drone(IProtocol):
         "uncertainty_rate": 0.01,
         "vanishing_update_time": 10.0,
         "number_of_drones": 3,
-        "map_width": 10,
-        "map_height": 10,
+        "map_width": 50,
+        "map_height": 50,
         "observation_map_size": 50,
         "action_map_size": 10, 
     }
@@ -184,7 +184,7 @@ class Drone(IProtocol):
         self.actor = Actor(
             max_num_agents=self.NUMBER_OF_DRONES,
             action_dim=ACTION_DIMENSION,
-            map_channels=1,
+            map_channels=2,
             vector_feature_dim=VECTOR_FEATURE_DIM,
             hidden_dim=HIDDEN_DIM,
             map_key=self.MAP_KEY,
@@ -245,6 +245,43 @@ class Drone(IProtocol):
     ###### Getting the total map uncertainty #####
     def get_current_map_uncertainty(self):
         return self.total_uncertainty
+    
+    def get_current_cell(self):
+        current_x = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+
+        return current_x, current_y
+    
+    def get_spatial_distance_map(self, observation_map_size: int) -> np.ndarray:
+        """
+        Returns a 2D matrix where each cell contains its normalized Euclidean 
+        distance to the drone's current position.
+        """
+        if observation_map_size == self.MAP_WIDTH:
+            # Generating for the full global map
+            w, h = self.MAP_WIDTH, self.MAP_HEIGHT
+            cx, cy = self.get_current_cell()
+            # Max possible distance is the diagonal of the map
+            max_dist = math.sqrt(w**2 + h**2)
+        else:
+            # Generating for the ego-centric patch map
+            w = h = observation_map_size
+            # In the patched map, the drone is always perfectly in the center
+            cx = cy = observation_map_size // 2
+            # Max distance in the patch is from the center to a corner
+            max_dist = math.sqrt(cx**2 + cy**2)
+
+        # Create coordinate grids for fast vectorized broadcasting
+        # x will have shape (w, 1) and y will have shape (1, h)
+        x, y = np.ogrid[:w, :h]
+        
+        # Calculate Euclidean distance from the center coordinates
+        distances = np.sqrt((x - cx)**2 + (y - cy)**2)
+        
+        # Normalize to [0.0, 1.0] to maintain stable training gradients
+        # Avoid division by zero in the extreme edge case where max_dist is 0
+        normalized_distances = (distances / max(1e-5, max_dist)).astype(np.float32)
+        return normalized_distances
     
     def get_patched_map(self, observation_map_size: int) -> np.ndarray:
         """
@@ -320,7 +357,7 @@ class Drone(IProtocol):
         """
         
         map_patch = torch.tensor(
-            self.get_patched_map(self.OBSERVATION_MAP_SIZE),
+            np.stack((self.get_patched_map(self.OBSERVATION_MAP_SIZE), self.get_spatial_distance_map(self.OBSERVATION_MAP_SIZE)), axis = 0),
             dtype=torch.float32
         )
 

@@ -290,7 +290,7 @@ class Drone(IProtocol):
     ##### Map updating ##### 
     def vanishing_map_routine(self):
         self.map[:, :, 0] = self.map[:, :, 0] + self.UNCERTAINTY_RATE
-        distance_map = self.get_spatial_distance_map(20)
+        #distance_map = self.get_spatial_distance_map(20)
         
         ##### Checking if the cell was visited #####
         ##### Importante parameter. If there are unviseted cells, there will be penalizations in the algorithm #####
