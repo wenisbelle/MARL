@@ -1,0 +1,1864 @@
+At time: 10.0, the node 3 has 2450.0 unvisited cells
+At time: 10.0, the node 1 has 2476.0 unvisited cells
+At time: 10.0, the node 4 has 2474.0 unvisited cells
+At time: 10.0, the node 0 has 2474.0 unvisited cells
+At time: 10.0, the node 2 has 2448.0 unvisited cells
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [-240. -460.   50.] from drone 4
+Drone 3 updated position command.
+At time: 20.0, the node 1 has 2458.0 unvisited cells
+At time: 20.0, the node 3 has 2332.0 unvisited cells
+At time: 20.0, the node 0 has 2332.0 unvisited cells
+At time: 20.0, the node 4 has 2332.0 unvisited cells
+At time: 20.0, the node 2 has 2423.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-480.  440.   50.] from drone 4
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-380.  280.   50.] from drone 4
+At time: 30.0, the node 1 has 2242.0 unvisited cells
+At time: 30.0, the node 2 has 2401.0 unvisited cells
+At time: 30.0, the node 3 has 2317.0 unvisited cells
+At time: 30.0, the node 4 has 2242.0 unvisited cells
+At time: 30.0, the node 0 has 2305.0 unvisited cells
+At time: 40.0, the node 1 has 2216.0 unvisited cells
+At time: 40.0, the node 0 has 2284.0 unvisited cells
+At time: 40.0, the node 2 has 2383.0 unvisited cells
+At time: 40.0, the node 4 has 2215.0 unvisited cells
+At time: 40.0, the node 3 has 2294.0 unvisited cells
+At time: 50.0, the node 3 has 2275.0 unvisited cells
+At time: 50.0, the node 0 has 2264.0 unvisited cells
+At time: 50.0, the node 4 has 2206.0 unvisited cells
+At time: 50.0, the node 1 has 2201.0 unvisited cells
+At time: 50.0, the node 2 has 2360.0 unvisited cells
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [ 400. -220.   50.] from drone 2
+Drone 2 received broadcasted destination [-140.   40.   50.] from drone 1
+At time: 60.0, the node 2 has 2097.0 unvisited cells
+At time: 60.0, the node 3 has 2270.0 unvisited cells
+At time: 60.0, the node 0 has 2240.0 unvisited cells
+At time: 60.0, the node 4 has 2187.0 unvisited cells
+At time: 60.0, the node 1 has 2101.0 unvisited cells
+At time: 70.0, the node 3 has 2270.0 unvisited cells
+At time: 70.0, the node 2 has 2075.0 unvisited cells
+At time: 70.0, the node 0 has 2224.0 unvisited cells
+At time: 70.0, the node 1 has 2079.0 unvisited cells
+At time: 70.0, the node 4 has 2177.0 unvisited cells
+At time: 80.0, the node 2 has 2062.0 unvisited cells
+At time: 80.0, the node 3 has 2270.0 unvisited cells
+At time: 80.0, the node 4 has 2158.0 unvisited cells
+At time: 80.0, the node 1 has 2059.0 unvisited cells
+At time: 80.0, the node 0 has 2206.0 unvisited cells
+At time: 90.0, the node 3 has 2263.0 unvisited cells
+At time: 90.0, the node 2 has 2052.0 unvisited cells
+At time: 90.0, the node 0 has 2188.0 unvisited cells
+At time: 90.0, the node 1 has 2037.0 unvisited cells
+At time: 90.0, the node 4 has 2136.0 unvisited cells
+Drone 1 updated position command.
+At time: 100.0, the node 3 has 2248.0 unvisited cells
+At time: 100.0, the node 0 has 1883.0 unvisited cells
+At time: 100.0, the node 2 has 1973.0 unvisited cells
+At time: 100.0, the node 1 has 1883.0 unvisited cells
+At time: 100.0, the node 4 has 2120.0 unvisited cells
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [  60. -140.   50.] from drone 3
+At time: 110.0, the node 3 has 1957.0 unvisited cells
+At time: 110.0, the node 2 has 1957.0 unvisited cells
+At time: 110.0, the node 0 has 1879.0 unvisited cells
+At time: 110.0, the node 1 has 1866.0 unvisited cells
+At time: 110.0, the node 4 has 2117.0 unvisited cells
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [ 480. -320.   50.] from drone 4
+At time: 120.0, the node 3 has 1954.0 unvisited cells
+At time: 120.0, the node 4 has 1768.0 unvisited cells
+At time: 120.0, the node 2 has 1943.0 unvisited cells
+At time: 120.0, the node 1 has 1768.0 unvisited cells
+At time: 120.0, the node 0 has 1864.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-200.  440.   50.] from drone 4
+At time: 130.0, the node 0 has 1854.0 unvisited cells
+At time: 130.0, the node 3 has 1948.0 unvisited cells
+At time: 130.0, the node 4 has 1750.0 unvisited cells
+At time: 130.0, the node 1 has 1750.0 unvisited cells
+At time: 130.0, the node 2 has 1922.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-380. -500.   50.] from drone 4
+At time: 140.0, the node 1 has 1747.0 unvisited cells
+At time: 140.0, the node 2 has 1905.0 unvisited cells
+At time: 140.0, the node 0 has 1714.0 unvisited cells
+At time: 140.0, the node 3 has 1945.0 unvisited cells
+At time: 140.0, the node 4 has 1719.0 unvisited cells
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [ 480. -220.   50.] from drone 4
+At time: 150.0, the node 1 has 1732.0 unvisited cells
+At time: 150.0, the node 4 has 1541.0 unvisited cells
+At time: 150.0, the node 0 has 1705.0 unvisited cells
+At time: 150.0, the node 2 has 1540.0 unvisited cells
+At time: 150.0, the node 3 has 1932.0 unvisited cells
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [ 80. 220.  50.] from drone 4
+At time: 160.0, the node 1 has 1718.0 unvisited cells
+At time: 160.0, the node 3 has 1526.0 unvisited cells
+At time: 160.0, the node 4 has 1526.0 unvisited cells
+At time: 160.0, the node 0 has 1700.0 unvisited cells
+At time: 160.0, the node 2 has 1535.0 unvisited cells
+At time: 170.0, the node 0 has 1695.0 unvisited cells
+At time: 170.0, the node 2 has 1524.0 unvisited cells
+At time: 170.0, the node 3 has 1524.0 unvisited cells
+At time: 170.0, the node 1 has 1703.0 unvisited cells
+At time: 170.0, the node 4 has 1524.0 unvisited cells
+At time: 180.0, the node 4 has 1516.0 unvisited cells
+At time: 180.0, the node 2 has 1503.0 unvisited cells
+At time: 180.0, the node 0 has 1693.0 unvisited cells
+At time: 180.0, the node 1 has 1693.0 unvisited cells
+At time: 180.0, the node 3 has 1520.0 unvisited cells
+At time: 190.0, the node 4 has 1492.0 unvisited cells
+At time: 190.0, the node 3 has 1504.0 unvisited cells
+At time: 190.0, the node 2 has 1497.0 unvisited cells
+At time: 190.0, the node 0 has 1685.0 unvisited cells
+At time: 190.0, the node 1 has 1679.0 unvisited cells
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [460. 280.  50.] from drone 2
+At time: 200.0, the node 4 has 1468.0 unvisited cells
+At time: 200.0, the node 1 has 1676.0 unvisited cells
+At time: 200.0, the node 3 has 1483.0 unvisited cells
+At time: 200.0, the node 0 has 1466.0 unvisited cells
+At time: 200.0, the node 2 has 1465.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-400.   20.   50.] from drone 4
+At time: 210.0, the node 0 has 1466.0 unvisited cells
+At time: 210.0, the node 1 has 1433.0 unvisited cells
+At time: 210.0, the node 3 has 1473.0 unvisited cells
+At time: 210.0, the node 2 has 1455.0 unvisited cells
+At time: 210.0, the node 4 has 1425.0 unvisited cells
+Drone 2 updated position command.
+At time: 220.0, the node 0 has 1454.0 unvisited cells
+At time: 220.0, the node 3 has 1455.0 unvisited cells
+At time: 220.0, the node 1 has 1367.0 unvisited cells
+At time: 220.0, the node 4 has 1420.0 unvisited cells
+At time: 220.0, the node 2 has 1367.0 unvisited cells
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [480. 420.  50.] from drone 1
+Drone 1 received broadcasted destination [ 20. 440.  50.] from drone 0
+At time: 230.0, the node 4 has 1412.0 unvisited cells
+At time: 230.0, the node 2 has 1365.0 unvisited cells
+At time: 230.0, the node 0 has 1364.0 unvisited cells
+At time: 230.0, the node 3 has 1446.0 unvisited cells
+At time: 230.0, the node 1 has 1364.0 unvisited cells
+Drone 3 updated position command.
+At time: 240.0, the node 2 has 1365.0 unvisited cells
+At time: 240.0, the node 4 has 1396.0 unvisited cells
+At time: 240.0, the node 0 has 1364.0 unvisited cells
+At time: 240.0, the node 1 has 1284.0 unvisited cells
+At time: 240.0, the node 3 has 1284.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-420. -220.   50.] from drone 3
+At time: 250.0, the node 3 has 1280.0 unvisited cells
+At time: 250.0, the node 1 has 1277.0 unvisited cells
+At time: 250.0, the node 2 has 1354.0 unvisited cells
+At time: 250.0, the node 4 has 1394.0 unvisited cells
+At time: 250.0, the node 0 has 1361.0 unvisited cells
+At time: 260.0, the node 0 has 1347.0 unvisited cells
+At time: 260.0, the node 3 has 1279.0 unvisited cells
+At time: 260.0, the node 1 has 1260.0 unvisited cells
+At time: 260.0, the node 4 has 1387.0 unvisited cells
+At time: 260.0, the node 2 has 1343.0 unvisited cells
+At time: 270.0, the node 0 has 1342.0 unvisited cells
+At time: 270.0, the node 2 has 1336.0 unvisited cells
+At time: 270.0, the node 3 has 1279.0 unvisited cells
+At time: 270.0, the node 4 has 1386.0 unvisited cells
+At time: 270.0, the node 1 has 1241.0 unvisited cells
+Drone 4 updated position command.
+At time: 280.0, the node 2 has 1326.0 unvisited cells
+At time: 280.0, the node 1 has 1226.0 unvisited cells
+At time: 280.0, the node 3 has 1264.0 unvisited cells
+At time: 280.0, the node 0 has 1311.0 unvisited cells
+At time: 280.0, the node 4 has 1304.0 unvisited cells
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [120. 240.  50.] from drone 1
+At time: 290.0, the node 4 has 1304.0 unvisited cells
+At time: 290.0, the node 1 has 1173.0 unvisited cells
+At time: 290.0, the node 2 has 1307.0 unvisited cells
+At time: 290.0, the node 3 has 1253.0 unvisited cells
+At time: 290.0, the node 0 has 1173.0 unvisited cells
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [400. 220.  50.] from drone 1
+At time: 300.0, the node 0 has 1173.0 unvisited cells
+At time: 300.0, the node 4 has 1302.0 unvisited cells
+At time: 300.0, the node 1 has 1172.0 unvisited cells
+At time: 300.0, the node 2 has 1293.0 unvisited cells
+At time: 300.0, the node 3 has 1253.0 unvisited cells
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [380. 380.  50.] from drone 4
+At time: 310.0, the node 2 has 1282.0 unvisited cells
+At time: 310.0, the node 3 has 1191.0 unvisited cells
+At time: 310.0, the node 0 has 1173.0 unvisited cells
+At time: 310.0, the node 4 has 1191.0 unvisited cells
+At time: 310.0, the node 1 has 1162.0 unvisited cells
+At time: 320.0, the node 1 has 1144.0 unvisited cells
+At time: 320.0, the node 2 has 1268.0 unvisited cells
+At time: 320.0, the node 3 has 1190.0 unvisited cells
+At time: 320.0, the node 0 has 1173.0 unvisited cells
+At time: 320.0, the node 4 has 1191.0 unvisited cells
+At time: 330.0, the node 2 has 1254.0 unvisited cells
+At time: 330.0, the node 1 has 1124.0 unvisited cells
+At time: 330.0, the node 4 has 1180.0 unvisited cells
+At time: 330.0, the node 3 has 1183.0 unvisited cells
+At time: 330.0, the node 0 has 1151.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-300.  380.   50.] from drone 3
+At time: 340.0, the node 2 has 1239.0 unvisited cells
+At time: 340.0, the node 1 has 1077.0 unvisited cells
+At time: 340.0, the node 4 has 1157.0 unvisited cells
+At time: 340.0, the node 3 has 1077.0 unvisited cells
+At time: 340.0, the node 0 has 1133.0 unvisited cells
+At time: 350.0, the node 2 has 1233.0 unvisited cells
+At time: 350.0, the node 0 has 1128.0 unvisited cells
+At time: 350.0, the node 1 has 1077.0 unvisited cells
+At time: 350.0, the node 4 has 1142.0 unvisited cells
+At time: 350.0, the node 3 has 1077.0 unvisited cells
+At time: 360.0, the node 2 has 1231.0 unvisited cells
+At time: 360.0, the node 3 has 1077.0 unvisited cells
+At time: 360.0, the node 0 has 1126.0 unvisited cells
+At time: 360.0, the node 1 has 1077.0 unvisited cells
+At time: 360.0, the node 4 has 1121.0 unvisited cells
+At time: 370.0, the node 3 has 1077.0 unvisited cells
+At time: 370.0, the node 2 has 1230.0 unvisited cells
+At time: 370.0, the node 4 has 1107.0 unvisited cells
+At time: 370.0, the node 0 has 1126.0 unvisited cells
+At time: 370.0, the node 1 has 1077.0 unvisited cells
+Drone 4 updated position command.
+At time: 380.0, the node 2 has 984.0 unvisited cells
+At time: 380.0, the node 3 has 1077.0 unvisited cells
+At time: 380.0, the node 4 has 984.0 unvisited cells
+At time: 380.0, the node 0 has 1126.0 unvisited cells
+At time: 380.0, the node 1 has 1071.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [280. 460.  50.] from drone 3
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [320.  60.  50.] from drone 4
+At time: 390.0, the node 2 has 970.0 unvisited cells
+At time: 390.0, the node 1 has 1052.0 unvisited cells
+At time: 390.0, the node 4 has 970.0 unvisited cells
+At time: 390.0, the node 3 has 1056.0 unvisited cells
+At time: 390.0, the node 0 has 1119.0 unvisited cells
+At time: 400.0, the node 2 has 970.0 unvisited cells
+At time: 400.0, the node 1 has 1037.0 unvisited cells
+At time: 400.0, the node 4 has 964.0 unvisited cells
+At time: 400.0, the node 0 has 1106.0 unvisited cells
+At time: 400.0, the node 3 has 1056.0 unvisited cells
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-500. -380.   50.] from drone 3
+At time: 410.0, the node 0 has 1106.0 unvisited cells
+At time: 410.0, the node 3 has 840.0 unvisited cells
+At time: 410.0, the node 2 has 838.0 unvisited cells
+At time: 410.0, the node 1 has 1018.0 unvisited cells
+At time: 410.0, the node 4 has 939.0 unvisited cells
+At time: 420.0, the node 4 has 921.0 unvisited cells
+At time: 420.0, the node 0 has 1105.0 unvisited cells
+At time: 420.0, the node 2 has 830.0 unvisited cells
+At time: 420.0, the node 3 has 839.0 unvisited cells
+At time: 420.0, the node 1 has 1010.0 unvisited cells
+At time: 430.0, the node 0 has 1104.0 unvisited cells
+At time: 430.0, the node 4 has 911.0 unvisited cells
+At time: 430.0, the node 1 has 996.0 unvisited cells
+At time: 430.0, the node 2 has 821.0 unvisited cells
+At time: 430.0, the node 3 has 839.0 unvisited cells
+At time: 440.0, the node 4 has 908.0 unvisited cells
+At time: 440.0, the node 0 has 1104.0 unvisited cells
+At time: 440.0, the node 1 has 982.0 unvisited cells
+At time: 440.0, the node 2 has 816.0 unvisited cells
+At time: 440.0, the node 3 has 839.0 unvisited cells
+At time: 450.0, the node 4 has 889.0 unvisited cells
+At time: 450.0, the node 3 has 838.0 unvisited cells
+At time: 450.0, the node 0 has 1100.0 unvisited cells
+At time: 450.0, the node 1 has 958.0 unvisited cells
+At time: 450.0, the node 2 has 816.0 unvisited cells
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [460. 240.  50.] from drone 2
+At time: 460.0, the node 3 has 830.0 unvisited cells
+At time: 460.0, the node 4 has 869.0 unvisited cells
+At time: 460.0, the node 2 has 759.0 unvisited cells
+At time: 460.0, the node 0 has 759.0 unvisited cells
+At time: 460.0, the node 1 has 943.0 unvisited cells
+At time: 470.0, the node 4 has 851.0 unvisited cells
+At time: 470.0, the node 1 has 933.0 unvisited cells
+At time: 470.0, the node 3 has 819.0 unvisited cells
+At time: 470.0, the node 2 has 759.0 unvisited cells
+At time: 470.0, the node 0 has 759.0 unvisited cells
+At time: 480.0, the node 1 has 933.0 unvisited cells
+At time: 480.0, the node 4 has 843.0 unvisited cells
+At time: 480.0, the node 0 has 759.0 unvisited cells
+At time: 480.0, the node 3 has 804.0 unvisited cells
+At time: 480.0, the node 2 has 753.0 unvisited cells
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-200.  440.   50.] from drone 1
+At time: 490.0, the node 2 has 738.0 unvisited cells
+At time: 490.0, the node 4 has 841.0 unvisited cells
+At time: 490.0, the node 1 has 648.0 unvisited cells
+At time: 490.0, the node 0 has 648.0 unvisited cells
+At time: 490.0, the node 3 has 791.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [460. 420.  50.] from drone 4
+At time: 500.0, the node 3 has 791.0 unvisited cells
+At time: 500.0, the node 2 has 719.0 unvisited cells
+At time: 500.0, the node 4 has 548.0 unvisited cells
+At time: 500.0, the node 1 has 548.0 unvisited cells
+At time: 500.0, the node 0 has 548.0 unvisited cells
+At time: 510.0, the node 3 has 786.0 unvisited cells
+At time: 510.0, the node 2 has 705.0 unvisited cells
+At time: 510.0, the node 4 has 548.0 unvisited cells
+At time: 510.0, the node 1 has 548.0 unvisited cells
+At time: 510.0, the node 0 has 546.0 unvisited cells
+At time: 520.0, the node 3 has 782.0 unvisited cells
+At time: 520.0, the node 0 has 539.0 unvisited cells
+At time: 520.0, the node 2 has 698.0 unvisited cells
+At time: 520.0, the node 4 has 547.0 unvisited cells
+At time: 520.0, the node 1 has 548.0 unvisited cells
+At time: 530.0, the node 0 has 523.0 unvisited cells
+At time: 530.0, the node 3 has 781.0 unvisited cells
+At time: 530.0, the node 1 has 543.0 unvisited cells
+At time: 530.0, the node 4 has 537.0 unvisited cells
+At time: 530.0, the node 2 has 680.0 unvisited cells
+Drone 2 updated position command.
+At time: 540.0, the node 0 has 435.0 unvisited cells
+At time: 540.0, the node 2 has 435.0 unvisited cells
+At time: 540.0, the node 1 has 537.0 unvisited cells
+At time: 540.0, the node 3 has 781.0 unvisited cells
+At time: 540.0, the node 4 has 529.0 unvisited cells
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [-320. -420.   50.] from drone 2
+At time: 550.0, the node 0 has 426.0 unvisited cells
+At time: 550.0, the node 3 has 781.0 unvisited cells
+At time: 550.0, the node 2 has 426.0 unvisited cells
+At time: 550.0, the node 1 has 537.0 unvisited cells
+At time: 550.0, the node 4 has 510.0 unvisited cells
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [-500.   80.   50.] from drone 2
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [460. 340.  50.] from drone 3
+At time: 560.0, the node 4 has 502.0 unvisited cells
+At time: 560.0, the node 0 has 425.0 unvisited cells
+At time: 560.0, the node 3 has 505.0 unvisited cells
+At time: 560.0, the node 2 has 425.0 unvisited cells
+At time: 560.0, the node 1 has 505.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [ 400. -340.   50.] from drone 3
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [ 260. -300.   50.] from drone 2
+At time: 570.0, the node 1 has 505.0 unvisited cells
+At time: 570.0, the node 0 has 424.0 unvisited cells
+At time: 570.0, the node 4 has 498.0 unvisited cells
+At time: 570.0, the node 3 has 505.0 unvisited cells
+At time: 570.0, the node 2 has 424.0 unvisited cells
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [-360.  340.   50.] from drone 2
+At time: 580.0, the node 2 has 421.0 unvisited cells
+At time: 580.0, the node 1 has 505.0 unvisited cells
+At time: 580.0, the node 0 has 421.0 unvisited cells
+At time: 580.0, the node 4 has 494.0 unvisited cells
+At time: 580.0, the node 3 has 505.0 unvisited cells
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [ 440. -500.   50.] from drone 3
+At time: 590.0, the node 3 has 378.0 unvisited cells
+At time: 590.0, the node 2 has 378.0 unvisited cells
+At time: 590.0, the node 1 has 505.0 unvisited cells
+At time: 590.0, the node 0 has 421.0 unvisited cells
+At time: 590.0, the node 4 has 483.0 unvisited cells
+At time: 600.0, the node 2 has 378.0 unvisited cells
+At time: 600.0, the node 3 has 378.0 unvisited cells
+At time: 600.0, the node 1 has 497.0 unvisited cells
+At time: 600.0, the node 0 has 414.0 unvisited cells
+At time: 600.0, the node 4 has 475.0 unvisited cells
+At time: 610.0, the node 2 has 375.0 unvisited cells
+At time: 610.0, the node 4 has 456.0 unvisited cells
+At time: 610.0, the node 3 has 371.0 unvisited cells
+At time: 610.0, the node 1 has 485.0 unvisited cells
+At time: 610.0, the node 0 has 410.0 unvisited cells
+At time: 620.0, the node 0 has 403.0 unvisited cells
+At time: 620.0, the node 2 has 375.0 unvisited cells
+At time: 620.0, the node 1 has 478.0 unvisited cells
+At time: 620.0, the node 3 has 367.0 unvisited cells
+At time: 620.0, the node 4 has 452.0 unvisited cells
+At time: 630.0, the node 2 has 375.0 unvisited cells
+At time: 630.0, the node 0 has 399.0 unvisited cells
+At time: 630.0, the node 1 has 477.0 unvisited cells
+At time: 630.0, the node 3 has 364.0 unvisited cells
+At time: 630.0, the node 4 has 452.0 unvisited cells
+At time: 640.0, the node 2 has 375.0 unvisited cells
+At time: 640.0, the node 4 has 452.0 unvisited cells
+At time: 640.0, the node 0 has 390.0 unvisited cells
+At time: 640.0, the node 3 has 363.0 unvisited cells
+At time: 640.0, the node 1 has 477.0 unvisited cells
+At time: 650.0, the node 2 has 375.0 unvisited cells
+At time: 650.0, the node 0 has 389.0 unvisited cells
+At time: 650.0, the node 1 has 477.0 unvisited cells
+At time: 650.0, the node 4 has 452.0 unvisited cells
+At time: 650.0, the node 3 has 362.0 unvisited cells
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [  20. -420.   50.] from drone 4
+At time: 660.0, the node 2 has 374.0 unvisited cells
+At time: 660.0, the node 3 has 281.0 unvisited cells
+At time: 660.0, the node 0 has 389.0 unvisited cells
+At time: 660.0, the node 1 has 477.0 unvisited cells
+At time: 660.0, the node 4 has 281.0 unvisited cells
+At time: 670.0, the node 2 has 367.0 unvisited cells
+Drone 4 updated position command.
+At time: 670.0, the node 3 has 277.0 unvisited cells
+Drone 0 received broadcasted destination [-480.  460.   50.] from drone 4
+At time: 670.0, the node 0 has 247.0 unvisited cells
+At time: 670.0, the node 1 has 475.0 unvisited cells
+At time: 670.0, the node 4 has 247.0 unvisited cells
+At time: 680.0, the node 2 has 363.0 unvisited cells
+At time: 680.0, the node 1 has 469.0 unvisited cells
+At time: 680.0, the node 4 has 247.0 unvisited cells
+At time: 680.0, the node 3 has 276.0 unvisited cells
+At time: 680.0, the node 0 has 247.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-500.  460.   50.] from drone 4
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-500.  420.   50.] from drone 3
+At time: 690.0, the node 0 has 242.0 unvisited cells
+At time: 690.0, the node 1 has 460.0 unvisited cells
+At time: 690.0, the node 2 has 363.0 unvisited cells
+At time: 690.0, the node 4 has 247.0 unvisited cells
+At time: 690.0, the node 3 has 242.0 unvisited cells
+At time: 700.0, the node 0 has 242.0 unvisited cells
+At time: 700.0, the node 1 has 441.0 unvisited cells
+At time: 700.0, the node 2 has 359.0 unvisited cells
+At time: 700.0, the node 4 has 247.0 unvisited cells
+At time: 700.0, the node 3 has 242.0 unvisited cells
+At time: 710.0, the node 0 has 242.0 unvisited cells
+At time: 710.0, the node 3 has 242.0 unvisited cells
+At time: 710.0, the node 1 has 427.0 unvisited cells
+At time: 710.0, the node 2 has 353.0 unvisited cells
+At time: 710.0, the node 4 has 246.0 unvisited cells
+Drone 4 updated position command.
+At time: 720.0, the node 0 has 242.0 unvisited cells
+Drone 3 updated position command.
+At time: 720.0, the node 4 has 193.0 unvisited cells
+Drone 1 received broadcasted destination [-380.  460.   50.] from drone 3
+At time: 720.0, the node 3 has 188.0 unvisited cells
+At time: 720.0, the node 2 has 353.0 unvisited cells
+At time: 720.0, the node 1 has 188.0 unvisited cells
+At time: 730.0, the node 4 has 188.0 unvisited cells
+At time: 730.0, the node 0 has 236.0 unvisited cells
+At time: 730.0, the node 1 has 187.0 unvisited cells
+At time: 730.0, the node 3 has 188.0 unvisited cells
+At time: 730.0, the node 2 has 353.0 unvisited cells
+At time: 740.0, the node 4 has 188.0 unvisited cells
+At time: 740.0, the node 1 has 181.0 unvisited cells
+At time: 740.0, the node 0 has 229.0 unvisited cells
+At time: 740.0, the node 2 has 353.0 unvisited cells
+At time: 740.0, the node 3 has 188.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [280.  40.  50.] from drone 3
+At time: 750.0, the node 3 has 169.0 unvisited cells
+At time: 750.0, the node 2 has 353.0 unvisited cells
+At time: 750.0, the node 4 has 184.0 unvisited cells
+At time: 750.0, the node 1 has 169.0 unvisited cells
+At time: 750.0, the node 0 has 227.0 unvisited cells
+Drone 3 updated position command.
+At time: 760.0, the node 3 has 167.0 unvisited cells
+At time: 760.0, the node 2 has 351.0 unvisited cells
+At time: 760.0, the node 4 has 177.0 unvisited cells
+At time: 760.0, the node 0 has 167.0 unvisited cells
+At time: 760.0, the node 1 has 168.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [380. 480.  50.] from drone 3
+At time: 770.0, the node 1 has 166.0 unvisited cells
+At time: 770.0, the node 3 has 167.0 unvisited cells
+At time: 770.0, the node 2 has 348.0 unvisited cells
+At time: 770.0, the node 4 has 172.0 unvisited cells
+At time: 770.0, the node 0 has 167.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-160.  480.   50.] from drone 4
+At time: 780.0, the node 1 has 166.0 unvisited cells
+At time: 780.0, the node 0 has 151.0 unvisited cells
+At time: 780.0, the node 3 has 167.0 unvisited cells
+At time: 780.0, the node 4 has 151.0 unvisited cells
+At time: 780.0, the node 2 has 334.0 unvisited cells
+Drone 3 updated position command.
+At time: 790.0, the node 1 has 166.0 unvisited cells
+At time: 790.0, the node 2 has 135.0 unvisited cells
+At time: 790.0, the node 3 has 135.0 unvisited cells
+At time: 790.0, the node 0 has 151.0 unvisited cells
+At time: 790.0, the node 4 has 151.0 unvisited cells
+Drone 2 received broadcasted destination [360. 460.  50.] from drone 3
+At time: 800.0, the node 1 has 166.0 unvisited cells
+At time: 800.0, the node 2 has 130.0 unvisited cells
+At time: 800.0, the node 3 has 125.0 unvisited cells
+At time: 800.0, the node 0 has 151.0 unvisited cells
+At time: 800.0, the node 4 has 145.0 unvisited cells
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [380.  40.  50.] from drone 4
+At time: 810.0, the node 4 has 112.0 unvisited cells
+At time: 810.0, the node 1 has 164.0 unvisited cells
+At time: 810.0, the node 2 has 112.0 unvisited cells
+At time: 810.0, the node 0 has 148.0 unvisited cells
+At time: 810.0, the node 3 has 118.0 unvisited cells
+Drone 4 updated position command.
+At time: 820.0, the node 3 has 114.0 unvisited cells
+At time: 820.0, the node 1 has 164.0 unvisited cells
+At time: 820.0, the node 4 has 111.0 unvisited cells
+At time: 820.0, the node 0 has 148.0 unvisited cells
+At time: 820.0, the node 2 has 111.0 unvisited cells
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [320. 120.  50.] from drone 1
+At time: 830.0, the node 2 has 111.0 unvisited cells
+At time: 830.0, the node 3 has 106.0 unvisited cells
+At time: 830.0, the node 0 has 146.0 unvisited cells
+At time: 830.0, the node 1 has 146.0 unvisited cells
+At time: 830.0, the node 4 has 111.0 unvisited cells
+At time: 840.0, the node 3 has 96.0 unvisited cells
+At time: 840.0, the node 2 has 111.0 unvisited cells
+At time: 840.0, the node 4 has 111.0 unvisited cells
+At time: 840.0, the node 0 has 146.0 unvisited cells
+At time: 840.0, the node 1 has 146.0 unvisited cells
+At time: 850.0, the node 1 has 146.0 unvisited cells
+At time: 850.0, the node 3 has 94.0 unvisited cells
+At time: 850.0, the node 4 has 108.0 unvisited cells
+At time: 850.0, the node 2 has 111.0 unvisited cells
+At time: 850.0, the node 0 has 146.0 unvisited cells
+Drone 4 updated position command.
+At time: 860.0, the node 0 has 146.0 unvisited cells
+At time: 860.0, the node 1 has 103.0 unvisited cells
+At time: 860.0, the node 3 has 94.0 unvisited cells
+At time: 860.0, the node 2 has 111.0 unvisited cells
+At time: 860.0, the node 4 has 103.0 unvisited cells
+At time: 870.0, the node 2 has 107.0 unvisited cells
+At time: 870.0, the node 4 has 103.0 unvisited cells
+At time: 870.0, the node 1 has 102.0 unvisited cells
+At time: 870.0, the node 0 has 146.0 unvisited cells
+At time: 870.0, the node 3 has 94.0 unvisited cells
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [360. 480.  50.] from drone 2
+Drone 2 received broadcasted destination [100. 480.  50.] from drone 1
+At time: 880.0, the node 2 has 95.0 unvisited cells
+At time: 880.0, the node 4 has 103.0 unvisited cells
+At time: 880.0, the node 1 has 95.0 unvisited cells
+At time: 880.0, the node 0 has 139.0 unvisited cells
+At time: 880.0, the node 3 has 94.0 unvisited cells
+At time: 890.0, the node 3 has 94.0 unvisited cells
+At time: 890.0, the node 2 has 93.0 unvisited cells
+At time: 890.0, the node 4 has 103.0 unvisited cells
+At time: 890.0, the node 1 has 94.0 unvisited cells
+At time: 890.0, the node 0 has 138.0 unvisited cells
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-460.  460.   50.] from drone 1
+Drone 1 received broadcasted destination [360. 460.  50.] from drone 0
+At time: 900.0, the node 0 has 82.0 unvisited cells
+At time: 900.0, the node 2 has 93.0 unvisited cells
+At time: 900.0, the node 3 has 91.0 unvisited cells
+At time: 900.0, the node 4 has 98.0 unvisited cells
+At time: 900.0, the node 1 has 82.0 unvisited cells
+At time: 910.0, the node 1 has 82.0 unvisited cells
+Drone 2 updated position command.
+At time: 910.0, the node 0 has 80.0 unvisited cells
+At time: 910.0, the node 3 has 91.0 unvisited cells
+At time: 910.0, the node 2 has 78.0 unvisited cells
+At time: 910.0, the node 4 has 97.0 unvisited cells
+At time: 920.0, the node 1 has 82.0 unvisited cells
+At time: 920.0, the node 4 has 91.0 unvisited cells
+At time: 920.0, the node 0 has 71.0 unvisited cells
+At time: 920.0, the node 3 has 89.0 unvisited cells
+At time: 920.0, the node 2 has 71.0 unvisited cells
+At time: 930.0, the node 1 has 82.0 unvisited cells
+At time: 930.0, the node 2 has 69.0 unvisited cells
+At time: 930.0, the node 4 has 86.0 unvisited cells
+At time: 930.0, the node 0 has 71.0 unvisited cells
+At time: 930.0, the node 3 has 87.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [ 340. -100.   50.] from drone 3
+At time: 940.0, the node 3 has 52.0 unvisited cells
+At time: 940.0, the node 1 has 52.0 unvisited cells
+At time: 940.0, the node 4 has 86.0 unvisited cells
+At time: 940.0, the node 2 has 64.0 unvisited cells
+At time: 940.0, the node 0 has 71.0 unvisited cells
+At time: 950.0, the node 3 has 52.0 unvisited cells
+At time: 950.0, the node 1 has 52.0 unvisited cells
+At time: 950.0, the node 4 has 86.0 unvisited cells
+At time: 950.0, the node 0 has 69.0 unvisited cells
+At time: 950.0, the node 2 has 56.0 unvisited cells
+At time: 960.0, the node 2 has 52.0 unvisited cells
+At time: 960.0, the node 3 has 52.0 unvisited cells
+At time: 960.0, the node 1 has 52.0 unvisited cells
+At time: 960.0, the node 0 has 66.0 unvisited cells
+At time: 960.0, the node 4 has 86.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [ 220. -500.   50.] from drone 3
+At time: 970.0, the node 2 has 44.0 unvisited cells
+At time: 970.0, the node 4 has 86.0 unvisited cells
+At time: 970.0, the node 3 has 48.0 unvisited cells
+At time: 970.0, the node 0 has 48.0 unvisited cells
+At time: 970.0, the node 1 has 52.0 unvisited cells
+At time: 980.0, the node 1 has 52.0 unvisited cells
+At time: 980.0, the node 0 has 47.0 unvisited cells
+At time: 980.0, the node 2 has 38.0 unvisited cells
+At time: 980.0, the node 4 has 86.0 unvisited cells
+At time: 980.0, the node 3 has 46.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-200.  480.   50.] from drone 3
+At time: 990.0, the node 1 has 51.0 unvisited cells
+At time: 990.0, the node 4 has 83.0 unvisited cells
+At time: 990.0, the node 2 has 38.0 unvisited cells
+At time: 990.0, the node 0 has 45.0 unvisited cells
+At time: 990.0, the node 3 has 45.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [ 460. -440.   50.] from drone 3
+At time: 1000.0, the node 4 has 83.0 unvisited cells
+At time: 1000.0, the node 3 has 45.0 unvisited cells
+At time: 1000.0, the node 1 has 51.0 unvisited cells
+At time: 1000.0, the node 2 has 38.0 unvisited cells
+At time: 1000.0, the node 0 has 45.0 unvisited cells
+Drone 3 updated position command.
+At time: 1010.0, the node 0 has 45.0 unvisited cells
+At time: 1010.0, the node 4 has 83.0 unvisited cells
+At time: 1010.0, the node 3 has 45.0 unvisited cells
+At time: 1010.0, the node 1 has 51.0 unvisited cells
+At time: 1010.0, the node 2 has 38.0 unvisited cells
+At time: 1020.0, the node 0 has 45.0 unvisited cells
+At time: 1020.0, the node 3 has 45.0 unvisited cells
+At time: 1020.0, the node 4 has 83.0 unvisited cells
+At time: 1020.0, the node 2 has 37.0 unvisited cells
+At time: 1020.0, the node 1 has 51.0 unvisited cells
+At time: 1030.0, the node 2 has 37.0 unvisited cells
+At time: 1030.0, the node 1 has 51.0 unvisited cells
+At time: 1030.0, the node 3 has 45.0 unvisited cells
+At time: 1030.0, the node 0 has 40.0 unvisited cells
+At time: 1030.0, the node 4 has 83.0 unvisited cells
+At time: 1040.0, the node 2 has 34.0 unvisited cells
+At time: 1040.0, the node 0 has 38.0 unvisited cells
+At time: 1040.0, the node 1 has 51.0 unvisited cells
+At time: 1040.0, the node 3 has 45.0 unvisited cells
+At time: 1040.0, the node 4 has 83.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-280.  460.   50.] from drone 3
+At time: 1050.0, the node 4 has 83.0 unvisited cells
+At time: 1050.0, the node 2 has 34.0 unvisited cells
+At time: 1050.0, the node 0 has 38.0 unvisited cells
+At time: 1050.0, the node 1 has 43.0 unvisited cells
+At time: 1050.0, the node 3 has 43.0 unvisited cells
+At time: 1060.0, the node 4 has 80.0 unvisited cells
+At time: 1060.0, the node 2 has 34.0 unvisited cells
+At time: 1060.0, the node 0 has 38.0 unvisited cells
+At time: 1060.0, the node 1 has 40.0 unvisited cells
+At time: 1060.0, the node 3 has 43.0 unvisited cells
+At time: 1070.0, the node 3 has 43.0 unvisited cells
+At time: 1070.0, the node 1 has 40.0 unvisited cells
+At time: 1070.0, the node 4 has 80.0 unvisited cells
+At time: 1070.0, the node 2 has 34.0 unvisited cells
+At time: 1070.0, the node 0 has 38.0 unvisited cells
+At time: 1080.0, the node 1 has 40.0 unvisited cells
+At time: 1080.0, the node 3 has 43.0 unvisited cells
+At time: 1080.0, the node 4 has 80.0 unvisited cells
+At time: 1080.0, the node 0 has 35.0 unvisited cells
+At time: 1080.0, the node 2 has 31.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-460.  460.   50.] from drone 4
+At time: 1090.0, the node 3 has 43.0 unvisited cells
+At time: 1090.0, the node 1 has 27.0 unvisited cells
+At time: 1090.0, the node 4 has 27.0 unvisited cells
+At time: 1090.0, the node 0 has 35.0 unvisited cells
+At time: 1090.0, the node 2 has 29.0 unvisited cells
+At time: 1100.0, the node 3 has 43.0 unvisited cells
+At time: 1100.0, the node 2 has 27.0 unvisited cells
+At time: 1100.0, the node 4 has 27.0 unvisited cells
+At time: 1100.0, the node 1 has 27.0 unvisited cells
+At time: 1100.0, the node 0 has 35.0 unvisited cells
+At time: 1110.0, the node 2 has 27.0 unvisited cells
+At time: 1110.0, the node 3 has 38.0 unvisited cells
+At time: 1110.0, the node 0 has 35.0 unvisited cells
+At time: 1110.0, the node 4 has 21.0 unvisited cells
+At time: 1110.0, the node 1 has 27.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-420.   80.   50.] from drone 3
+At time: 1120.0, the node 3 has 28.0 unvisited cells
+At time: 1120.0, the node 2 has 27.0 unvisited cells
+At time: 1120.0, the node 0 has 28.0 unvisited cells
+At time: 1120.0, the node 4 has 18.0 unvisited cells
+At time: 1120.0, the node 1 has 27.0 unvisited cells
+At time: 1130.0, the node 3 has 26.0 unvisited cells
+At time: 1130.0, the node 1 has 27.0 unvisited cells
+At time: 1130.0, the node 2 has 24.0 unvisited cells
+At time: 1130.0, the node 0 has 28.0 unvisited cells
+At time: 1130.0, the node 4 has 18.0 unvisited cells
+Drone 4 updated position command.
+At time: 1140.0, the node 3 has 9.0 unvisited cells
+At time: 1140.0, the node 4 has 9.0 unvisited cells
+At time: 1140.0, the node 1 has 27.0 unvisited cells
+At time: 1140.0, the node 2 has 21.0 unvisited cells
+At time: 1140.0, the node 0 has 28.0 unvisited cells
+At time: 1150.0, the node 3 has 9.0 unvisited cells
+At time: 1150.0, the node 1 has 24.0 unvisited cells
+At time: 1150.0, the node 0 has 28.0 unvisited cells
+At time: 1150.0, the node 4 has 9.0 unvisited cells
+At time: 1150.0, the node 2 has 21.0 unvisited cells
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-340.  460.   50.] from drone 1
+At time: 1160.0, the node 3 has 9.0 unvisited cells
+At time: 1160.0, the node 2 has 21.0 unvisited cells
+At time: 1160.0, the node 1 has 17.0 unvisited cells
+At time: 1160.0, the node 0 has 17.0 unvisited cells
+At time: 1160.0, the node 4 has 9.0 unvisited cells
+At time: 1170.0, the node 3 has 9.0 unvisited cells
+At time: 1170.0, the node 2 has 20.0 unvisited cells
+At time: 1170.0, the node 1 has 17.0 unvisited cells
+At time: 1170.0, the node 0 has 17.0 unvisited cells
+At time: 1170.0, the node 4 has 9.0 unvisited cells
+At time: 1180.0, the node 0 has 17.0 unvisited cells
+At time: 1180.0, the node 4 has 9.0 unvisited cells
+At time: 1180.0, the node 3 has 9.0 unvisited cells
+At time: 1180.0, the node 1 has 17.0 unvisited cells
+At time: 1180.0, the node 2 has 19.0 unvisited cells
+At time: 1190.0, the node 0 has 17.0 unvisited cells
+At time: 1190.0, the node 2 has 19.0 unvisited cells
+At time: 1190.0, the node 3 has 9.0 unvisited cells
+At time: 1190.0, the node 4 has 9.0 unvisited cells
+At time: 1190.0, the node 1 has 17.0 unvisited cells
+At time: 1200.0, the node 2 has 19.0 unvisited cells
+At time: 1200.0, the node 0 has 17.0 unvisited cells
+At time: 1200.0, the node 1 has 17.0 unvisited cells
+At time: 1200.0, the node 3 has 9.0 unvisited cells
+At time: 1200.0, the node 4 has 9.0 unvisited cells
+At time: 1210.0, the node 0 has 16.0 unvisited cells
+At time: 1210.0, the node 2 has 19.0 unvisited cells
+At time: 1210.0, the node 3 has 9.0 unvisited cells
+At time: 1210.0, the node 1 has 8.0 unvisited cells
+At time: 1210.0, the node 4 has 7.0 unvisited cells
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-440. -500.   50.] from drone 3
+Drone 3 received broadcasted destination [ 180. -500.   50.] from drone 2
+At time: 1220.0, the node 0 has 16.0 unvisited cells
+At time: 1220.0, the node 3 has 4.0 unvisited cells
+At time: 1220.0, the node 4 has 7.0 unvisited cells
+At time: 1220.0, the node 1 has 8.0 unvisited cells
+At time: 1220.0, the node 2 has 4.0 unvisited cells
+At time: 1230.0, the node 0 has 16.0 unvisited cells
+At time: 1230.0, the node 2 has 4.0 unvisited cells
+At time: 1230.0, the node 1 has 8.0 unvisited cells
+At time: 1230.0, the node 4 has 7.0 unvisited cells
+At time: 1230.0, the node 3 has 4.0 unvisited cells
+At time: 1240.0, the node 3 has 4.0 unvisited cells
+At time: 1240.0, the node 2 has 4.0 unvisited cells
+At time: 1240.0, the node 0 has 16.0 unvisited cells
+At time: 1240.0, the node 4 has 7.0 unvisited cells
+At time: 1240.0, the node 1 has 8.0 unvisited cells
+At time: 1250.0, the node 0 has 16.0 unvisited cells
+At time: 1250.0, the node 3 has 4.0 unvisited cells
+At time: 1250.0, the node 2 has 3.0 unvisited cells
+At time: 1250.0, the node 1 has 8.0 unvisited cells
+At time: 1250.0, the node 4 has 7.0 unvisited cells
+At time: 1260.0, the node 3 has 2.0 unvisited cells
+At time: 1260.0, the node 0 has 16.0 unvisited cells
+At time: 1260.0, the node 2 has 3.0 unvisited cells
+At time: 1260.0, the node 1 has 8.0 unvisited cells
+At time: 1260.0, the node 4 has 7.0 unvisited cells
+At time: 1270.0, the node 3 has 2.0 unvisited cells
+At time: 1270.0, the node 4 has 4.0 unvisited cells
+At time: 1270.0, the node 0 has 14.0 unvisited cells
+At time: 1270.0, the node 2 has 3.0 unvisited cells
+At time: 1270.0, the node 1 has 8.0 unvisited cells
+At time: 1280.0, the node 4 has 4.0 unvisited cells
+At time: 1280.0, the node 3 has 1.0 unvisited cells
+At time: 1280.0, the node 0 has 14.0 unvisited cells
+At time: 1280.0, the node 1 has 8.0 unvisited cells
+At time: 1280.0, the node 2 has 3.0 unvisited cells
+At time: 1290.0, the node 4 has 4.0 unvisited cells
+At time: 1290.0, the node 2 has 2.0 unvisited cells
+At time: 1290.0, the node 3 has 1.0 unvisited cells
+At time: 1290.0, the node 0 has 14.0 unvisited cells
+At time: 1290.0, the node 1 has 8.0 unvisited cells
+Drone 3 updated position command.
+At time: 1300.0, the node 2 has 0.0 unvisited cells
+At time: 1300.0, the node 4 has 4.0 unvisited cells
+At time: 1300.0, the node 3 has 0.0 unvisited cells
+At time: 1300.0, the node 0 has 8.0 unvisited cells
+At time: 1300.0, the node 1 has 6.0 unvisited cells
+At time: 1310.0, the node 2 has 0.0 unvisited cells
+At time: 1310.0, the node 1 has 6.0 unvisited cells
+At time: 1310.0, the node 4 has 4.0 unvisited cells
+At time: 1310.0, the node 3 has 0.0 unvisited cells
+At time: 1310.0, the node 0 has 5.0 unvisited cells
+At time: 1320.0, the node 0 has 5.0 unvisited cells
+At time: 1320.0, the node 1 has 5.0 unvisited cells
+At time: 1320.0, the node 2 has 0.0 unvisited cells
+At time: 1320.0, the node 4 has 4.0 unvisited cells
+At time: 1320.0, the node 3 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-20. -40.  50.] from drone 2
+Drone 2 received broadcasted destination [ 360. -120.   50.] from drone 1
+At time: 1330.0, the node 3 has 0.0 unvisited cells
+At time: 1330.0, the node 1 has 0.0 unvisited cells
+At time: 1330.0, the node 0 has 5.0 unvisited cells
+At time: 1330.0, the node 2 has 0.0 unvisited cells
+At time: 1330.0, the node 4 has 3.0 unvisited cells
+At time: 1340.0, the node 3 has 0.0 unvisited cells
+At time: 1340.0, the node 4 has 3.0 unvisited cells
+At time: 1340.0, the node 1 has 0.0 unvisited cells
+At time: 1340.0, the node 0 has 5.0 unvisited cells
+At time: 1340.0, the node 2 has 0.0 unvisited cells
+At time: 1350.0, the node 2 has 0.0 unvisited cells
+At time: 1350.0, the node 0 has 5.0 unvisited cells
+At time: 1350.0, the node 3 has 0.0 unvisited cells
+At time: 1350.0, the node 4 has 3.0 unvisited cells
+At time: 1350.0, the node 1 has 0.0 unvisited cells
+At time: 1360.0, the node 0 has 5.0 unvisited cells
+At time: 1360.0, the node 2 has 0.0 unvisited cells
+At time: 1360.0, the node 3 has 0.0 unvisited cells
+At time: 1360.0, the node 4 has 2.0 unvisited cells
+At time: 1360.0, the node 1 has 0.0 unvisited cells
+At time: 1370.0, the node 0 has 4.0 unvisited cells
+At time: 1370.0, the node 1 has 0.0 unvisited cells
+At time: 1370.0, the node 2 has 0.0 unvisited cells
+At time: 1370.0, the node 3 has 0.0 unvisited cells
+At time: 1370.0, the node 4 has 1.0 unvisited cells
+At time: 1380.0, the node 0 has 4.0 unvisited cells
+At time: 1380.0, the node 1 has 0.0 unvisited cells
+At time: 1380.0, the node 2 has 0.0 unvisited cells
+At time: 1380.0, the node 3 has 0.0 unvisited cells
+At time: 1380.0, the node 4 has 1.0 unvisited cells
+At time: 1390.0, the node 4 has 1.0 unvisited cells
+At time: 1390.0, the node 3 has 0.0 unvisited cells
+At time: 1390.0, the node 0 has 4.0 unvisited cells
+At time: 1390.0, the node 1 has 0.0 unvisited cells
+At time: 1390.0, the node 2 has 0.0 unvisited cells
+At time: 1400.0, the node 3 has 0.0 unvisited cells
+At time: 1400.0, the node 4 has 1.0 unvisited cells
+At time: 1400.0, the node 0 has 4.0 unvisited cells
+At time: 1400.0, the node 2 has 0.0 unvisited cells
+At time: 1400.0, the node 1 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [ 260. -120.   50.] from drone 3
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [ 260. -120.   50.] from drone 3
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [ 260. -120.   50.] from drone 2
+At time: 1410.0, the node 3 has 0.0 unvisited cells
+At time: 1410.0, the node 4 has 1.0 unvisited cells
+At time: 1410.0, the node 0 has 4.0 unvisited cells
+At time: 1410.0, the node 2 has 0.0 unvisited cells
+At time: 1410.0, the node 1 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [ 260. -120.   50.] from drone 3
+Drone 3 updated position command.
+Drone 2 updated position command.
+At time: 1420.0, the node 0 has 4.0 unvisited cells
+Drone 1 received broadcasted destination [ 260. -120.   50.] from drone 2
+At time: 1420.0, the node 4 has 1.0 unvisited cells
+At time: 1420.0, the node 3 has 0.0 unvisited cells
+At time: 1420.0, the node 1 has 0.0 unvisited cells
+At time: 1420.0, the node 2 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [ 260. -120.   50.] from drone 3
+Drone 1 received broadcasted destination [ 260. -120.   50.] from drone 2
+At time: 1430.0, the node 0 has 2.0 unvisited cells
+At time: 1430.0, the node 1 has 0.0 unvisited cells
+At time: 1430.0, the node 4 has 0.0 unvisited cells
+At time: 1430.0, the node 3 has 0.0 unvisited cells
+At time: 1430.0, the node 2 has 0.0 unvisited cells
+Drone 2 updated position command.
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-80. 300.  50.] from drone 3
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [300. 180.  50.] from drone 3
+Drone 2 received broadcasted destination [300. 180.  50.] from drone 3
+At time: 1440.0, the node 0 has 2.0 unvisited cells
+At time: 1440.0, the node 1 has 0.0 unvisited cells
+At time: 1440.0, the node 2 has 0.0 unvisited cells
+At time: 1440.0, the node 4 has 0.0 unvisited cells
+At time: 1440.0, the node 3 has 0.0 unvisited cells
+Drone 2 updated position command.
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-80. 300.  50.] from drone 3
+Drone 2 received broadcasted destination [-80. 300.  50.] from drone 3
+Drone 3 updated position command.
+At time: 1450.0, the node 0 has 2.0 unvisited cells
+Drone 1 received broadcasted destination [300. 180.  50.] from drone 3
+At time: 1450.0, the node 1 has 0.0 unvisited cells
+At time: 1450.0, the node 2 has 0.0 unvisited cells
+At time: 1450.0, the node 3 has 0.0 unvisited cells
+At time: 1450.0, the node 4 has 0.0 unvisited cells
+Drone 2 updated position command.
+At time: 1460.0, the node 1 has 0.0 unvisited cells
+At time: 1460.0, the node 4 has 0.0 unvisited cells
+At time: 1460.0, the node 2 has 0.0 unvisited cells
+At time: 1460.0, the node 0 has 1.0 unvisited cells
+At time: 1460.0, the node 3 has 0.0 unvisited cells
+Drone 3 updated position command.
+At time: 1470.0, the node 1 has 0.0 unvisited cells
+At time: 1470.0, the node 3 has 0.0 unvisited cells
+At time: 1470.0, the node 4 has 0.0 unvisited cells
+At time: 1470.0, the node 2 has 0.0 unvisited cells
+At time: 1470.0, the node 0 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-160. -300.   50.] from drone 3
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-80. 300.  50.] from drone 4
+At time: 1480.0, the node 2 has 0.0 unvisited cells
+At time: 1480.0, the node 0 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-160. -300.   50.] from drone 3
+Drone 2 received broadcasted destination [-160. -300.   50.] from drone 3
+Drone 3 received broadcasted destination [-160. -300.   50.] from drone 1
+At time: 1480.0, the node 1 has 0.0 unvisited cells
+At time: 1480.0, the node 4 has 0.0 unvisited cells
+At time: 1480.0, the node 3 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-160. -300.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+At time: 1490.0, the node 0 has 0.0 unvisited cells
+At time: 1490.0, the node 2 has 0.0 unvisited cells
+At time: 1490.0, the node 1 has 0.0 unvisited cells
+At time: 1490.0, the node 3 has 0.0 unvisited cells
+At time: 1490.0, the node 4 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-160. -300.   50.] from drone 4
+Drone 3 received broadcasted destination [-160. -300.   50.] from drone 4
+Drone 1 received broadcasted destination [-160. -300.   50.] from drone 3
+Drone 3 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-160. -300.   50.] from drone 2
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-160. -300.   50.] from drone 4
+At time: 1500.0, the node 3 has 0.0 unvisited cells
+At time: 1500.0, the node 2 has 0.0 unvisited cells
+At time: 1500.0, the node 4 has 0.0 unvisited cells
+At time: 1500.0, the node 0 has 0.0 unvisited cells
+At time: 1500.0, the node 1 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-160. -300.   50.] from drone 3
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-160. -300.   50.] from drone 4
+Drone 1 received broadcasted destination [-160. -300.   50.] from drone 4
+Drone 3 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-160. -300.   50.] from drone 2
+Drone 3 received broadcasted destination [-160. -300.   50.] from drone 2
+Drone 4 updated position command.
+At time: 1510.0, the node 1 has 0.0 unvisited cells
+At time: 1510.0, the node 2 has 0.0 unvisited cells
+At time: 1510.0, the node 4 has 0.0 unvisited cells
+At time: 1510.0, the node 3 has 0.0 unvisited cells
+At time: 1510.0, the node 0 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-160. -300.   50.] from drone 4
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-160. -300.   50.] from drone 3
+Drone 2 received broadcasted destination [-160. -300.   50.] from drone 3
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-160. -300.   50.] from drone 4
+Drone 3 received broadcasted destination [-460.   60.   50.] from drone 4
+Drone 2 updated position command.
+At time: 1520.0, the node 3 has 0.0 unvisited cells
+At time: 1520.0, the node 0 has 0.0 unvisited cells
+At time: 1520.0, the node 4 has 0.0 unvisited cells
+At time: 1520.0, the node 1 has 0.0 unvisited cells
+At time: 1520.0, the node 2 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-460.   40.   50.] from drone 4
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-460.   60.   50.] from drone 4
+At time: 1530.0, the node 3 has 0.0 unvisited cells
+At time: 1530.0, the node 0 has 0.0 unvisited cells
+At time: 1530.0, the node 2 has 0.0 unvisited cells
+At time: 1530.0, the node 1 has 0.0 unvisited cells
+At time: 1530.0, the node 4 has 0.0 unvisited cells
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-460.   40.   50.] from drone 2
+Drone 3 received broadcasted destination [-460.   40.   50.] from drone 2
+Drone 2 received broadcasted destination [-460.   40.   50.] from drone 1
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-460.   40.   50.] from drone 4
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-460.   60.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [-460.   40.   50.] from drone 4
+At time: 1540.0, the node 3 has 0.0 unvisited cells
+At time: 1540.0, the node 4 has 0.0 unvisited cells
+At time: 1540.0, the node 2 has 0.0 unvisited cells
+At time: 1540.0, the node 0 has 0.0 unvisited cells
+At time: 1540.0, the node 1 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-460.   60.   50.] from drone 3
+Drone 1 received broadcasted destination [-460.   40.   50.] from drone 2
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-460.   60.   50.] from drone 4
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-500. -180.   50.] from drone 4
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-500. -180.   50.] from drone 3
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [-500. -180.   50.] from drone 4
+At time: 1550.0, the node 3 has 0.0 unvisited cells
+At time: 1550.0, the node 4 has 0.0 unvisited cells
+At time: 1550.0, the node 1 has 0.0 unvisited cells
+At time: 1550.0, the node 2 has 0.0 unvisited cells
+At time: 1550.0, the node 0 has 0.0 unvisited cells
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-500. -180.   50.] from drone 2
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-500. -180.   50.] from drone 3
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-500. -180.   50.] from drone 4
+Drone 1 received broadcasted destination [-500. -180.   50.] from drone 4
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-500. -180.   50.] from drone 3
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [-500. -180.   50.] from drone 4
+At time: 1560.0, the node 3 has 0.0 unvisited cells
+At time: 1560.0, the node 0 has 0.0 unvisited cells
+At time: 1560.0, the node 2 has 0.0 unvisited cells
+At time: 1560.0, the node 4 has 0.0 unvisited cells
+At time: 1560.0, the node 1 has 0.0 unvisited cells
+Drone 1 received broadcasted destination [-160.  260.   50.] from drone 3
+Drone 3 updated position command.
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-500. -460.   50.] from drone 4
+Drone 2 received broadcasted destination [-500. -460.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 2 received broadcasted destination [-160.  260.   50.] from drone 4
+At time: 1570.0, the node 3 has 0.0 unvisited cells
+At time: 1570.0, the node 1 has 0.0 unvisited cells
+At time: 1570.0, the node 4 has 0.0 unvisited cells
+At time: 1570.0, the node 2 has 0.0 unvisited cells
+At time: 1570.0, the node 0 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-500. -460.   50.] from drone 4
+Drone 3 received broadcasted destination [-500. -460.   50.] from drone 4
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-500. -440.   50.] from drone 4
+At time: 1580.0, the node 3 has 0.0 unvisited cells
+At time: 1580.0, the node 4 has 0.0 unvisited cells
+At time: 1580.0, the node 1 has 0.0 unvisited cells
+At time: 1580.0, the node 0 has 0.0 unvisited cells
+At time: 1580.0, the node 2 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 1 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 3 updated position command.
+At time: 1590.0, the node 0 has 0.0 unvisited cells
+At time: 1590.0, the node 3 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 3 received broadcasted destination [-160.  260.   50.] from drone 4
+At time: 1590.0, the node 1 has 0.0 unvisited cells
+At time: 1590.0, the node 2 has 0.0 unvisited cells
+At time: 1590.0, the node 4 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 2 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-160.  260.   50.] from drone 1
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-160.  260.   50.] from drone 3
+At time: 1600.0, the node 1 has 0.0 unvisited cells
+At time: 1600.0, the node 3 has 0.0 unvisited cells
+At time: 1600.0, the node 2 has 0.0 unvisited cells
+At time: 1600.0, the node 0 has 0.0 unvisited cells
+At time: 1600.0, the node 4 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-160.  260.   50.] from drone 3
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-160.  260.   50.] from drone 1
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-160.  260.   50.] from drone 4
+At time: 1610.0, the node 1 has 0.0 unvisited cells
+At time: 1610.0, the node 3 has 0.0 unvisited cells
+At time: 1610.0, the node 0 has 0.0 unvisited cells
+At time: 1610.0, the node 4 has 0.0 unvisited cells
+At time: 1610.0, the node 2 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-160.  260.   50.] from drone 3
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 2 received broadcasted destination [-160.  260.   50.] from drone 4
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-160.  260.   50.] from drone 1
+Drone 2 updated position command.
+At time: 1620.0, the node 1 has 0.0 unvisited cells
+At time: 1620.0, the node 4 has 0.0 unvisited cells
+At time: 1620.0, the node 2 has 0.0 unvisited cells
+At time: 1620.0, the node 0 has 0.0 unvisited cells
+At time: 1620.0, the node 3 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-480. -480.   50.] from drone 4
+Drone 2 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-480. -480.   50.] from drone 3
+Drone 2 received broadcasted destination [-480. -480.   50.] from drone 3
+Drone 3 received broadcasted destination [-500. -480.   50.] from drone 0
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-500. -500.   50.] from drone 3
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-480. -480.   50.] from drone 4
+Drone 2 received broadcasted destination [-500. -480.   50.] from drone 0
+Drone 2 updated position command.
+At time: 1630.0, the node 1 has 0.0 unvisited cells
+At time: 1630.0, the node 3 has 0.0 unvisited cells
+At time: 1630.0, the node 2 has 0.0 unvisited cells
+At time: 1630.0, the node 0 has 0.0 unvisited cells
+At time: 1630.0, the node 4 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-480. -480.   50.] from drone 4
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-480. -500.   50.] from drone 4
+Drone 2 received broadcasted destination [-480. -500.   50.] from drone 4
+Drone 2 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-480. -500.   50.] from drone 3
+Drone 3 received broadcasted destination [-480. -500.   50.] from drone 0
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-500. -500.   50.] from drone 3
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-500. -480.   50.] from drone 4
+At time: 1640.0, the node 1 has 0.0 unvisited cells
+At time: 1640.0, the node 0 has 0.0 unvisited cells
+At time: 1640.0, the node 3 has 0.0 unvisited cells
+At time: 1640.0, the node 2 has 0.0 unvisited cells
+At time: 1640.0, the node 4 has 0.0 unvisited cells
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-480. -500.   50.] from drone 2
+Drone 2 received broadcasted destination [-500. -500.   50.] from drone 1
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-500. -500.   50.] from drone 4
+Drone 1 received broadcasted destination [-500. -500.   50.] from drone 4
+Drone 2 updated position command.
+Drone 3 received broadcasted destination [-500. -500.   50.] from drone 2
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-500. -480.   50.] from drone 3
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-480. -500.   50.] from drone 4
+Drone 4 updated position command.
+At time: 1650.0, the node 0 has 0.0 unvisited cells
+At time: 1650.0, the node 4 has 0.0 unvisited cells
+At time: 1650.0, the node 3 has 0.0 unvisited cells
+At time: 1650.0, the node 1 has 0.0 unvisited cells
+At time: 1650.0, the node 2 has 0.0 unvisited cells
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-500. -480.   50.] from drone 2
+Drone 2 received broadcasted destination [-500. -480.   50.] from drone 1
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [-480. -480.   50.] from drone 3
+Drone 3 received broadcasted destination [-480. -500.   50.] from drone 2
+Drone 1 received broadcasted destination [-480. -500.   50.] from drone 2
+Drone 2 received broadcasted destination [-500. -500.   50.] from drone 0
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-480. -480.   50.] from drone 4
+At time: 1660.0, the node 4 has 0.0 unvisited cells
+At time: 1660.0, the node 0 has 0.0 unvisited cells
+At time: 1660.0, the node 3 has 0.0 unvisited cells
+At time: 1660.0, the node 2 has 0.0 unvisited cells
+At time: 1660.0, the node 1 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-500. -480.   50.] from drone 4
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-480. -480.   50.] from drone 2
+Drone 2 received broadcasted destination [-480. -500.   50.] from drone 1
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-500. -500.   50.] from drone 4
+Drone 3 updated position command.
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [-500. -480.   50.] from drone 2
+Drone 3 received broadcasted destination [-500. -480.   50.] from drone 2
+Drone 2 received broadcasted destination [-500. -480.   50.] from drone 3
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [ 120. -400.   50.] from drone 3
+At time: 1670.0, the node 4 has 0.0 unvisited cells
+At time: 1670.0, the node 1 has 0.0 unvisited cells
+At time: 1670.0, the node 0 has 0.0 unvisited cells
+At time: 1670.0, the node 2 has 0.0 unvisited cells
+At time: 1670.0, the node 3 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [ 120. -400.   50.] from drone 2
+Drone 2 received broadcasted destination [ 120. -400.   50.] from drone 1
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [ 120. -400.   50.] from drone 3
+Drone 4 updated position command.
+Drone 1 updated position command.
+At time: 1680.0, the node 3 has 0.0 unvisited cells
+At time: 1680.0, the node 2 has 0.0 unvisited cells
+At time: 1680.0, the node 1 has 0.0 unvisited cells
+At time: 1680.0, the node 0 has 0.0 unvisited cells
+At time: 1680.0, the node 4 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [ 120. -400.   50.] from drone 3
+Drone 1 received broadcasted destination [ 120. -400.   50.] from drone 3
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [ 120. -400.   50.] from drone 2
+Drone 2 received broadcasted destination [ 120. -400.   50.] from drone 1
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [ 120. -400.   50.] from drone 3
+Drone 3 received broadcasted destination [ 120. -400.   50.] from drone 1
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [ 120. -400.   50.] from drone 1
+At time: 1690.0, the node 4 has 0.0 unvisited cells
+At time: 1690.0, the node 3 has 0.0 unvisited cells
+At time: 1690.0, the node 1 has 0.0 unvisited cells
+At time: 1690.0, the node 2 has 0.0 unvisited cells
+At time: 1690.0, the node 0 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [ 120. -400.   50.] from drone 4
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [ 120. -400.   50.] from drone 2
+Drone 2 received broadcasted destination [ 120. -400.   50.] from drone 1
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [ 120. -400.   50.] from drone 3
+Drone 1 received broadcasted destination [ 120. -400.   50.] from drone 3
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 1 updated position command.
+Drone 3 received broadcasted destination [ 120. -400.   50.] from drone 1
+Drone 0 received broadcasted destination [ 120. -400.   50.] from drone 1
+Drone 1 received broadcasted destination [ 120. -400.   50.] from drone 0
+At time: 1700.0, the node 2 has 0.0 unvisited cells
+At time: 1700.0, the node 1 has 0.0 unvisited cells
+At time: 1700.0, the node 4 has 0.0 unvisited cells
+At time: 1700.0, the node 0 has 0.0 unvisited cells
+At time: 1700.0, the node 3 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [ 120. -400.   50.] from drone 4
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-280. -240.   50.] from drone 3
+Drone 2 received broadcasted destination [-280. -240.   50.] from drone 1
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [-280. -240.   50.] from drone 4
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-280. -240.   50.] from drone 1
+Drone 2 updated position command.
+At time: 1710.0, the node 4 has 0.0 unvisited cells
+At time: 1710.0, the node 0 has 0.0 unvisited cells
+At time: 1710.0, the node 2 has 0.0 unvisited cells
+At time: 1710.0, the node 1 has 0.0 unvisited cells
+At time: 1710.0, the node 3 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-280. -240.   50.] from drone 4
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-280. -240.   50.] from drone 2
+Drone 2 received broadcasted destination [-280. -240.   50.] from drone 1
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-280. -240.   50.] from drone 4
+Drone 3 updated position command.
+At time: 1720.0, the node 4 has 0.0 unvisited cells
+At time: 1720.0, the node 3 has 0.0 unvisited cells
+At time: 1720.0, the node 2 has 0.0 unvisited cells
+At time: 1720.0, the node 0 has 0.0 unvisited cells
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-280. -240.   50.] from drone 1
+Drone 3 received broadcasted destination [-280. -240.   50.] from drone 1
+At time: 1720.0, the node 1 has 0.0 unvisited cells
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [-280. -240.   50.] from drone 2
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-280. -240.   50.] from drone 3
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-280. -240.   50.] from drone 3
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [-280. -240.   50.] from drone 2
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-280. -240.   50.] from drone 4
+At time: 1730.0, the node 1 has 0.0 unvisited cells
+Drone 4 updated position command.
+At time: 1730.0, the node 4 has 0.0 unvisited cells
+Drone 3 updated position command.
+At time: 1730.0, the node 3 has 0.0 unvisited cells
+At time: 1730.0, the node 2 has 0.0 unvisited cells
+Drone 3 received broadcasted destination [-280. -240.   50.] from drone 4
+At time: 1730.0, the node 0 has 0.0 unvisited cells
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-180. -340.   50.] from drone 1
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [440.  40.  50.] from drone 4
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [440.   0.  50.] from drone 4
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [440.  80.  50.] from drone 4
+At time: 1740.0, the node 1 has 0.0 unvisited cells
+At time: 1740.0, the node 4 has 0.0 unvisited cells
+At time: 1740.0, the node 3 has 0.0 unvisited cells
+At time: 1740.0, the node 0 has 0.0 unvisited cells
+At time: 1740.0, the node 2 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [440.  80.  50.] from drone 3
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [440.  60.  50.] from drone 4
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [440. -40.  50.] from drone 4
+Drone 3 received broadcasted destination [440. -40.  50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+At time: 1750.0, the node 1 has 0.0 unvisited cells
+At time: 1750.0, the node 4 has 0.0 unvisited cells
+At time: 1750.0, the node 2 has 0.0 unvisited cells
+At time: 1750.0, the node 3 has 0.0 unvisited cells
+At time: 1750.0, the node 0 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [440.  40.  50.] from drone 3
+Drone 2 received broadcasted destination [440.  20.  50.] from drone 0
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [440. -40.  50.] from drone 3
+Drone 2 received broadcasted destination [440. -40.  50.] from drone 3
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [440.  40.  50.] from drone 4
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [440.  80.  50.] from drone 4
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [440.   0.  50.] from drone 4
+Drone 3 received broadcasted destination [440.   0.  50.] from drone 4
+Drone 4 updated position command.
+At time: 1760.0, the node 3 has 0.0 unvisited cells
+Drone 2 received broadcasted destination [440.  20.  50.] from drone 4
+At time: 1760.0, the node 0 has 0.0 unvisited cells
+At time: 1760.0, the node 4 has 0.0 unvisited cells
+At time: 1760.0, the node 1 has 0.0 unvisited cells
+At time: 1760.0, the node 2 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [440.  20.  50.] from drone 3
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [440.  80.  50.] from drone 3
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [440.  40.  50.] from drone 4
+Drone 2 received broadcasted destination [440.  40.  50.] from drone 4
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [440.  60.  50.] from drone 2
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [440.   0.  50.] from drone 4
+Drone 4 updated position command.
+At time: 1770.0, the node 3 has 0.0 unvisited cells
+At time: 1770.0, the node 4 has 0.0 unvisited cells
+At time: 1770.0, the node 0 has 0.0 unvisited cells
+At time: 1770.0, the node 1 has 0.0 unvisited cells
+At time: 1770.0, the node 2 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [440.   0.  50.] from drone 4
+Drone 3 received broadcasted destination [440.   0.  50.] from drone 4
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [440.  80.  50.] from drone 3
+Drone 4 updated position command.
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [440.  80.  50.] from drone 1
+Drone 1 received broadcasted destination [440.  60.  50.] from drone 4
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [440.  20.  50.] from drone 3
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [440.  20.  50.] from drone 2
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [440.  80.  50.] from drone 4
+At time: 1780.0, the node 3 has 0.0 unvisited cells
+At time: 1780.0, the node 1 has 0.0 unvisited cells
+At time: 1780.0, the node 2 has 0.0 unvisited cells
+At time: 1780.0, the node 4 has 0.0 unvisited cells
+At time: 1780.0, the node 0 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [440.  80.  50.] from drone 4
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [440. -40.  50.] from drone 0
+Drone 1 received broadcasted destination [440. -40.  50.] from drone 0
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [ 440. -140.   50.] from drone 4
+Drone 3 updated position command.
+Drone 1 updated position command.
+Drone 2 received broadcasted destination [ 440. -200.   50.] from drone 1
+Drone 1 received broadcasted destination [ 440. -200.   50.] from drone 2
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [ 440. -160.   50.] from drone 2
+At time: 1790.0, the node 3 has 0.0 unvisited cells
+At time: 1790.0, the node 0 has 0.0 unvisited cells
+At time: 1790.0, the node 1 has 0.0 unvisited cells
+At time: 1790.0, the node 2 has 0.0 unvisited cells
+At time: 1790.0, the node 4 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [ 440. -140.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [ 440. -180.   50.] from drone 4
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [ 440. -200.   50.] from drone 4
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [ 440. -280.   50.] from drone 1
+Drone 2 received broadcasted destination [ 440. -280.   50.] from drone 1
+Drone 1 received broadcasted destination [ 440. -280.   50.] from drone 0
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [ 440. -280.   50.] from drone 2
+At time: 1800.0, the node 2 has 0.0 unvisited cells
+At time: 1800.0, the node 4 has 0.0 unvisited cells
+At time: 1800.0, the node 1 has 0.0 unvisited cells
+At time: 1800.0, the node 0 has 0.0 unvisited cells
+At time: 1800.0, the node 3 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 3 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 2 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 3 updated position command.
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 1
+At time: 1810.0, the node 4 has 0.0 unvisited cells
+At time: 1810.0, the node 2 has 0.0 unvisited cells
+At time: 1810.0, the node 3 has 0.0 unvisited cells
+At time: 1810.0, the node 1 has 0.0 unvisited cells
+At time: 1810.0, the node 0 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 3 received broadcasted destination [-220.  300.   50.] from drone 0
+Drone 2 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 1
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 0
+At time: 1820.0, the node 2 has 0.0 unvisited cells
+At time: 1820.0, the node 3 has 0.0 unvisited cells
+At time: 1820.0, the node 4 has 0.0 unvisited cells
+At time: 1820.0, the node 1 has 0.0 unvisited cells
+At time: 1820.0, the node 0 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 3 received broadcasted destination [-220.  300.   50.] from drone 2
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 0
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 1
+Drone 4 updated position command.
+At time: 1830.0, the node 3 has 0.0 unvisited cells
+At time: 1830.0, the node 1 has 0.0 unvisited cells
+At time: 1830.0, the node 4 has 0.0 unvisited cells
+At time: 1830.0, the node 0 has 0.0 unvisited cells
+At time: 1830.0, the node 2 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 2 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 3 received broadcasted destination [-220.  300.   50.] from drone 0
+At time: 1840.0, the node 2 has 0.0 unvisited cells
+At time: 1840.0, the node 0 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 3
+At time: 1840.0, the node 3 has 0.0 unvisited cells
+At time: 1840.0, the node 4 has 0.0 unvisited cells
+At time: 1840.0, the node 1 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 1 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 3 received broadcasted destination [-220.  300.   50.] from drone 2
+At time: 1850.0, the node 0 has 0.0 unvisited cells
+At time: 1850.0, the node 1 has 0.0 unvisited cells
+At time: 1850.0, the node 2 has 0.0 unvisited cells
+At time: 1850.0, the node 3 has 0.0 unvisited cells
+At time: 1850.0, the node 4 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 3
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 1 received broadcasted destination [-220.  300.   50.] from drone 4
+Drone 1 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-220.  380.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 2 received broadcasted destination [-200.  380.   50.] from drone 3
+Drone 0 received broadcasted destination [-200.  380.   50.] from drone 3
+Drone 3 received broadcasted destination [-220.  380.   50.] from drone 2
+At time: 1860.0, the node 0 has 0.0 unvisited cells
+At time: 1860.0, the node 2 has 0.0 unvisited cells
+At time: 1860.0, the node 1 has 0.0 unvisited cells
+At time: 1860.0, the node 3 has 0.0 unvisited cells
+At time: 1860.0, the node 4 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [480. 420.  50.] from drone 4
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [460. 420.  50.] from drone 4
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [460. 420.  50.] from drone 2
+Drone 2 received broadcasted destination [480. 420.  50.] from drone 1
+Drone 1 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [460. 420.  50.] from drone 4
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [480. 420.  50.] from drone 4
+At time: 1870.0, the node 2 has 0.0 unvisited cells
+At time: 1870.0, the node 0 has 0.0 unvisited cells
+At time: 1870.0, the node 1 has 0.0 unvisited cells
+At time: 1870.0, the node 4 has 0.0 unvisited cells
+At time: 1870.0, the node 3 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [480. 420.  50.] from drone 3
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [480. 420.  50.] from drone 3
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [480. 420.  50.] from drone 3
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 1 updated position command.
+Drone 2 received broadcasted destination [480. 420.  50.] from drone 1
+Drone 1 received broadcasted destination [460. 420.  50.] from drone 2
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [460. 420.  50.] from drone 4
+Drone 1 received broadcasted destination [460. 420.  50.] from drone 4
+Drone 4 updated position command.
+At time: 1880.0, the node 1 has 0.0 unvisited cells
+At time: 1880.0, the node 3 has 0.0 unvisited cells
+At time: 1880.0, the node 4 has 0.0 unvisited cells
+At time: 1880.0, the node 0 has 0.0 unvisited cells
+At time: 1880.0, the node 2 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [480. 420.  50.] from drone 3
+Drone 3 received broadcasted destination [480. 420.  50.] from drone 0
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [480. 420.  50.] from drone 3
+Drone 1 received broadcasted destination [460. 420.  50.] from drone 4
+Drone 1 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [480. 420.  50.] from drone 4
+Drone 1 received broadcasted destination [480. 420.  50.] from drone 4
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [480. 420.  50.] from drone 4
+At time: 1890.0, the node 2 has 0.0 unvisited cells
+At time: 1890.0, the node 1 has 0.0 unvisited cells
+At time: 1890.0, the node 4 has 0.0 unvisited cells
+At time: 1890.0, the node 3 has 0.0 unvisited cells
+At time: 1890.0, the node 0 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [460. 420.  50.] from drone 4
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [480. 420.  50.] from drone 3
+Drone 3 received broadcasted destination [460. 420.  50.] from drone 0
+Drone 1 received broadcasted destination [480. 420.  50.] from drone 3
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [460. 420.  50.] from drone 4
+Drone 0 received broadcasted destination [460. 420.  50.] from drone 4
+Drone 1 updated position command.
+Drone 1 received broadcasted destination [480. 420.  50.] from drone 0
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [460. 420.  50.] from drone 2
+Drone 2 received broadcasted destination [460. 420.  50.] from drone 0
+Drone 4 updated position command.
+At time: 1900.0, the node 1 has 0.0 unvisited cells
+At time: 1900.0, the node 0 has 0.0 unvisited cells
+At time: 1900.0, the node 4 has 0.0 unvisited cells
+At time: 1900.0, the node 3 has 0.0 unvisited cells
+At time: 1900.0, the node 2 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [480. 420.  50.] from drone 4
+Drone 3 received broadcasted destination [480. 420.  50.] from drone 0
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 1 received broadcasted destination [480. 420.  50.] from drone 0
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 1
+Drone 2 received broadcasted destination [-240.  400.   50.] from drone 1
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 4 updated position command.
+At time: 1910.0, the node 3 has 0.0 unvisited cells
+At time: 1910.0, the node 4 has 0.0 unvisited cells
+At time: 1910.0, the node 1 has 0.0 unvisited cells
+At time: 1910.0, the node 2 has 0.0 unvisited cells
+At time: 1910.0, the node 0 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 3 received broadcasted destination [-240.  400.   50.] from drone 1
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 1 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 2 updated position command.
+At time: 1920.0, the node 3 has 0.0 unvisited cells
+At time: 1920.0, the node 0 has 0.0 unvisited cells
+At time: 1920.0, the node 4 has 0.0 unvisited cells
+At time: 1920.0, the node 1 has 0.0 unvisited cells
+At time: 1920.0, the node 2 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 1 updated position command.
+Drone 2 received broadcasted destination [-240.  400.   50.] from drone 1
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 2
+At time: 1930.0, the node 4 has 0.0 unvisited cells
+At time: 1930.0, the node 3 has 0.0 unvisited cells
+At time: 1930.0, the node 0 has 0.0 unvisited cells
+At time: 1930.0, the node 1 has 0.0 unvisited cells
+At time: 1930.0, the node 2 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 3 received broadcasted destination [-240.  400.   50.] from drone 0
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 0
+Drone 4 updated position command.
+Drone 2 updated position command.
+Drone 2 updated position command.
+At time: 1940.0, the node 2 has 0.0 unvisited cells
+At time: 1940.0, the node 0 has 0.0 unvisited cells
+At time: 1940.0, the node 1 has 0.0 unvisited cells
+Drone 3 updated position command.
+At time: 1940.0, the node 4 has 0.0 unvisited cells
+Drone 2 received broadcasted destination [-240.  400.   50.] from drone 3
+At time: 1940.0, the node 3 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 1 updated position command.
+Drone 2 received broadcasted destination [-240.  400.   50.] from drone 1
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 2
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 3 received broadcasted destination [-240.  400.   50.] from drone 0
+At time: 1950.0, the node 2 has 0.0 unvisited cells
+At time: 1950.0, the node 4 has 0.0 unvisited cells
+At time: 1950.0, the node 3 has 0.0 unvisited cells
+At time: 1950.0, the node 1 has 0.0 unvisited cells
+At time: 1950.0, the node 0 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 3
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [-240.  400.   50.] from drone 4
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 3 updated position command.
+Drone 1 updated position command.
+Drone 0 received broadcasted destination [-240.  400.   50.] from drone 1
+Drone 1 received broadcasted destination [-240.  400.   50.] from drone 0
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 4
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [380. 280.  50.] from drone 4
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 4
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 3
+At time: 1960.0, the node 2 has 0.0 unvisited cells
+At time: 1960.0, the node 4 has 0.0 unvisited cells
+At time: 1960.0, the node 0 has 0.0 unvisited cells
+At time: 1960.0, the node 3 has 0.0 unvisited cells
+At time: 1960.0, the node 1 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 1 received broadcasted destination [380. 280.  50.] from drone 2
+Drone 1 updated position command.
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 3
+Drone 2 received broadcasted destination [380. 280.  50.] from drone 4
+Drone 4 updated position command.
+Drone 2 received broadcasted destination [380. 280.  50.] from drone 4
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 2
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [380. 280.  50.] from drone 4
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 3
+At time: 1970.0, the node 1 has 0.0 unvisited cells
+At time: 1970.0, the node 3 has 0.0 unvisited cells
+At time: 1970.0, the node 2 has 0.0 unvisited cells
+At time: 1970.0, the node 4 has 0.0 unvisited cells
+At time: 1970.0, the node 0 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [380. 280.  50.] from drone 4
+Drone 4 updated position command.
+Drone 1 updated position command.
+Drone 1 received broadcasted destination [380. 280.  50.] from drone 4
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 2
+Drone 2 received broadcasted destination [380. 280.  50.] from drone 0
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 4
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 3
+Drone 3 received broadcasted destination [380. 280.  50.] from drone 0
+At time: 1980.0, the node 0 has 0.0 unvisited cells
+At time: 1980.0, the node 4 has 0.0 unvisited cells
+At time: 1980.0, the node 2 has 0.0 unvisited cells
+At time: 1980.0, the node 1 has 0.0 unvisited cells
+At time: 1980.0, the node 3 has 0.0 unvisited cells
+Drone 3 updated position command.
+Drone 1 updated position command.
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 2
+Drone 1 received broadcasted destination [380. 280.  50.] from drone 2
+Drone 2 received broadcasted destination [380. 280.  50.] from drone 1
+Drone 4 updated position command.
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 1 received broadcasted destination [380. 280.  50.] from drone 3
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [380. 280.  50.] from drone 4
+At time: 1990.0, the node 0 has 0.0 unvisited cells
+At time: 1990.0, the node 1 has 0.0 unvisited cells
+At time: 1990.0, the node 3 has 0.0 unvisited cells
+At time: 1990.0, the node 2 has 0.0 unvisited cells
+At time: 1990.0, the node 4 has 0.0 unvisited cells
+Drone 4 updated position command.
+Drone 3 received broadcasted destination [ 320. -400.   50.] from drone 4
+Drone 0 received broadcasted destination [ 320. -400.   50.] from drone 2
+Drone 3 updated position command.
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 1 received broadcasted destination [ 320. -400.   50.] from drone 4
+Drone 0 received broadcasted destination [ 320. -400.   50.] from drone 4
+Drone 2 received broadcasted destination [ 320. -400.   50.] from drone 0
+Drone 1 updated position command.
+Drone 1 received broadcasted destination [ 320. -400.   50.] from drone 2
+Drone 0 received broadcasted destination [ 320. -400.   50.] from drone 1
+Drone 2 updated position command.
+Drone 2 updated position command.
+Drone 2 received broadcasted destination [ 320. -400.   50.] from drone 0
+Drone 4 updated position command.
+Drone 3 updated position command.
+Drone 4 updated position command.
+Drone 0 received broadcasted destination [ 320. -400.   50.] from drone 4
+At time: 2000.0, the node 1 has 0.0 unvisited cells
+At time: 2000.0, the node 3 has 0.0 unvisited cells
+At time: 2000.0, the node 4 has 0.0 unvisited cells
+At time: 2000.0, the node 0 has 0.0 unvisited cells
+At time: 2000.0, the node 2 has 0.0 unvisited cells
