@@ -29,13 +29,15 @@ class AsyncMARLOrchestrator:
     for agents that are actually making a decision this step.
     """
 
-    def __init__(self, env, policy_fn: Callable[[TensorDict], torch.Tensor], scale: int, reward_decay: float = 0.99):
+    def __init__(self, env, policy_fn: Callable[[TensorDict], torch.Tensor], scale: int, reward_decay: float = 0.99, local_global_reward_ratio: float = 0.5):
         self.env = env
         self.policy_fn = policy_fn
         self.N = env.max_num_agents
         self.action_dim = env.action_spec["agents", "action"].shape[-1]
         self.REWARD_SCALE = scale
         self.REWARD_DECAY = reward_decay
+        self.LOCAL_GLOBAL_REWARD_RATIO = local_global_reward_ratio
+
 
         self.pending_transition: list[PendingTransition | None] = [None] * self.N 
         
@@ -90,16 +92,20 @@ class AsyncMARLOrchestrator:
         td = self.env.step(td)
 
         # Accumulate rewards into all pending transitions.
+        rewards = td["next", "agents", "reward"].squeeze(-1)
         global_reward = td["next", "global_reward"].item()
         mask = td["next", "agents", "mask"]
-        step_reward = global_reward / self.REWARD_SCALE
+        global_step_reward = global_reward / self.REWARD_SCALE
 
         for i in range(self.N):
             p = self.pending_transition[i]
             if p is not None and mask[i]:
                 # Avoid reward to explode
-                temporal_reward = (self.REWARD_DECAY**p.agent_n_sim_steps) * step_reward
-                p.agent_reward_sum += max(-2.0, min(2.0, temporal_reward))         
+                global_temporal_reward = (self.REWARD_DECAY**p.agent_n_sim_steps) * global_step_reward
+                local_temporal_reward = (self.REWARD_DECAY**p.agent_n_sim_steps) * (rewards[i].item() / self.REWARD_SCALE)
+                
+                agent_temporal_reward = self.LOCAL_GLOBAL_REWARD_RATIO * local_temporal_reward + (1 - self.LOCAL_GLOBAL_REWARD_RATIO) * global_temporal_reward
+                p.agent_reward_sum += max(-2.0, min(2.0, agent_temporal_reward))         
                 p.agent_n_sim_steps += 1
 
 

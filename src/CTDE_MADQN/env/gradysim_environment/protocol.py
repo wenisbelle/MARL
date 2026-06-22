@@ -80,11 +80,12 @@ class Drone(IProtocol):
 
     ##### Configuration for drone inheritance #####
     _config = {
-        "uncertainty_rate": 0.01,
-        "vanishing_update_time": 10.0,
+        "uncertainty_rate": 0.001,
+        "vanishing_update_time": 1.0,
         "number_of_drones": 3,
         "map_width": 10,
         "map_height": 10,
+        "initial_map": np.ndarray
     }
 
     def initialize(self) -> None:
@@ -102,6 +103,8 @@ class Drone(IProtocol):
         self.MAP_WIDTH = self._config["map_width"]
         self.MAP_HEIGHT = self._config["map_height"]
         self.results_aggregator = self._config.get("results_aggregator", {})
+        initial_uncertainty_map = self._config["initial_map"]
+        
         
         self.DRONE_ALTITUDE = 50.0
         self.DISTANCE_BETWEEN_CELLS = 20
@@ -111,7 +114,7 @@ class Drone(IProtocol):
         
         ##### Initialize map #####
         self.map = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT, 2))
-        self.map[:,:,0] = 0.5
+        self.map[:,:,0] = initial_uncertainty_map
         self.total_uncertainty = self.map[:,:,0].sum()
         self.is_cell_visited = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT))
         self.accomulated_uncertainty = 0.0
@@ -150,6 +153,9 @@ class Drone(IProtocol):
         #### Mobility command buffer for RL trainning
         # The first one is for the internal mobility command, to start the moviment
         self.mobility_command_buffer = BufferedMobilityCommand(flag=FlagMessage.MOBILITY_COMMAND.value)
+
+        # For the second drone, it has to wait till receiving the position the first one choose
+        self.waiting_for_destination = False
         
         ##### Instead of using flags, each drone will have a list with all destinations from the other drones, indexed by the drone ID.
         ##### This model assumes that the drones position will be at their destination 
@@ -284,8 +290,7 @@ class Drone(IProtocol):
         # Avoid division by zero in the extreme edge case where max_dist is 0
         normalized_distances = (distances / max(1e-5, max_dist)).astype(np.float32)
         return normalized_distances
-        
-        
+           
     
     ##### Map updating ##### 
     def vanishing_map_routine(self):
@@ -453,6 +458,7 @@ class Drone(IProtocol):
                     #### In this case the drone needs to update its current goal.
                     #### This will be called in the RL framework
                     self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
+                    #print(f"Drone {self.provider.get_id()} reached its destination and updated flag.")
                     #print(f"Drone {self.provider.get_id()} updated flag.")
 
                 #print(f"Drone {self.provider.get_id()} has a total uncertainty of {self.total_uncertainty} and an accomulated uncertainty of {self.accomulated_uncertainty}")
@@ -508,7 +514,11 @@ class Drone(IProtocol):
                 # Update the map and the states of the drones, both will be used in the NN policy
                 self.update_states(data)
                 if self.provider.current_time() - self.last_drone_interaction_time[data['sender']]  > self.TIMEOUT_TO_UPDATE_DESTINATION: # the drone id starts at 0
-                    self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
+                    if self.provider.get_id() > data['sender']: 
+                        self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
+                        #print(f"Drone {self.provider.get_id()} updated flag directly")
+                    else:
+                        self.waiting_for_destination = True
                     #print(f"Drone {self.provider.get_id()} updated flag.")                    
                     self.last_drone_interaction_time[data['sender']] = self.provider.current_time() 
             
@@ -517,6 +527,11 @@ class Drone(IProtocol):
                 destination = np.array(data['destination'])
                 self.drone_states[sender_id]['position'] = destination[0:2] # only x and y
                 self.drone_states[sender_id]['time_of_last_update'] = self.provider.current_time()
+
+                if self.waiting_for_destination:
+                    self.mobility_command_buffer['flag'] = FlagMessage.MOBILITY_COMMAND.value
+                    self.waiting_for_destination = False
+                    #print(f"Drone {self.provider.get_id()} updated flag after receiving data from drone {sender_id}.")
                 #print(f"Drone {self.provider.get_id()} received broadcasted destination {destination} from drone {sender_id}.") 
             else:
                 self._log.warning(f"Received message with unknown type: {msg_type}")
@@ -538,7 +553,8 @@ def drone_protocol_factory(
     number_of_drones: int,
     map_width: int,
     map_height: int,
-    results_aggregator: dict
+    results_aggregator: dict,
+    initial_map: np.ndarray,
 ) -> Type[Drone]:
     """
     Creates a new Drone protocol class with the specified configuration.
@@ -550,7 +566,8 @@ def drone_protocol_factory(
         "number_of_drones": number_of_drones,
         "map_width": map_width,
         "map_height": map_height,
-        "results_aggregator": results_aggregator
+        "results_aggregator": results_aggregator,
+        "initial_map": initial_map
     }
 
     # Define a new class that inherits from Drone

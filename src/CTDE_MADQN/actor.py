@@ -44,50 +44,62 @@ from tensordict import TensorDict
 
 # Sub-modules: one encoder per modality, then a fusion
 
-class MapCNN(nn.Module):
+class DualMapEncoder(nn.Module):
     """
-    Small CNN that ingests the local map patch (`map_patch`) and returns a
-    flat feature vector.
-
-    Architecture:
-        Two conv blocks (each: Conv -> ReLU) with padding=1 keep the spatial
-        size. A MaxPool halves the resolution. A third conv increases channel
-        capacity, and an `AdaptiveAvgPool2d(1)` collapses to a single vector.
-        That last pool also makes the encoder size-agnostic: if you change
-        `observation_map_size` later, this module still works without code
-        changes.
+    Two-resolution map encoder.
+        large : (B, in_channels, N, N)  — wide FOV
+        small : (B, in_channels, M, M)  — narrow FOV
+        The small should have the same size as the action 
+    The large branch is convolved and downsampled to M×M, concatenated on the
+    channel axis with the small branch, jointly convolved, flattened, projected.
     """
-
-    def __init__(self, in_channels: int = 2, feature_dim: int = 256):
+    def __init__(self, in_channels: int = 2, large_size: int = 50,
+                 small_size: int = 10, feature_dim: int = 128):
         super().__init__()
-        self.conv = nn.Sequential(
-            nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
+        self.large_size = large_size
+        self.small_size = small_size
+
+        # large branch: extract features, then lock to M×M
+        self.large_stem = nn.Sequential(
+            nn.Conv2d(in_channels, 32, 3, stride=1, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.Conv2d(32, 64, 3, stride=2, padding=1),         
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),                    # 50 -> 25
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.Conv2d(64, 64, 3, stride=1, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.AdaptiveAvgPool2d((small_size, small_size)),     # -> (B, 64, M, M) exactly
+        )
+        # small branch: same resolution, just extract features
+        self.small_stem = nn.Sequential(
+            nn.Conv2d(in_channels, 32, 3, stride=1, padding=1),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),                    # 25 -> 12
-            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.Conv2d(32, 64, 3, stride=1, padding=1),
+            nn.ReLU(inplace=True),
+        )                                                       # -> (B, 64, M, M)
+        # joint head: concat on channels, convolve at M×M
+        self.joint_conv = nn.Sequential(
+            nn.Conv2d(64 + 64, 128, 3, stride=1, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(128, 128, 3, stride=1, padding=1),
             nn.ReLU(inplace=True),
         )
-        # 128 channels × 12 × 12 = 18432 — flatten
-        self.proj = nn.Linear(128 * 12 * 12, feature_dim)
+        self.proj = nn.Linear(self._infer_flat_dim(in_channels), feature_dim)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Args:
-            x: (B, C, H, W). Caller is responsible for adding the channel
-               dimension if the env emits (B, H, W).
-        Returns:
-            (B, feature_dim) feature vector.
-        """
-        h = self.conv(x)
-        h = h.flatten(start_dim=1)                 # (B, 64)
-        return F.relu(self.proj(h))                # (B, feature_dim)
+    @torch.no_grad()
+    def _infer_flat_dim(self, in_channels: int) -> int:
+        large = torch.zeros(1, in_channels, self.large_size, self.large_size)
+        small = torch.zeros(1, in_channels, self.small_size, self.small_size)
+        return self._fuse(large, small).flatten(1).shape[1]
+
+    def _fuse(self, large, small):
+        l = self.large_stem(large)        # (B, 64, M, M)
+        s = self.small_stem(small)        # (B, 64, M, M)
+        x = torch.cat([l, s], dim=1)      # (B, 128, M, M)
+        return self.joint_conv(x)         # (B, 128, M, M)
+
+    def forward(self, large, small):
+        x = self._fuse(large, small).flatten(1)   # (B, 128*M*M)
+        return F.relu(self.proj(x))               # (B, feature_dim)
 
 
 class VectorEncoder(nn.Module):
@@ -149,12 +161,15 @@ class Actor(nn.Module):
         *,
         max_num_agents: int = 3,        # affects estimated_positions size
         action_dim: int = 100,          # size of the action space 
-        map_channels: int = 1,          # map_patch is single-channel uncertainty
+        map_channels: int = 2,          # map_patch is channel uncertainty and channel distance
+        large_map_size: int = 50,
+        small_map_size: int = 10,
         map_feature_dim: int = 128,
         vector_feature_dim: int = 64,
         hidden_dim: int = 256,
         # Keys inside per_agent_obs_td — change here if you rename them in the env.
-        map_key: str = "map_patch",
+        large_map_key: str = "large_map_patch",
+        small_map_key: str = "small_map_patch",
         position_key: str = "position",
         uncertainty_key: str = "individual_map_uncertainty",
         estimated_positions_key: str = "estimated_positions_and_time",
@@ -164,7 +179,8 @@ class Actor(nn.Module):
         self.action_dim = action_dim
         self.max_num_agents = max_num_agents
 
-        self.map_key = map_key
+        self.large_map_key = large_map_key
+        self.small_map_key = small_map_key
         self.position_key = position_key
         self.uncertainty_key = uncertainty_key
         self.estimated_positions_key = estimated_positions_key
@@ -176,8 +192,11 @@ class Actor(nn.Module):
         self.vector_in_dim = 2 + 1 + ((max_num_agents - 1) * 3)
 
         ##### Inputs
-        self.map_encoder = MapCNN(
-            in_channels=map_channels, feature_dim=map_feature_dim
+        self.map_encoder = DualMapEncoder(
+            in_channels=map_channels,
+            large_size=large_map_size,
+            small_size=small_map_size,
+            feature_dim=map_feature_dim,
         )
         self.vec_encoder = VectorEncoder(
             in_dim=self.vector_in_dim, feature_dim=vector_feature_dim
@@ -207,7 +226,8 @@ class Actor(nn.Module):
         pos = obs_td[self.position_key]            # unbatched (2,)     | batched (B, 2)
         unc = obs_td[self.uncertainty_key]         # unbatched (1,)     | batched (B, 1)
         ep = obs_td[self.estimated_positions_key]  # unbatched (N-1, 3) | batched (B, N-1, 3)
-        mp = obs_td[self.map_key]                  # unbatched (H, W)   | batched (B, H, W)
+        large_map = obs_td[self.large_map_key].float()
+        small_map = obs_td[self.small_map_key].float()                  
 
         # Detect batching from `position` (1-D = single sample, 2-D = batched).
         is_unbatched = pos.dim() == 1
@@ -215,26 +235,31 @@ class Actor(nn.Module):
             pos = pos.unsqueeze(0)
             unc = unc.unsqueeze(0)
             ep = ep.unsqueeze(0)
-            mp = mp.unsqueeze(0)
+            large_map = large_map.unsqueeze(0)
+            small_map = small_map.unsqueeze(0)
 
-        # The env emits map_patch as (B, H, W) — no channel dim. The CNN
+        # The env may emit map_patch as (B, H, W) — no channel dim. The CNN
         # expects (B, C, H, W), so insert a singleton channel.
-        if mp.dim() == 3:
-            mp = mp.unsqueeze(1)                   # (B, 1, H, W)
+        if large_map.dim() == 3:
+            large_map = large_map.unsqueeze(1)                   # (B, 1, H, W)
+        
+        if small_map.dim() == 3:
+            small_map = small_map.unsqueeze(1)                   # (B, 1, H, W)
 
         # Cast everything else to float too, just in case the env returns
         # something different (e.g. on GPU with mixed dtypes).
         pos = pos.float()
         unc = unc.float()
         ep = ep.float()
-        mp = mp.float()
+        large_map = large_map.float()
+        small_map = small_map.float()
 
         # Flatten `estimated_positions` from (B, N, 2) to (B, N*2) so it can
         # be concatenated with the other 1-D vectors.
         ep_flat = ep.flatten(start_dim=1)          # (B, N*2)
 
         # Encode each modality and concatenate 
-        map_feat = self.map_encoder(mp)                  # (B, map_feature_dim)
+        map_feat = self.map_encoder(large_map, small_map)                  # (B, map_feature_dim)
         vec_in = torch.cat([pos, unc, ep_flat], dim=-1)  # (B, vector_in_dim)
         vec_feat = self.vec_encoder(vec_in)              # (B, vector_feature_dim)
 
@@ -266,41 +291,15 @@ class Actor(nn.Module):
 
 """
 if __name__ == "__main__":
-    torch.manual_seed(0)
-
-    # Build a dummy per-agent observation that matches the env's spec.
-    M = 20
-    N = 3
-    per_agent_obs = TensorDict(
-        {
-            "map_patch":                   torch.rand(M, M) * 0.8,
-            "individual_map_uncertainty":  torch.rand(1),
-            "position":                    torch.rand(2),
-            "estimated_positions":         torch.rand(N, 2),
-        },
-        batch_size=[],
-    )
-
-    actor = Actor(max_num_agents=N, action_dim=M*M)
-
-    q_values = actor.forward(per_agent_obs)
-    print(q_values)
-    action = q_values.argmax(dim=-1, keepdim=True)
-    print(f"Q max: {action.item()}")
-
-
-    # 3) Batched forward — what training will use.
-    B = 8
-    batched_obs = TensorDict(
-        {
-            "map_patch":                   torch.rand(B, M, M) * 2.0,
-            "individual_map_uncertainty":  torch.rand(B, 1),
-            "position":                    torch.rand(B, 2),
-            "estimated_positions":         torch.rand(B, N, 2),
-        },
-        batch_size=[B],
-    )
-    q_batch = actor.forward(batched_obs)
-    action = q_batch.argmax(dim=-1, keepdim=True)
-    print(f"Batched Q max indices: {action.squeeze(-1).tolist()}")
+    N, M, C = 50, 20, 2
+    a = Actor(max_num_agents=3, action_dim=100, large_map_size=N, small_map_size=M)
+    ub = TensorDict({"map_patch_large": torch.rand(C, N, N),
+                     "map_patch_small": torch.rand(C, M, M),
+                     "individual_map_uncertainty": torch.rand(1),
+                     "position": torch.rand(2),
+                     "estimated_positions_and_time": torch.rand(2, 3),
+                     "valid_actions": torch.ones(100)}, batch_size=[])
+    print(a(ub).shape)                                  # (100,)
+    b = ub.expand(8).clone(); b.batch_size = [8]
+    print(a(b).shape)                                   # (8, 100)
 """

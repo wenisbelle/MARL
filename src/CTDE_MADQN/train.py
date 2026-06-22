@@ -25,8 +25,8 @@ from policy import RandomPolicy, DQNPolicy
 from train_logs import TrainingLogger
 
 ALGORITHM_ITERATION_INTERVAL = 1.0
-MAX_NUM_AGENTS = 3
-MIN_NUM_AGENTS = 3   
+MAX_NUM_AGENTS = 5
+MIN_NUM_AGENTS = 5   
 MAP_WIDTH = 50
 MAP_HEIGHT = 50
 OBSERVATION_MAP_SIZE = 50
@@ -36,24 +36,26 @@ AGENT_DEATH_PROBABILITY = 0.0
 MAP_CHANNELS = 2
 VECTOR_FEATURE_DIM = 64
 HIDDEN_DIM = 256
-MAP_KEY = "map_patch"
+LARGE_MAP_KEY = "large_map_patch"
+SMALL_MAP_KEY = "small_map_patch"
 POSITION_KEY = "position"
 UNCERTAINTY_KEY = "individual_map_uncertainty"
 ESTIMATED_POSITIONS_KEY = "estimated_positions_and_time"
 EPS_INIT = 1.0
 EPS_DECAY = 0.9998
 EPS_MIN = 0.1
-N_WORKERS = 24
+N_WORKERS = 12
 STEPS_PER_BATCH = 100
 NUM_ITERATIONS = 20000
-MIN_TRANSITIONS_PER_COLLECT = 250
+MIN_TRANSITIONS_PER_COLLECT = 100
 COLLECT_TIMEOUT_S = 10.0
 SYNC = False
 NEW_BATCH_NEW_SIMULATION = False
 TRAIN_FREQUENCY = 4
+BASE_SEED = 47
 
 BATCH_SIZE = 256
-BUFFERSIZE = 30000
+BUFFERSIZE = 10000
 VALUE_NETWORK_UPDATES_PER_ITERATION = 4
 
 GAMMA        = 0.99
@@ -68,6 +70,7 @@ CHECKPOINT_DIR      = "checkpoints"
 LOG_EVERY           = 1                # print every iter; raise for long runs
 REWARD_WINDOW       = 100               # rolling-average window for "is it improving?"
 
+LOCAL_GLOBAL_REWARD_RATIO = 0.5 # how to weight the local vs global reward in the worker's reward calculation
 
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
@@ -98,7 +101,8 @@ def make_policy():
         map_channels=MAP_CHANNELS,
         vector_feature_dim=VECTOR_FEATURE_DIM,
         hidden_dim=HIDDEN_DIM,
-        map_key=MAP_KEY,
+        large_map_key=LARGE_MAP_KEY,
+        small_map_key=SMALL_MAP_KEY,
         position_key=POSITION_KEY,
         uncertainty_key=UNCERTAINTY_KEY,
         estimated_positions_key=ESTIMATED_POSITIONS_KEY,
@@ -127,7 +131,8 @@ def main():
         map_channels=MAP_CHANNELS,
         vector_feature_dim=VECTOR_FEATURE_DIM,
         hidden_dim=HIDDEN_DIM,
-        map_key=MAP_KEY,
+        large_map_key=LARGE_MAP_KEY,
+        small_map_key=SMALL_MAP_KEY,
         position_key=POSITION_KEY,
         uncertainty_key=UNCERTAINTY_KEY,
         estimated_positions_key=ESTIMATED_POSITIONS_KEY,
@@ -144,10 +149,11 @@ def main():
         policy_fn=make_policy,
         replay_buffer=replay_buffer,
         steps_per_batch=STEPS_PER_BATCH,
-        base_seed=42,
+        base_seed=BASE_SEED,
         sync=SYNC,
         reward_scale = MAP_WIDTH/5,
         reward_decay = REWARD_DECAY,
+        local_global_reward_ratio = LOCAL_GLOBAL_REWARD_RATIO,
         new_batch_new_simulation=NEW_BATCH_NEW_SIMULATION,
     ) as orch:
 
@@ -226,7 +232,8 @@ def main():
 
                 logger.maybe_checkpoint(it, trainer_policy.actor, target_actor, optimizer,
                                          eps=trainer_policy.eps)
-    logger.close()
+        
+        logger.close()
                         
          
 
