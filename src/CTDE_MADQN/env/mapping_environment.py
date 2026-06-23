@@ -752,7 +752,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 continue  # It is far way to consider a penalty
             norm_distance = distance_to_other / (self.action_map_size * self.distance_between_cells)
             
-            total_penalty += max(0, 1 - norm_distance)  # Closer means higher penalty, with a hard cutoff at the action map's diagonal distance
+            total_penalty += 2*max(0, 1 - norm_distance)  # Closer means higher penalty, with a hard cutoff at the action map's diagonal distance
         
         #print(f"------------Total penalty of drone {agent.node_id} is: {total_penalty:.4f}")
         return total_penalty
