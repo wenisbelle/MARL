@@ -198,7 +198,12 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             )))
 
         results_aggregator = {}
-        initial_map = np.random.uniform(0, 3, size=(self.map_width, self.map_height)) 
+        ### Initial map mostly with values between 0 and 1, but some cells with higher values
+        mask = np.random.rand(self.map_width, self.map_height) < 0.20
+        values_0_to_1 = np.random.rand(self.map_width, self.map_height)
+        values_2_to_3 = np.random.rand(self.map_width, self.map_height) + 2
+        initial_map = np.where(mask, values_2_to_3, values_0_to_1)
+        
         ConfiguredDrone = drone_protocol_factory(uncertainty_rate=self.uncertainty_rate,
                                                  vanishing_update_time=self.vanishing_update_time,
                                                  number_of_drones=self.max_num_agents,
