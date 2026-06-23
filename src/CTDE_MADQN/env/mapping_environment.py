@@ -198,7 +198,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             )))
 
         results_aggregator = {}
-        initial_map = np.random.rand(self.map_width, self.map_height)  
+        initial_map = np.random.uniform(0, 3, size=(self.map_width, self.map_height)) 
         ConfiguredDrone = drone_protocol_factory(uncertainty_rate=self.uncertainty_rate,
                                                  vanishing_update_time=self.vanishing_update_time,
                                                  number_of_drones=self.max_num_agents,
@@ -207,7 +207,6 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                                                  results_aggregator=results_aggregator,
                                                  initial_map=initial_map)
                                                  
-
         # The episode state keeps stable slot identity; only existing agents get simulator nodes.
         for agent in self._existing_episode_agents():
             if self.full_random_drone_position:
@@ -256,7 +255,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 # Upper bound: uncertainty grows over time. Pick something safe.
                 # If max_episode_length * uncertainty_rate ≈ max value seen,
                 # use that. Or use Unbounded if you don't want to cap it.
-                torch.full(large_map_patch_shape, 2.0, device=device),
+                torch.full(large_map_patch_shape, 10.0, device=device),
                 large_map_patch_shape,
                 dtype=torch.float32,
                 device=device,
@@ -267,7 +266,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 # Upper bound: uncertainty grows over time. Pick something safe.
                 # If max_episode_length * uncertainty_rate ≈ max value seen,
                 # use that. Or use Unbounded if you don't want to cap it.
-                torch.full(small_map_patch_shape, 2.0, device=device),
+                torch.full(small_map_patch_shape, 10.0, device=device),
                 small_map_patch_shape,
                 dtype=torch.float32,
                 device=device,
