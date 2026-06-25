@@ -114,7 +114,10 @@ class Drone(IProtocol):
         
         ##### Initialize map #####
         self.map = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT, 2))
-        self.map[:,:,0] = 2.0
+        mask = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) < 0.25
+        values_0_to_1 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT)
+        values_2_to_3 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) + 1
+        self.map[:,:,0] = np.where(mask, values_2_to_3, values_0_to_1)
         self.total_uncertainty = self.map[:,:,0].sum()
         self.is_cell_visited = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT))
         self.accomulated_uncertainty = 0.0
@@ -261,7 +264,6 @@ class Drone(IProtocol):
     def get_current_cell(self):
         current_x = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
         current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
-
         return current_x, current_y
     
     def get_normalized_drone_position(self):
