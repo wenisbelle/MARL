@@ -186,10 +186,10 @@ class Actor(nn.Module):
         self.estimated_positions_key = estimated_positions_key
         self.valid_actions_key = valid_actions_key
 
-        # Vector input dim = position(2) + uncertainty(1) + estimated((N-1)*3). -> For each of the other agents (x, y, time_of_last_observation)
+        # Vector input dim = position(2) + uncertainty(2)[mean, std_deviation] + estimated((N-1)*3). -> For each of the other agents (x, y, time_of_last_observation)
         # If you later add or remove obs fields, update this number and the
         # corresponding concatenation inside `_features`.
-        self.vector_in_dim = 2 + 1 + ((max_num_agents - 1) * 3)
+        self.vector_in_dim = 2 + 2 + ((max_num_agents - 1) * 3)
 
         ##### Inputs
         self.map_encoder = DualMapEncoder(

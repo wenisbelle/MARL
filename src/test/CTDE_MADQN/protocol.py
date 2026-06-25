@@ -114,7 +114,10 @@ class Drone(IProtocol):
         
         ##### Initialize map #####
         self.map = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT, 2))
-        self.map[:,:,0] = 0.5
+        mask = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) < 0.25
+        values_0_to_1 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT)
+        values_2_to_3 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) + 1
+        self.map[:,:,0] = np.where(mask, values_2_to_3, values_0_to_1)
         self.total_uncertainty = self.map[:,:,0].sum()
         self.is_cell_visited = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT))
         self.accomulated_uncertainty = 0.0
@@ -253,12 +256,41 @@ class Drone(IProtocol):
     def get_current_map_uncertainty(self):
         return self.total_uncertainty
     
+    def mean_and_std_deviation_uncertainty(self):
+        mean_uncertainty = np.mean(self.map[:,:,0])
+        std_deviation_uncertainty = np.std(self.map[:,:,0])
+        return mean_uncertainty, std_deviation_uncertainty
+    
     def get_current_cell(self):
         current_x = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
         current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
-
         return current_x, current_y
     
+    def get_normalized_drone_position(self):
+        half_map_width = self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS / 2
+        half_map_height = self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS / 2
+        normalized_x = (self.drone_position[0] + half_map_width) / (2*half_map_width)
+        normalized_y = (self.drone_position[1] + half_map_height) / (2*half_map_height)
+        return [normalized_x, normalized_y]
+    
+    def get_estimated_drone_destinations(self, normalize_time: float = 60.0):
+        half_map_width = self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS / 2
+        half_map_height = self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS / 2
+
+        est = np.zeros((self.NUMBER_OF_DRONES - 1, 3))
+        row = 0
+        for i, s in enumerate(self.drone_states):
+            if i == self.provider.get_id():
+                continue
+            px = (s['position'][0] + half_map_width) / (2*half_map_width)
+            py = (s['position'][1] + half_map_height) / (2*half_map_height)
+            dt_norm = min(float(self.provider.current_time() - s['time_of_last_update']) / normalize_time, 1.0)
+            est[row, 0] = px
+            est[row, 1] = py
+            est[row, 2] = dt_norm
+            row += 1
+        return est
+
     def get_spatial_distance_map(self, observation_map_size: int) -> np.ndarray:
         """
         Returns a 2D matrix where each cell contains its normalized Euclidean 
@@ -290,14 +322,18 @@ class Drone(IProtocol):
         normalized_distances = (distances / max(1e-5, max_dist)).astype(np.float32)
         return normalized_distances
     
-    def get_patched_map(self, observation_map_size: int) -> np.ndarray:
+    def get_patched_map(self, observation_map_size: int, clip_limit: float = 5.0) -> np.ndarray:
         """
         Return an (M, M) patch of the uncertainty map centered on the drone.
         Cells outside the world are padded with 0.0 (maximum uncertainty), so
         the drone is always at patch[M//2, M//2] regardless of edge proximity.
         """
+        mean_u, std_u = self.mean_and_std_deviation_uncertainty()
+        normalized_map = (self.map[:, :, 0] - mean_u) / (std_u + 1e-4)
+        normalized_map = np.clip(normalized_map, -clip_limit, clip_limit)
+
         if observation_map_size == self.MAP_WIDTH:
-            return self.map[:,:,0]
+            return normalized_map
         else:        
             M = observation_map_size
             half = M // 2
@@ -327,7 +363,7 @@ class Drone(IProtocol):
                 dst_x_hi = dst_x_lo + (src_x_hi - src_x_lo)
                 dst_y_hi = dst_y_lo + (src_y_hi - src_y_lo)
                 patch[dst_x_lo:dst_x_hi, dst_y_lo:dst_y_hi] = \
-                    self.map[src_x_lo:src_x_hi, src_y_lo:src_y_hi, 0]
+                    normalized_map[src_x_lo:src_x_hi, src_y_lo:src_y_hi]
             return patch
     
     ##### Map updating ##### 
@@ -374,29 +410,19 @@ class Drone(IProtocol):
         )
 
         # individual_map_uncertainty: (1,) - Try to normalize. But it is still possible that the uncertainty is larger than 1.0
-        norm = 2*self.MAP_WIDTH * self.MAP_HEIGHT
+        individual_map_uncertainty = self.mean_and_std_deviation_uncertainty()
+
         uncertainty = torch.tensor(
-            [self.total_uncertainty / norm],
+            individual_map_uncertainty,
             dtype=torch.float32
         )
 
         # position: (2,) — drone x,y normalized to [0, 1] over the world
-        world_w = self.MAP_WIDTH  * self.DISTANCE_BETWEEN_CELLS
-        world_h = self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS
-        pos_x = (self.drone_position[0] + world_w / 2) / world_w
-        pos_y = (self.drone_position[1] + world_h / 2) / world_h
+        pos_x, pos_y = self.get_normalized_drone_position()
         position = torch.tensor([pos_x, pos_y], dtype=torch.float32)
 
         # estimated_positions: (N-1, 3) — other drones' last known positions, normalized
-        est = []
-        for i, s in enumerate(self.drone_states):
-            if i == self.provider.get_id():
-                continue
-            px = (s['position'][0] + world_w / 2) / world_w
-            py = (s['position'][1] + world_h / 2) / world_h
-            dt_norm = min(float(self.provider.current_time() - s['time_of_last_update']) / self.NORMALIZE_TIME, 1.0)
-            est.append([px, py, dt_norm])
-
+        est = self.get_estimated_drone_destinations()
         estimated_positions_and_time = torch.tensor(est, dtype=torch.float32)  # (N, 2)
 
         return TensorDict(

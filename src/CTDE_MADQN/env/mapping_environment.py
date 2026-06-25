@@ -198,7 +198,26 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             )))
 
         results_aggregator = {}
-        initial_map = np.random.rand(self.map_width, self.map_height)  
+        ### Initial map most be the more diverse possible
+        num = random.random()
+
+        if num < 0.25:
+            ### Uniform values between 0 and 1
+            initial_map = np.random.rand(self.map_width, self.map_height)
+        elif num < 0.5:
+            ### Uniform values between 0.5 and 1.0
+            initial_map = np.random.uniform(low=0.5, high=1.0, size=(self.map_width, self.map_height))           
+        elif num < 0.75:
+            ### The map will start with 25% of the cells with a high uncertainty value between 1 and 2.
+            mask = np.random.rand(self.map_width, self.map_height) < 0.25
+            values_0_to_1 = np.random.rand(self.map_width, self.map_height)
+            values_2_to_3 = np.random.rand(self.map_width, self.map_height) + 1
+            initial_map = np.where(mask, values_2_to_3, values_0_to_1)
+        else:
+            ### The map will start with an initial high uncertainty value of 1.0 in the whole map
+            initial_map = np.ones((self.map_width, self.map_height))
+
+        
         ConfiguredDrone = drone_protocol_factory(uncertainty_rate=self.uncertainty_rate,
                                                  vanishing_update_time=self.vanishing_update_time,
                                                  number_of_drones=self.max_num_agents,
@@ -207,7 +226,6 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                                                  results_aggregator=results_aggregator,
                                                  initial_map=initial_map)
                                                  
-
         # The episode state keeps stable slot identity; only existing agents get simulator nodes.
         for agent in self._existing_episode_agents():
             if self.full_random_drone_position:
@@ -238,12 +256,19 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         # The time will vary from 0 to 1, where 0 means the information is fresh and 1 means the information is as old as the vanishing_update_time - Hoping the system can learn
         # to give more importance to fresher information
 
-        large_map_patch_shape = (self.max_num_agents, 2, M, M) # 1 for uncertainty and 1 for the norm distances
+        ### The map will be divided in 2 channels: one for uncertainty and other for the normalized distances from the 
+        ### drone current cell to the others in the map.
+        ### The uncertainty channel is the (uncertainty of the cell - mean value)/(standard_ deviation). So the value will be cliped 
+        ### from -5 to 5. 
+        large_map_patch_shape = (self.max_num_agents, 2, M, M) 
         # Reduced observed map with size equal to the action map
-        small_map_patch_shape = (self.max_num_agents, 2, A, A) # 1 for uncertainty and 1 for the norm distances
+        small_map_patch_shape = (self.max_num_agents, 2, A, A) 
         complete_map_shape = (self.map_width, self.map_height)
+        
         position_shape = (self.max_num_agents, 2)
-        uncertainty_shape = (self.max_num_agents, 1)
+
+        #### Total uncertainty will be given by the mean the and the standard deviation
+        uncertainty_shape = (self.max_num_agents, 2)
         mask_shape = (self.max_num_agents,)
         action_shape = (self.max_num_agents,1)
         reward_shape = (self.max_num_agents, 1)
@@ -251,33 +276,23 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         obs_inner = {
             "large_map_patch": Bounded(
-                torch.zeros(large_map_patch_shape, device=device),
-                # Some RL algorithms work better with bounded observation spaces.
-                # Upper bound: uncertainty grows over time. Pick something safe.
-                # If max_episode_length * uncertainty_rate ≈ max value seen,
-                # use that. Or use Unbounded if you don't want to cap it.
-                torch.full(large_map_patch_shape, 2.0, device=device),
+                torch.full(large_map_patch_shape, -5.0, device=device),
+                torch.full(large_map_patch_shape, 5.0, device=device),
                 large_map_patch_shape,
                 dtype=torch.float32,
                 device=device,
             ),
             "small_map_patch": Bounded(
-                torch.zeros(small_map_patch_shape, device=device),
-                # Some RL algorithms work better with bounded observation spaces.
-                # Upper bound: uncertainty grows over time. Pick something safe.
-                # If max_episode_length * uncertainty_rate ≈ max value seen,
-                # use that. Or use Unbounded if you don't want to cap it.
-                torch.full(small_map_patch_shape, 2.0, device=device),
+                torch.full(small_map_patch_shape, -5.0, device=device),
+                torch.full(small_map_patch_shape, 5.0, device=device),
                 small_map_patch_shape,
                 dtype=torch.float32,
                 device=device,
             ),
-            ##### the total uncertainty is the sum of uncertainty from every cell of the map
-            ##### for trainning the normalization will be applied with a factor of: 2 x map_width x map_height
-            ##### this is coherent with the bounderies from the map_patch 
+            ##### the total uncertainty is represented by the mean and the standard deviation of the uncertainty map
             "individual_map_uncertainty": Bounded(
                 torch.zeros(uncertainty_shape, device=device),
-                torch.ones(uncertainty_shape, device=device),  # normalized to [0,1] - Better for training stability
+                torch.full(uncertainty_shape, 5.0, device=device),  # normalized to [0,5] - Better for training stability
                 uncertainty_shape,
                 dtype=torch.float32,
                 device=device,
@@ -314,16 +329,16 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         ##### For critics, it will observe the position of all drones and the full map, with lowest uncertainty in each cell from all individual observations.
         obs_global = {
             "full_map": Bounded(
-                torch.zeros(complete_map_shape, device=device),
-                torch.full(complete_map_shape, 2.0, device=device),  # same reasoning as map_patch
+                torch.full(complete_map_shape, -5.0, device=device),
+                torch.full(complete_map_shape, 5.0, device=device),  # same reasoning as map_patch
                 complete_map_shape,
                 dtype=torch.float32,
                 device=device,
             ),
             "global_map_uncertainty": Bounded(
-                torch.zeros((1,), device=device),
-                torch.ones((1,), device=device),  # normalized to [0,1] - Better for training stability
-                (1,),
+                torch.zeros((1,2), device=device),
+                torch.full((1,2), 5.0, device=device),  # normalized to [0,5] - Better for training stability
+                (1,2),
                 dtype=torch.float32,
                 device=device,
             ),
@@ -455,9 +470,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         ##### Get the individual uncertainty before the step, to compute the reward later
         pre_step_agents = self._active_episode_agents()
-        collected_individual_uncertainty_before = self.get_individual_uncertainty_from_simulation(pre_step_agents)
-        collected_global_uncertainty_before = self.get_global_uncertainty_from_simulation(pre_step_agents)
-        individual_high_cells_before, global_extreme_high_cells_before, global_high_cells_before = self.get_number_of_cells_with_high_uncertainty(pre_step_agents)
+        collected_individual_uncertainty_before_mean = self.get_individual_uncertainty_from_simulation(pre_step_agents)
+        collected_global_uncertainty_before_mean = self.get_global_map_from_simulation(pre_step_agents).mean()
 
         self._apply_actions(actions)
         status = self.step_simulation()
@@ -465,21 +479,20 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         ##### Get the individual uncertainty after the step, to compute the reward later
         ##### For now, in this calculation we are considering that the reward is given to the specific agent even if he dies in this step
-        collected_individual_uncertainty_after = self.get_individual_uncertainty_from_simulation(pre_step_agents)
-        collected_global_uncertainty_after = self.get_global_uncertainty_from_simulation(pre_step_agents)
-        individual_high_cells_after, global_extreme_high_cells_after, global_high_cells_after = self.get_number_of_cells_with_high_uncertainty(pre_step_agents) 
+        collected_individual_uncertainty_after_mean = self.get_individual_uncertainty_from_simulation(pre_step_agents)
+        collected_global_uncertainty_after_mean = self.get_global_map_from_simulation(pre_step_agents).mean()
 
+        #print(f"Pre steps uncertainty: {collected_individual_uncertainty_before_mean}")
+        #print(f"Post steps uncertainty: {collected_individual_uncertainty_after_mean}")
+        #print(f"Pre steps global uncertainty: {collected_global_uncertainty_before_mean:.4f}")
+        #print(f"Post steps global uncertainty: {collected_global_uncertainty_after_mean:.4f}")
 
         ##### Reward
-        individual_rewards = self._compute_individual_rewards(collected_individual_uncertainty_before,
-                                                              collected_individual_uncertainty_after,
-                                                              individual_high_cells_before,
-                                                              individual_high_cells_after,
+        individual_rewards = self._compute_individual_rewards(collected_individual_uncertainty_before_mean,
+                                                              collected_individual_uncertainty_after_mean,
                                                               pre_step_agents)
         
-        global_reward = self._compute_global_rewards(collected_global_uncertainty_before, collected_global_uncertainty_after,
-                                                     global_extreme_high_cells_before, global_high_cells_before,
-                                                     global_extreme_high_cells_after, global_high_cells_after)
+        global_reward = self._compute_global_rewards(collected_global_uncertainty_before_mean, collected_global_uncertainty_after_mean)
         
         #"Step reward calculation: individual rewards = {individual_rewards}, global reward = {global_reward:.4f}")
         
@@ -614,10 +627,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
     def get_individual_patch_map_from_simulation(self, agent: EpisodeAgentState, observation_size: float) -> np.ndarray:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-        if observation_size == self.map_width:
-            return protocol.map[:,:,0]
-        else:
-            return protocol.get_patched_map(observation_size)
+        return protocol.get_patched_map(observation_size)
         
     def get_individual_distances_from_map(self, agent:EpisodeAgentState, observation_size: float) -> np.ndarray:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
@@ -625,11 +635,12 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
     
     def get_individual_agent_uncertainty_from_simulation(self, agent: EpisodeAgentState) -> float:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-        return protocol.total_uncertainty
+        mean, std = protocol.get_mean_and_std_deviation_uncertainty()
+        return [mean, std]
     
     def get_individual_position_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-        return protocol.drone_position[:2]
+        return protocol.get_normalized_drone_position()
     
     def _compute_valid_action_mask(self, agent: EpisodeAgentState) -> np.ndarray:
         """
@@ -654,23 +665,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
     def get_estimated_positions_and_time_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-        current_time = self.simulator._current_timestamp
-        out = np.zeros((self.max_num_agents - 1, 3), dtype=np.float32)
-
-        row = 0
-        for i in range(self.max_num_agents):
-            if i == agent.node_id:
-                continue
-            state = protocol.drone_states[i]
-            position = state['position'][:2]
-            dt = current_time - state['time_of_last_update']
-            
-            out[row, 0] = position[0]
-            out[row, 1] = position[1]
-            out[row, 2] = dt
-            row += 1
-
-        return out
+        
+        return protocol.get_estimated_drone_destinations(self.NORMALIZE_TIME)
 
     def get_global_positions_from_simulation(self, agents: list[EpisodeAgentState]) -> list[np.ndarray]:
         positions = []
@@ -688,12 +684,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             if agent.active is False:
                 continue
             protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-            agents_uncertainty.append(protocol.total_uncertainty)
+            mean, _ = protocol.get_mean_and_std_deviation_uncertainty()
+            agents_uncertainty.append(mean)
         return agents_uncertainty
     
-    def get_global_uncertainty_from_simulation(self, agents: list[EpisodeAgentState]) -> float:
-        global_map = self.get_global_map_from_simulation(agents)
-        return global_map.sum()
     
     def get_number_of_cells_with_high_uncertainty(self, agents: list[EpisodeAgentState]) -> list[int]:
         """ Computes the number of high uncertainty cells for each agent and globally.
@@ -752,11 +746,11 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 continue  # It is far way to consider a penalty
             norm_distance = distance_to_other / (self.action_map_size * self.distance_between_cells)
             
-            total_penalty += max(0, 1 - norm_distance)  # Closer means higher penalty, with a hard cutoff at the action map's diagonal distance
+            total_penalty += 2*max(0, 1 - norm_distance)  # Closer means higher penalty, with a hard cutoff at the action map's diagonal distance
         
         #print(f"------------Total penalty of drone {agent.node_id} is: {total_penalty:.4f}")
         return total_penalty
-
+    
     def get_global_map_from_simulation(self, agents: list[EpisodeAgentState]) -> np.ndarray:
         individual_maps = []
         for agent in agents:
@@ -773,6 +767,22 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         ##### Take the lowest uncertainty value for each cell across all drones
         return np.min(individual_maps, axis=0)
 
+    def get_normalized_global_map_from_simulation(self, agents: list[EpisodeAgentState]) -> np.ndarray:
+        global_map = self.get_global_map_from_simulation(agents)
+        mean_uncertainty = np.mean(global_map)
+        std_uncertainty = np.std(global_map)
+
+        normalized_global_map = (global_map - mean_uncertainty) / (std_uncertainty + 1e-4)
+
+        return np.clip(normalized_global_map, -5.0, 5.0)
+    
+    def get_normalized_global_uncertainty(self, agents: list[EpisodeAgentState]):
+        global_map = self.get_global_map_from_simulation(agents)
+        mean_uncertainty = np.clip(np.mean(global_map), 0.0, 5.0)
+        std_uncertainty = np.clip(np.std(global_map), 0.0, 5.0)
+        
+        return [mean_uncertainty, std_uncertainty]
+
 
     def _update_stall(self, collected_before: list[bool], collected_after: list[bool]) -> None:
         if sum(collected_after) > sum(collected_before):
@@ -782,41 +792,29 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         self.episode_duration += 1
 
-    def _compute_individual_rewards(self, uncertainty_before, uncertainty_after, 
-                                    individuals_high_cells_before, individuals_high_cells_after,
-                                    stepped_agents):
+    def _compute_individual_rewards(self, uncertainty_before, uncertainty_after, stepped_agents):
         rewards = {}
         
-        for agent, u_before, u_after, high_cells_before, high_cells_after in zip(stepped_agents,
-                                                                                 uncertainty_before,
-                                                                                 uncertainty_after,
-                                                                                 individuals_high_cells_before,
-                                                                                 individuals_high_cells_after):
+        for agent, u_before, u_after in zip(stepped_agents,uncertainty_before, uncertainty_after):
             ### Positive reward from reducing uncertainty
-            reward_1 = u_before - u_after
+            reward_1 = 100*(u_before - u_after)            
 
             ### reward for distance penalty:
             reward_2 = self.immediate_reward_from_action[agent.slot_index]
             # Reset this variable. It will be updated when the agent takes another action
             self.immediate_reward_from_action[agent.slot_index] = 0.0
+            #print(f"Reward 1: {reward_1:.4f}")
+            #print(f"Reward 2: {reward_2:.4f}")
 
-            ### Reward for reducing the number of high uncertainty cells
-            reward_3 = 0.5*(high_cells_before[1] - high_cells_after[1])
-            reward_4 = 1.0*(high_cells_before[0] - high_cells_after[0])
-
-            rewards[agent.slot_index] = reward_1 + reward_2 + reward_3 + reward_4
+            rewards[agent.slot_index] = reward_1 + reward_2
             #print(f"The final reward of agent {agent.slot_index} is {reward}")
         return rewards   
 
-    def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float,
-                                extreme_high_cells_before: int, high_cells_before: int,
-                                extreme_high_cells_after: int, high_cells_after: int) -> float:
+    def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float) -> float:
         """Return the global reward based on the change in global uncertainty."""
-        global_1 = uncertainty_before - uncertainty_after
-        global_2 = 0.5*(high_cells_before-high_cells_after)
-        global_3 = 1.0*(extreme_high_cells_before - extreme_high_cells_after)
-               
-        return global_1 + global_2 + global_3
+        global_1 = 100*(uncertainty_before - uncertainty_after)
+        #print(f"Global: {global_1:.4f}")
+        return global_1 
 
 
     def _reward_sum_update(self, individual_rewards: list[float], global_reward: float, stepped_agents: list[EpisodeAgentState]) -> None:
@@ -858,8 +856,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 "valid_actions": self._compute_valid_action_mask(agent),
             }
         global_state = {}
-        global_map = self.get_global_map_from_simulation(existing_agents)
-        global_uncertainty = self.get_global_uncertainty_from_simulation(existing_agents)
+        global_map = self.get_normalized_global_map_from_simulation(existing_agents)
+        global_uncertainty = self.get_normalized_global_uncertainty(existing_agents)
         global_positions = self.get_global_positions_from_simulation(existing_agents)
         global_active = [agent.active for agent in self.episode_agents]
 
@@ -922,20 +920,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         individual_obs = observation_dict.get("individual", {})
         global_obs     = observation_dict.get("global", {})
 
-        # normalization  
-        half_w = self.map_width  * self.distance_between_cells / 2.0
-        half_h = self.map_height * self.distance_between_cells / 2.0
-        uncertainty_norm = 2.0 * self.map_width * self.map_height  # matches the spec's comment
+
         M = self.observation_map_size
+        A = self.action_map_size
         
-
-        def _normalize_xy(p):
-            # world [-half_w, +half_w] x [-half_h, +half_h]  ->  [0, 1] x [0, 1]
-            return np.array([
-                (float(p[0]) + half_w) / (2.0 * half_w),
-                (float(p[1]) + half_h) / (2.0 * half_h),
-            ], dtype=np.float32)
-
         # agent observations 
         for agent in self._existing_episode_agents():
             slot = agent.slot_index
@@ -952,8 +940,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                 obs["large_map_patch"], device=self.device, dtype=large_agent_map_patch.dtype
             )
 
-            raw_patch = obs["small_map_patch"]
-            A = self.action_map_size
+            raw_patch = obs["small_map_patch"]            
             assert raw_patch.shape == (2, A, A), (
                 f"Expected patch shape (2, {A}, {A}) from protocol, got {raw_patch.shape}"
             )
@@ -962,27 +949,25 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             )
 
             # scalar uncertainty (normalized)
-            agent_individual_map_uncertainty[slot, 0] = (
-                float(obs["individual_map_uncertainty"]) / uncertainty_norm
+            agent_individual_map_uncertainty[slot] = torch.as_tensor(
+                obs["individual_map_uncertainty"], 
+                device=self.device, 
+                dtype=agent_individual_map_uncertainty.dtype
             )
 
             # own (x, y) normalized
             agent_position[slot] = torch.as_tensor(
-                _normalize_xy(obs["position"]), device=self.device, dtype=agent_position.dtype
+                (obs["position"]), device=self.device, dtype=agent_position.dtype
             )
 
             # estimated_positions_and_time 
-            raw_estimates = obs.get("estimated_positions_and_time")  # shape (max_num_agents-1, 3) - x, y, normalized time
-            if raw_estimates is not None:
-                for j in range(self.max_num_agents-1):
-                    row = raw_estimates[j]
-                    xy_norm = _normalize_xy(row[:2])
-                    dt_norm = min(float(row[2])/self.NORMALIZE_TIME, 1.0)  
-                    estimated_positions_and_time_t[slot, j] = torch.as_tensor(
-                        np.array([xy_norm[0], xy_norm[1], dt_norm], dtype=np.float32),
-                        device=self.device,
-                        dtype=estimated_positions_and_time_t.dtype,
-                        )
+            estimates = obs.get("estimated_positions_and_time")  # shape (max_num_agents-1, 3) - x, y, normalized time
+            if estimates is not None:
+                estimated_positions_and_time_t[slot, :] = torch.as_tensor(
+                    estimates,
+                    device=self.device,
+                    dtype=estimated_positions_and_time_t.dtype
+                )
             
             # encounter_flag (int) -> one-hot 
             agent_encounter_flag[slot, 0] = bool(obs["encounter_flag"])
@@ -993,13 +978,29 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
 
         ##### global / critic observation 
+        half_w = self.map_width  * self.distance_between_cells / 2.0
+        half_h = self.map_height * self.distance_between_cells / 2.0
+        
+
+        def _normalize_xy(p):
+            # world [-half_w, +half_w] x [-half_h, +half_h]  ->  [0, 1] x [0, 1]
+            return np.array([
+                (float(p[0]) + half_w) / (2.0 * half_w),
+                (float(p[1]) + half_h) / (2.0 * half_h),
+            ], dtype=np.float32)
+        
+
         if "full_map" in global_obs:
             global_full_map.copy_(
                 torch.as_tensor(global_obs["full_map"], device=self.device, dtype=global_full_map.dtype)
             )
 
         if "global_map_uncertainty" in global_obs:
-            global_map_uncertainty[0] = float(global_obs["global_map_uncertainty"]) / uncertainty_norm
+            global_map_uncertainty = torch.as_tensor(
+                global_obs["global_map_uncertainty"],
+                device=self.device,
+                dtype=torch.float32  
+            )
 
         for i, pos in enumerate(global_obs.get("all_positions", []) or []):
             if i >= self.max_num_agents:
