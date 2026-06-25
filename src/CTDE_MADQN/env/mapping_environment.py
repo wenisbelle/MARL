@@ -2,6 +2,7 @@ import dataclasses
 import math
 import random
 from typing import Optional
+from scipy.spatial.distance import pdist
 
 import numpy as np
 import torch
@@ -492,7 +493,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
                                                               collected_individual_uncertainty_after_mean,
                                                               pre_step_agents)
         
-        global_reward = self._compute_global_rewards(collected_global_uncertainty_before_mean, collected_global_uncertainty_after_mean)
+        global_reward = self._compute_global_rewards(collected_global_uncertainty_before_mean, collected_global_uncertainty_after_mean, pre_step_agents)
         
         #"Step reward calculation: individual rewards = {individual_rewards}, global reward = {global_reward:.4f}")
         
@@ -678,6 +679,19 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             positions.append(protocol.drone_position[:2])
         return positions
     
+    def get_global_distance_penalty(self, agents: list[EpisodeAgentState]) -> float:
+        positions = self.get_global_positions_from_simulation(agents)
+        
+        if len(positions) < 2:
+            return 0.0
+        pos_arr = np.array(positions)
+        # pdist computes only the unique pairs
+        dists = pdist(pos_arr)
+
+        valid_dists = dists[dists < self.communication_range]
+        penalty = np.sum(1 - valid_dists / self.communication_range)
+        return penalty 
+    
     def get_individual_uncertainty_from_simulation(self, agents: list[EpisodeAgentState]) -> list[float]:
         agents_uncertainty = []
         for agent in agents:
@@ -810,10 +824,13 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             #print(f"The final reward of agent {agent.slot_index} is {reward}")
         return rewards   
 
-    def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float) -> float:
+    def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float, stepped_agents: list[EpisodeAgentState]) -> float:
         """Return the global reward based on the change in global uncertainty."""
         global_1 = 100*(uncertainty_before - uncertainty_after)
-        #print(f"Global: {global_1:.4f}")
+        #print(f"Global 1: {global_1:.4f}")
+        
+        global_2 = -self.get_global_distance_penalty(stepped_agents)/10
+        #print(f"Global 2 {global_2:.4f}")
         return global_1 
 
 
