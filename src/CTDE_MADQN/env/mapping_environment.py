@@ -471,7 +471,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         ##### Get the individual uncertainty before the step, to compute the reward later
         pre_step_agents = self._active_episode_agents()
         collected_individual_uncertainty_before_mean = self.get_individual_uncertainty_from_simulation(pre_step_agents)
-        collected_global_uncertainty_before_mean = (self.get_global_uncertainty_from_simulation(pre_step_agents)).mean()
+        collected_global_uncertainty_before_mean = self.get_global_map_from_simulation(pre_step_agents).mean()
 
         self._apply_actions(actions)
         status = self.step_simulation()
@@ -480,8 +480,12 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         ##### Get the individual uncertainty after the step, to compute the reward later
         ##### For now, in this calculation we are considering that the reward is given to the specific agent even if he dies in this step
         collected_individual_uncertainty_after_mean = self.get_individual_uncertainty_from_simulation(pre_step_agents)
-        collected_global_uncertainty_after_mean = (self.get_global_uncertainty_from_simulation(pre_step_agents)).mean()
+        collected_global_uncertainty_after_mean = self.get_global_map_from_simulation(pre_step_agents).mean()
 
+        #print(f"Pre steps uncertainty: {collected_individual_uncertainty_before_mean}")
+        #print(f"Post steps uncertainty: {collected_individual_uncertainty_after_mean}")
+        #print(f"Pre steps global uncertainty: {collected_global_uncertainty_before_mean:.4f}")
+        #print(f"Post steps global uncertainty: {collected_global_uncertainty_after_mean:.4f}")
 
         ##### Reward
         individual_rewards = self._compute_individual_rewards(collected_individual_uncertainty_before_mean,
@@ -631,7 +635,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
     
     def get_individual_agent_uncertainty_from_simulation(self, agent: EpisodeAgentState) -> float:
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-        mean, std = protocol.mean_and_std_deviation_uncertainty()
+        mean, std = protocol.get_mean_and_std_deviation_uncertainty()
         return [mean, std]
     
     def get_individual_position_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
@@ -680,12 +684,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             if agent.active is False:
                 continue
             protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-            agents_uncertainty.append((protocol.total_uncertainty).mean())
+            mean, _ = protocol.get_mean_and_std_deviation_uncertainty()
+            agents_uncertainty.append(mean)
         return agents_uncertainty
     
-    def get_global_uncertainty_from_simulation(self, agents: list[EpisodeAgentState]) -> float:
-        global_map = self.get_global_map_from_simulation(agents)
-        return global_map.sum()
     
     def get_number_of_cells_with_high_uncertainty(self, agents: list[EpisodeAgentState]) -> list[int]:
         """ Computes the number of high uncertainty cells for each agent and globally.
@@ -793,16 +795,16 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
     def _compute_individual_rewards(self, uncertainty_before, uncertainty_after, stepped_agents):
         rewards = {}
         
-        for agent, u_before, u_after in zip(stepped_agents,
-                                                                                 uncertainty_before,
-                                                                                 uncertainty_after):
+        for agent, u_before, u_after in zip(stepped_agents,uncertainty_before, uncertainty_after):
             ### Positive reward from reducing uncertainty
-            reward_1 = u_before - u_after
+            reward_1 = 100*(u_before - u_after)            
 
             ### reward for distance penalty:
             reward_2 = self.immediate_reward_from_action[agent.slot_index]
             # Reset this variable. It will be updated when the agent takes another action
             self.immediate_reward_from_action[agent.slot_index] = 0.0
+            #print(f"Reward 1: {reward_1:.4f}")
+            #print(f"Reward 2: {reward_2:.4f}")
 
             rewards[agent.slot_index] = reward_1 + reward_2
             #print(f"The final reward of agent {agent.slot_index} is {reward}")
@@ -810,8 +812,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
     def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float) -> float:
         """Return the global reward based on the change in global uncertainty."""
-        global_1 = uncertainty_before - uncertainty_after
-
+        global_1 = 100*(uncertainty_before - uncertainty_after)
+        #print(f"Global: {global_1:.4f}")
         return global_1 
 
 

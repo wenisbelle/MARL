@@ -95,14 +95,16 @@ class AsyncMARLOrchestrator:
         rewards = td["next", "agents", "reward"].squeeze(-1)
         global_reward = td["next", "global_reward"].item()
         mask = td["next", "agents", "mask"]
-        global_step_reward = global_reward / self.REWARD_SCALE
+        global_step_reward = global_reward
 
         for i in range(self.N):
             p = self.pending_transition[i]
             if p is not None and mask[i]:
                 # Avoid reward to explode
                 global_temporal_reward = (self.REWARD_DECAY**p.agent_n_sim_steps) * global_step_reward
-                local_temporal_reward = (self.REWARD_DECAY**p.agent_n_sim_steps) * (rewards[i].item() / self.REWARD_SCALE)
+                local_temporal_reward = (self.REWARD_DECAY**p.agent_n_sim_steps) * (rewards[i].item())
+                #print(f"Global temporal reward: {global_temporal_reward:.4f}")
+                #print(f"Local temporal reward: {local_temporal_reward:.4f}")
                 
                 agent_temporal_reward = self.LOCAL_GLOBAL_REWARD_RATIO * local_temporal_reward + (1 - self.LOCAL_GLOBAL_REWARD_RATIO) * global_temporal_reward
                 p.agent_reward_sum += max(-2.0, min(2.0, agent_temporal_reward))         
@@ -166,6 +168,7 @@ class AsyncMARLOrchestrator:
             "joint_action":       p.joint_action,
         }, batch_size=[])
         self.transitions.append(transition)
+        print(f"Reward: {p.agent_reward_sum:.4f}  n_sim_steps: {p.agent_n_sim_steps}")
         self.pending_transition[i] = None
         
 

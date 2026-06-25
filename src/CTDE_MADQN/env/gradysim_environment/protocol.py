@@ -223,7 +223,7 @@ class Drone(IProtocol):
     def get_current_map_uncertainty(self):
         return self.total_uncertainty
     
-    def mean_and_std_deviation_uncertainty(self):
+    def get_mean_and_std_deviation_uncertainty(self):
         mean_uncertainty = np.mean(self.map[:,:,0])
         std_deviation_uncertainty = np.std(self.map[:,:,0])
         return mean_uncertainty, std_deviation_uncertainty
@@ -234,7 +234,7 @@ class Drone(IProtocol):
         Cells outside the world are padded with 0.0 (minimum uncertainty), so
         the drone is always at patch[M//2, M//2] regardless of edge proximity.
         """
-        mean_u, std_u = self.mean_and_std_deviation_uncertainty()
+        mean_u, std_u = self.get_mean_and_std_deviation_uncertainty()
         normalized_map = (self.map[:, :, 0] - mean_u) / (std_u + 1e-4)
         normalized_map = np.clip(normalized_map, -clip_limit, clip_limit)
 
