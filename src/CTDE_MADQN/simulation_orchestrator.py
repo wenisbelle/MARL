@@ -102,7 +102,7 @@ class AsyncMARLOrchestrator:
             if p is not None and mask[i]:
                 # Avoid reward to explode
                 global_temporal_reward = (self.REWARD_DECAY**p.agent_n_sim_steps) * global_step_reward
-                local_temporal_reward = (self.REWARD_DECAY**p.agent_n_sim_steps) * (rewards[i].item())
+                local_temporal_reward =  (rewards[i].item())
                 #print(f"Global temporal reward: {global_temporal_reward:.4f}")
                 #print(f"Local temporal reward: {local_temporal_reward:.4f}")
                 

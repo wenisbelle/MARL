@@ -59,7 +59,7 @@ class DualMapEncoder(nn.Module):
         self.large_size = large_size
         self.small_size = small_size
 
-        # large branch: extract features, then lock to M×M
+        # large
         self.large_stem = nn.Sequential(
             nn.Conv2d(in_channels, 32, 3, stride=1, padding=1),
             nn.ReLU(inplace=True),
@@ -67,9 +67,9 @@ class DualMapEncoder(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 3, stride=1, padding=1),
             nn.ReLU(inplace=True),
-            nn.AdaptiveAvgPool2d((small_size, small_size)),     # -> (B, 64, M, M) exactly
+            nn.AdaptiveAvgPool2d((small_size, small_size)),     # -> (B, 64, M, M)
         )
-        # small branch: same resolution, just extract features
+        # small
         self.small_stem = nn.Sequential(
             nn.Conv2d(in_channels, 32, 3, stride=1, padding=1),
             nn.ReLU(inplace=True),

@@ -117,7 +117,8 @@ class Drone(IProtocol):
         mask = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) < 0.25
         values_0_to_1 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT)
         values_2_to_3 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) + 1
-        self.map[:,:,0] = np.where(mask, values_2_to_3, values_0_to_1)
+        #self.map[:,:,0] = np.where(mask, values_2_to_3, values_0_to_1)
+        self.map[:,:,0] = 1.0
         self.total_uncertainty = self.map[:,:,0].sum()
         self.is_cell_visited = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT))
         self.accomulated_uncertainty = 0.0

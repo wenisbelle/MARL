@@ -831,7 +831,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         
         global_2 = -self.get_global_distance_penalty(stepped_agents)/10
         #print(f"Global 2 {global_2:.4f}")
-        return global_1 
+        return global_1 + global_2
 
 
     def _reward_sum_update(self, individual_rewards: list[float], global_reward: float, stepped_agents: list[EpisodeAgentState]) -> None:
