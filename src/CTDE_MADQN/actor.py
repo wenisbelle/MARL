@@ -54,7 +54,7 @@ class DualMapEncoder(nn.Module):
     channel axis with the small branch, jointly convolved, flattened, projected.
     """
     def __init__(self, in_channels: int = 2, large_size: int = 50,
-                 small_size: int = 10, feature_dim: int = 128):
+                 small_size: int = 11, feature_dim: int = 128):
         super().__init__()
         self.large_size = large_size
         self.small_size = small_size
@@ -160,10 +160,10 @@ class Actor(nn.Module):
         self,
         *,
         max_num_agents: int = 3,        # affects estimated_positions size
-        action_dim: int = 100,          # size of the action space 
+        action_dim: int = 121,          # size of the action space 
         map_channels: int = 2,          # map_patch is channel uncertainty and channel distance
         large_map_size: int = 50,
-        small_map_size: int = 10,
+        small_map_size: int = 11,
         map_feature_dim: int = 128,
         vector_feature_dim: int = 64,
         hidden_dim: int = 256,

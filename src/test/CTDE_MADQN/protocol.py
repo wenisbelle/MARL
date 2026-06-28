@@ -384,7 +384,7 @@ class Drone(IProtocol):
         current_x_cell = int((self.drone_position[0] + (self.MAP_WIDTH  * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
         current_y_cell = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
 
-        mask = -5*torch.ones(M * M, dtype=torch.bool)
+        mask = torch.zeros(M * M, dtype=torch.bool)
         for idx in range(M * M):
             row, col = idx // M, idx % M
             x = (row + 0.5) / M
@@ -393,6 +393,8 @@ class Drone(IProtocol):
             target_col = int(current_y_cell + (y - 0.5) * M)
             if 0 <= target_row < self.MAP_WIDTH and 0 <= target_col < self.MAP_HEIGHT:
                 mask[idx] = True
+            if target_row == current_x_cell and target_col == current_y_cell:
+                mask[idx] = False
         return mask
 
     def _build_obs_td(self) -> TensorDict:

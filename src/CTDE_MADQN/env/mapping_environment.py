@@ -653,7 +653,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
         current_x_cell, current_y_cell = protocol.get_current_cell()  
 
-        mask = -100*np.ones(A * A, dtype=bool)
+        mask = np.zeros(A * A, dtype=bool)
         for idx in range(A * A):
             row, col = idx // A, idx % A
             x = (row + 0.5) / A
@@ -662,6 +662,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             target_col = int(current_y_cell + (y - 0.5) * A)
             if 0 <= target_row < self.map_width and 0 <= target_col < self.map_height:
                 mask[idx] = True
+            if target_row == current_x_cell and target_col == current_y_cell:
+                mask[idx] = False
         return mask
 
     def get_estimated_positions_and_time_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
@@ -786,8 +788,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         mean_uncertainty = np.mean(global_map)
         std_uncertainty = np.std(global_map)
 
-        normalized_global_map = (global_map - mean_uncertainty) / (std_uncertainty + 1e-4)
-
+        #normalized_global_map = (global_map - mean_uncertainty) / (std_uncertainty + 1e-4)
+        normalized_global_map = (global_map - mean_uncertainty) 
         return np.clip(normalized_global_map, -5.0, 5.0)
     
     def get_normalized_global_uncertainty(self, agents: list[EpisodeAgentState]):
@@ -811,7 +813,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         
         for agent, u_before, u_after in zip(stepped_agents,uncertainty_before, uncertainty_after):
             ### Positive reward from reducing uncertainty
-            reward_1 = 100*(u_before - u_after)            
+            reward_1 = 1000*(u_before - u_after)
+            #print(f"u before: {u_before}. u after {u_after}")            
 
             ### reward for distance penalty:
             reward_2 = self.immediate_reward_from_action[agent.slot_index]
@@ -826,10 +829,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
     def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float, stepped_agents: list[EpisodeAgentState]) -> float:
         """Return the global reward based on the change in global uncertainty."""
-        global_1 = 100*(uncertainty_before - uncertainty_after)
+        global_1 = 1000*(uncertainty_before - uncertainty_after)
         #print(f"Global 1: {global_1:.4f}")
         
-        global_2 = -self.get_global_distance_penalty(stepped_agents)/10
+        global_2 = -self.get_global_distance_penalty(stepped_agents)
         #print(f"Global 2 {global_2:.4f}")
         return global_1 + global_2
 
