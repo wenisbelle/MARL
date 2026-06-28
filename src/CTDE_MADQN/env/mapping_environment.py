@@ -653,7 +653,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
         current_x_cell, current_y_cell = protocol.get_current_cell()  
 
-        mask = np.zeros(A * A, dtype=bool)
+        mask = -100*np.ones(A * A, dtype=bool)
         for idx in range(A * A):
             row, col = idx // A, idx % A
             x = (row + 0.5) / A
