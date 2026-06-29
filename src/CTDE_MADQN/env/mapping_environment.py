@@ -832,7 +832,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         global_1 = 1000*(uncertainty_before - uncertainty_after)
         #print(f"Global 1: {global_1:.4f}")
         
-        global_2 = -self.get_global_distance_penalty(stepped_agents)
+        global_2 = -0.5*self.get_global_distance_penalty(stepped_agents)
         #print(f"Global 2 {global_2:.4f}")
         return global_1 + global_2
 
