@@ -690,8 +690,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         # pdist computes only the unique pairs
         dists = pdist(pos_arr)
 
-        valid_dists = dists[dists < self.communication_range]
-        penalty = np.sum(1 - valid_dists / self.communication_range)
+        valid_dists = dists[dists < 2*self.communication_range]
+        penalty = np.sum(valid_dists / self.communication_range - 1)
         return penalty 
     
     def get_individual_uncertainty_from_simulation(self, agents: list[EpisodeAgentState]) -> list[float]:
@@ -832,7 +832,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         global_1 = 1000*(uncertainty_before - uncertainty_after)
         #print(f"Global 1: {global_1:.4f}")
         
-        global_2 = -0.5*self.get_global_distance_penalty(stepped_agents)
+        # This value can be positive or negative, depending on whether the agents are too close or too far from each other
+        global_2 = 0.5*self.get_global_distance_penalty(stepped_agents)
         #print(f"Global 2 {global_2:.4f}")
         return global_1 + global_2
 
