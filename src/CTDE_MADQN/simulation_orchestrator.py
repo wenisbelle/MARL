@@ -106,8 +106,8 @@ class AsyncMARLOrchestrator:
                 #print(f"Global temporal reward: {global_temporal_reward:.4f}")
                 #print(f"Local temporal reward: {local_temporal_reward:.4f}")
                 
-                agent_temporal_reward = self.LOCAL_GLOBAL_REWARD_RATIO * local_temporal_reward + (1 - self.LOCAL_GLOBAL_REWARD_RATIO) * global_temporal_reward
-                p.agent_reward_sum += max(-2.0, min(2.0, agent_temporal_reward))         
+                agent_temporal_reward = local_temporal_reward + (self.LOCAL_GLOBAL_REWARD_RATIO) * global_temporal_reward
+                p.agent_reward_sum += max(-1.0, min(1.0, agent_temporal_reward))         
                 p.agent_n_sim_steps += 1
 
 
@@ -153,12 +153,13 @@ class AsyncMARLOrchestrator:
 
     def _close_agent(self, i: int, next_obs_td: TensorDict, terminal: bool):
         p = self.pending_transition[i]
+        clipped_reward_sum = max(-5.0, min(5.0, p.agent_reward_sum))
         transition = TensorDict({
             # agent side
             "obs":         p.agent_state,
             "next_obs":    self._slice_agent_obs(next_obs_td, i),
             "action":      p.agent_action,
-            "reward":      torch.tensor([p.agent_reward_sum], dtype=torch.float32),
+            "reward":      torch.tensor([clipped_reward_sum], dtype=torch.float32),
             "done":        torch.tensor([terminal], dtype=torch.bool),
             "n_sim_steps": torch.tensor([p.agent_n_sim_steps], dtype=torch.long),
             "agent_idx":   torch.tensor([i], dtype=torch.long),
@@ -168,7 +169,7 @@ class AsyncMARLOrchestrator:
             "joint_action":       p.joint_action,
         }, batch_size=[])
         self.transitions.append(transition)
-        #print(f"Reward: {p.agent_reward_sum:.4f}  n_sim_steps: {p.agent_n_sim_steps}")
+        print(f"Reward: {clipped_reward_sum:.4f}  n_sim_steps: {p.agent_n_sim_steps}")
         self.pending_transition[i] = None
         
 
