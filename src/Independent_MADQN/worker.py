@@ -4,10 +4,13 @@ Ther worker is responsible for running one instance of the environment and colle
 These transitions are sent back to the main process via a multiprocessing.Queue.
 The worker also listens for new policy weights and control signals (like "STOP") from the main process.
 """
-
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
 import multiprocessing as mp
 import time
 import torch
+torch.set_num_threads(1)
 from queue import Empty
 from tensordict import TensorDict
 from torchrl.envs.utils import step_mdp
@@ -15,11 +18,14 @@ from torchrl.envs.utils import step_mdp
 from simulation_orchestrator import AsyncMARLOrchestrator
 
 def _drain_latest(q: mp.Queue):
-    """Pop everything available on `q` non-blocking; return the last item or None."""
+    """Pop everything available on `q`; safely discard older tensors."""
     latest = None
     try:
         while True:
+            old = latest
             latest = q.get_nowait()
+            if old is not None:
+                del old  # <-- Release the shared memory of skipped weights
     except Empty:
         pass
     return latest
@@ -34,6 +40,8 @@ def _worker_loop(
     weight_queue: mp.Queue,
     control_queue: mp.Queue,
     reward_scale: int, 
+    reward_decay: float,
+    local_global_reward_ratio: float,
     new_batch_new_simulation: bool = True, # whether to reset the simulation at the start of each batch
 ):
     """One worker process: env + orchestrator + local policy."""
@@ -52,7 +60,7 @@ def _worker_loop(
         with torch.no_grad(): 
             return policy(per_agent_obs_td)
 
-    orch = AsyncMARLOrchestrator(env, policy_callable, reward_scale)
+    orch = AsyncMARLOrchestrator(env, policy_callable, reward_scale, reward_decay, local_global_reward_ratio)
     td = orch.reset()
 
 
