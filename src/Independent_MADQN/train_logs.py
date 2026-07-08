@@ -63,7 +63,7 @@ class TrainingLogger:
         # Write the header row
         self.csv_writer.writerow([
             "iteration", "loss", "q_mean", "td_error", "action_entropy",
-            "reward", "avg_reward", "global_reward", "avg_global_reward", "eps"
+            "reward", "avg_reward", "eps"
         ])
         # ----------------------
 
@@ -75,7 +75,6 @@ class TrainingLogger:
 
         # Rolling histories across iterations.
         self._reward_history = deque(maxlen=reward_window)
-        self._global_reward_history = deque(maxlen=reward_window)
 
         # Full-history series for plotting.
         self._iters: list[int] = []
@@ -146,9 +145,8 @@ class TrainingLogger:
         new_count: int,
         buffer_size: int,
         eps: float,
-        reward_sample: Optional[torch.Tensor] = None,
-        global_reward_sample: Optional[torch.Tensor] = None,
-    ) -> None:
+        reward_sample: Optional[torch.Tensor] = None
+        ) -> None:
         """
         Print a one-line summary, update plots, and log to CSV.
         """
@@ -156,16 +154,10 @@ class TrainingLogger:
             reward_sample.mean().item() if reward_sample is not None and reward_sample.numel() > 0
             else float("nan")
         )
-        global_reward = (
-            global_reward_sample.mean().item()
-            if global_reward_sample is not None and global_reward_sample.numel() > 0
-            else float("nan")
-        )
+
 
         if mean_reward == mean_reward:
             self._reward_history.append(mean_reward)
-        if global_reward == global_reward:
-            self._global_reward_history.append(global_reward)
 
         # Calculate averages for the current iteration
         iter_loss = _avg(self._losses)
@@ -182,8 +174,6 @@ class TrainingLogger:
             iter_entropy,
             mean_reward, 
             self.avg_reward, 
-            global_reward, 
-            self.avg_global_reward, 
             eps
         ])
         self.csv_file.flush()  # Force write to disk immediately so data isn't lost on crash
@@ -197,7 +187,6 @@ class TrainingLogger:
                 f"TD_err={iter_td_error:+.3f} | "
                 f"ent={iter_entropy:.2f} | "
                 f"r={mean_reward:+.3f} (avg={self.avg_reward:+.3f}) | "
-                f"R_team={global_reward:+.3f} (avg={self.avg_global_reward:+.3f}) | "
                 f"ε={eps:.3f} | "
                 f"buf={buffer_size} | "
                 f"new={new_count}"
@@ -290,9 +279,6 @@ class TrainingLogger:
     def avg_reward(self) -> float:
         return _avg(self._reward_history)
 
-    @property
-    def avg_global_reward(self) -> float:
-        return _avg(self._global_reward_history)
 
     @property
     def best_avg_reward(self) -> float:

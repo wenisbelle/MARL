@@ -35,6 +35,8 @@ class WorkersOrchestrator:
         base_seed: int = 0,
         sync: bool = False,
         reward_scale: int = 100,
+        reward_decay: float = 0.99,
+        local_global_reward_ratio: float = 0.5,
         new_batch_new_simulation: bool = True,
     ):
         # "spawn" is required cross-platform 
@@ -52,6 +54,7 @@ class WorkersOrchestrator:
         self.replay_buffer = replay_buffer
         self.num_workers = num_workers
         self.reward_scale = reward_scale
+        self.reward_decay = reward_decay
         self.new_batch_new_simulation = new_batch_new_simulation
 
         self.workers = []
@@ -68,6 +71,8 @@ class WorkersOrchestrator:
                     self.weight_queues[i],
                     self.control_queues[i],
                     self.reward_scale,
+                    self.reward_decay,
+                    local_global_reward_ratio,
                     self.new_batch_new_simulation,
                 ),
                 daemon=False, # in trainning it should be False
@@ -130,6 +135,7 @@ class WorkersOrchestrator:
             if agent_td is not None:
                 self.replay_buffer.load_transitions(agent_td)
                 new_count += agent_td.batch_size[0]
+                del agent_td
             #print(f"Collected {new_count} transitions so far...")
 
         if self.sync:

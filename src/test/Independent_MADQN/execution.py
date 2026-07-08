@@ -7,6 +7,7 @@ from gradysim.simulator.handler.visualization import VisualizationHandler
 from gradysim.simulator.simulation import SimulationConfiguration, SimulationBuilder
 from protocol import drone_protocol_factory
 from gradysim.simulator.handler.communication import CommunicationHandler, CommunicationMedium
+from recorder import SimulationRecorder
 
 import numpy as np
 
@@ -27,12 +28,13 @@ def create_and_run_simulation():
     builder.add_handler(MobilityHandler())
     #builder.add_handler(VisualizationHandler())
     builder.add_handler(CommunicationHandler(CommunicationMedium(
-        transmission_range=200
+        transmission_range=100
     )))
 
     MAP_WIDTH = 50
     MAP_HEIGHT = 50
-    NUMBER_OF_DRONES = 3
+    NUMBER_OF_DRONES = 5
+    DISTANCE_BETWEEN_CELLS = 20
 
     results_aggregator = {}
     ConfiguredDrone = drone_protocol_factory(
@@ -47,11 +49,14 @@ def create_and_run_simulation():
     )
 
     for _ in range(NUMBER_OF_DRONES):
-        builder.add_node(ConfiguredDrone, (0, 0, 0))
+        builder.add_node(ConfiguredDrone, (random.uniform(-MAP_WIDTH*DISTANCE_BETWEEN_CELLS/2, MAP_WIDTH*DISTANCE_BETWEEN_CELLS/2), 
+                                           random.uniform(-MAP_HEIGHT*DISTANCE_BETWEEN_CELLS/2, MAP_HEIGHT*DISTANCE_BETWEEN_CELLS/2), 
+                                           50))
 
   
     # Building & starting
     simulation = builder.build()
+    recorder = SimulationRecorder(simulation, NUMBER_OF_DRONES, MAP_WIDTH, MAP_HEIGHT, distance_between_cells=20)
 
     def get_global_map():
         agents_maps = []
@@ -76,7 +81,9 @@ def create_and_run_simulation():
             global_map = get_global_map()
             sum = global_map.sum()
             print(f"At time: {simulation._current_timestamp} the global map: {sum}")
+            recorder.snapshot()  
         next_checkpoint += STEP_INTERVAL
+    recorder.save("logs/recording.pkl", results_aggregator)
 
 
 def main():

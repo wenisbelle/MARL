@@ -81,10 +81,10 @@ class Drone(IProtocol):
         "uncertainty_rate": 0.01,
         "vanishing_update_time": 10.0,
         "number_of_drones": 3,
-        "map_width": 10,
-        "map_height": 10,
+        "map_width": 50,
+        "map_height": 50,
         "observation_map_size": 50,
-        "action_map_size": 10, 
+        "action_map_size": 10,
     }
 
     def initialize(self) -> None:
@@ -114,7 +114,11 @@ class Drone(IProtocol):
         
         ##### Initialize map #####
         self.map = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT, 2))
-        self.map[:,:,0] = 1
+        mask = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) < 0.25
+        values_0_to_1 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT)
+        values_2_to_3 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) + 1
+        #self.map[:,:,0] = np.where(mask, values_2_to_3, values_0_to_1)
+        self.map[:,:,0] = 1.0
         self.total_uncertainty = self.map[:,:,0].sum()
         self.is_cell_visited = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT))
         self.accomulated_uncertainty = 0.0
@@ -150,6 +154,9 @@ class Drone(IProtocol):
         self.battery_status = self.energy.get_battery_status() 
         self.provider.schedule_timer("battery", self.provider.current_time() + 1)
 
+        # For the second drone, it has to wait till receiving the position the first one choose
+        self.waiting_for_destination = False
+
         
         ##### Instead of using flags, each drone will have a list with all destinations from the other drones, indexed by the drone ID.
         ##### This model assumes that the drones position will be at their destination 
@@ -162,10 +169,10 @@ class Drone(IProtocol):
 
 
         # For debugging process
-        if Drone.visualizer is None:
+        #if Drone.visualizer is None:
         #    # We have 3 drones in the simulation.
         #    # I have to think a better way to do this.
-           Drone.visualizer = MapVisualizer(num_drones=self.NUMBER_OF_DRONES, map_width=self.MAP_WIDTH, map_height=self.MAP_HEIGHT, distance_between_cells=self.DISTANCE_BETWEEN_CELLS)
+        #   Drone.visualizer = MapVisualizer(num_drones=self.NUMBER_OF_DRONES, map_width=self.MAP_WIDTH, map_height=self.MAP_HEIGHT, distance_between_cells=self.DISTANCE_BETWEEN_CELLS)
         
         if self.visualizer:
             self.visualizer.update_map(self.provider.get_id(), self.map[:,:,0])
@@ -175,7 +182,8 @@ class Drone(IProtocol):
         ################################
         VECTOR_FEATURE_DIM = 64
         HIDDEN_DIM = 256
-        self.MAP_KEY = 'map_patch'
+        self.LARGE_MAP_KEY = 'large_map_patch'
+        self.SMALL_MAP_KEY = 'small_map_patch'
         self.POSITION_KEY = 'position'
         self.UNCERTAINTY_KEY = 'individual_map_uncertainty'
         self.ESTIMATED_POSITIONS_AND_TIME_KEY = 'estimated_positions_and_time'
@@ -184,13 +192,16 @@ class Drone(IProtocol):
         self.actor = Actor(
             max_num_agents=self.NUMBER_OF_DRONES,
             action_dim=ACTION_DIMENSION,
-            map_channels=1,
+            map_channels=2,
+            large_map_size = self.MAP_WIDTH,
+            small_map_size = self.ACTION_MAP_SIZE,
             vector_feature_dim=VECTOR_FEATURE_DIM,
             hidden_dim=HIDDEN_DIM,
-            map_key=self.MAP_KEY,
+            large_map_key=self.LARGE_MAP_KEY,
+            small_map_key=self.SMALL_MAP_KEY,
             position_key=self.POSITION_KEY,
             uncertainty_key=self.UNCERTAINTY_KEY,
-            estimated_positions_and_time_key=self.ESTIMATED_POSITIONS_AND_TIME_KEY,
+            estimated_positions_key=self.ESTIMATED_POSITIONS_AND_TIME_KEY,
             )
         checkpoint = torch.load('best.pt', map_location="cpu")
         # print(checkpoint.keys())
@@ -212,10 +223,10 @@ class Drone(IProtocol):
         current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
 
         ### Calculating the range of cells to update based on the observation radius. The range in index, so it needs to be converted to the map coordinates. 
-        x_min = max(0, math.floor(current_x - cells_to_check))
-        x_max = min(self.MAP_WIDTH, math.floor(current_x + cells_to_check) + 1)
-        y_min = max(0, math.floor(current_y - cells_to_check))
-        y_max = min(self.MAP_HEIGHT, math.floor(current_y + cells_to_check) + 1)
+        x_min = max(0, int(current_x - cells_to_check))
+        x_max = min(self.MAP_WIDTH, int(current_x + cells_to_check) + 1)
+        y_min = max(0, int(current_y - cells_to_check))
+        y_max = min(self.MAP_HEIGHT, int(current_y + cells_to_check) + 1)
 
         #self._log.info(f"Drone {self.provider.get_id()} is updating cells in range x: [{x_min}, {x_max}), y: [{y_min}, {y_max}) based on its position {self.drone_position} and observation radius {observation_radius}")
 
@@ -246,14 +257,84 @@ class Drone(IProtocol):
     def get_current_map_uncertainty(self):
         return self.total_uncertainty
     
-    def get_patched_map(self, observation_map_size: int) -> np.ndarray:
+    def mean_and_std_deviation_uncertainty(self):
+        mean_uncertainty = np.mean(self.map[:,:,0])
+        std_deviation_uncertainty = np.std(self.map[:,:,0])
+        return mean_uncertainty, std_deviation_uncertainty
+    
+    def get_current_cell(self):
+        current_x = int((self.drone_position[0] + (self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
+        return current_x, current_y
+    
+    def get_normalized_drone_position(self):
+        half_map_width = self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS / 2
+        half_map_height = self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS / 2
+        normalized_x = (self.drone_position[0] + half_map_width) / (2*half_map_width)
+        normalized_y = (self.drone_position[1] + half_map_height) / (2*half_map_height)
+        return [normalized_x, normalized_y]
+    
+    def get_estimated_drone_destinations(self, normalize_time: float = 60.0):
+        half_map_width = self.MAP_WIDTH * self.DISTANCE_BETWEEN_CELLS / 2
+        half_map_height = self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS / 2
+
+        est = np.zeros((self.NUMBER_OF_DRONES - 1, 3))
+        row = 0
+        for i, s in enumerate(self.drone_states):
+            if i == self.provider.get_id():
+                continue
+            px = (s['position'][0] + half_map_width) / (2*half_map_width)
+            py = (s['position'][1] + half_map_height) / (2*half_map_height)
+            dt_norm = min(float(self.provider.current_time() - s['time_of_last_update']) / normalize_time, 1.0)
+            est[row, 0] = px
+            est[row, 1] = py
+            est[row, 2] = dt_norm
+            row += 1
+        return est
+
+    def get_spatial_distance_map(self, observation_map_size: int) -> np.ndarray:
+        """
+        Returns a 2D matrix where each cell contains its normalized Euclidean 
+        distance to the drone's current position.
+        """
+        if observation_map_size == self.MAP_WIDTH:
+            # Generating for the full global map
+            w, h = self.MAP_WIDTH, self.MAP_HEIGHT
+            cx, cy = self.get_current_cell()
+            # Max possible distance is the diagonal of the map
+            max_dist = math.sqrt(w**2 + h**2)
+        else:
+            # Generating for the ego-centric patch map
+            w = h = observation_map_size
+            # In the patched map, the drone is always perfectly in the center
+            cx = cy = observation_map_size // 2
+            # Max distance in the patch is from the center to a corner
+            max_dist = math.sqrt(cx**2 + cy**2)
+
+        # Create coordinate grids for fast vectorized broadcasting
+        # x will have shape (w, 1) and y will have shape (1, h)
+        x, y = np.ogrid[:w, :h]
+        
+        # Calculate Euclidean distance from the center coordinates
+        distances = np.sqrt((x - cx)**2 + (y - cy)**2)
+        
+        # Normalize to [0.0, 1.0] to maintain stable training gradients
+        # Avoid division by zero in the extreme edge case where max_dist is 0
+        normalized_distances = (distances / max(1e-5, max_dist)).astype(np.float32)
+        return normalized_distances
+    
+    def get_patched_map(self, observation_map_size: int, clip_limit: float = 5.0) -> np.ndarray:
         """
         Return an (M, M) patch of the uncertainty map centered on the drone.
         Cells outside the world are padded with 0.0 (maximum uncertainty), so
         the drone is always at patch[M//2, M//2] regardless of edge proximity.
         """
-        if self.OBSERVATION_MAP_SIZE == self.MAP_WIDTH:
-            return self.map[:,:,0]
+        mean_u, std_u = self.mean_and_std_deviation_uncertainty()
+        normalized_map = (self.map[:, :, 0] - mean_u) / (std_u + 1e-4)
+        normalized_map = np.clip(normalized_map, -clip_limit, clip_limit)
+
+        if observation_map_size == self.MAP_WIDTH:
+            return normalized_map
         else:        
             M = observation_map_size
             half = M // 2
@@ -274,8 +355,8 @@ class Drone(IProtocol):
             src_y_lo = max(0, y_lo)
             src_y_hi = min(self.MAP_HEIGHT, y_hi)
 
-            # Pre-fill with 0.0 so off-map cells look maximally uncertain (not "explored").
-            patch = np.full((M, M), 0.0, dtype=np.float32)
+            # Pre-fill with 0.0 so off-map cells look well known
+            patch = np.full((M, M), -5.0, dtype=np.float32)
 
             if src_x_hi > src_x_lo and src_y_hi > src_y_lo:
                 dst_x_lo = src_x_lo - x_lo
@@ -283,7 +364,7 @@ class Drone(IProtocol):
                 dst_x_hi = dst_x_lo + (src_x_hi - src_x_lo)
                 dst_y_hi = dst_y_lo + (src_y_hi - src_y_lo)
                 patch[dst_x_lo:dst_x_hi, dst_y_lo:dst_y_hi] = \
-                    self.map[src_x_lo:src_x_hi, src_y_lo:src_y_hi, 0]
+                    normalized_map[src_x_lo:src_x_hi, src_y_lo:src_y_hi]
             return patch
     
     ##### Map updating ##### 
@@ -294,7 +375,7 @@ class Drone(IProtocol):
         ##### Importante parameter. If there are unviseted cells, there will be penalizations in the algorithm #####
         self.is_cell_visited[self.map[:, :, 1] > 0.0] = 1
 
-        #self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
+        self._log.info(f"At time: {self.provider.current_time()}, the node {self.provider.get_id()} has {self.MAP_WIDTH*self.MAP_HEIGHT - np.sum(self.is_cell_visited)} unvisited cells")
 
 
     def _compute_valid_action_mask(self) -> torch.Tensor:
@@ -312,6 +393,8 @@ class Drone(IProtocol):
             target_col = int(current_y_cell + (y - 0.5) * M)
             if 0 <= target_row < self.MAP_WIDTH and 0 <= target_col < self.MAP_HEIGHT:
                 mask[idx] = True
+            if target_row == current_x_cell and target_col == current_y_cell:
+                mask[idx] = False
         return mask
 
     def _build_obs_td(self) -> TensorDict:
@@ -319,40 +402,36 @@ class Drone(IProtocol):
         Convert current numpy drone state into the TensorDict that Actor.forward expects.
         """
         
-        map_patch = torch.tensor(
-            self.get_patched_map(self.OBSERVATION_MAP_SIZE),
+        large_map_patch = torch.tensor(
+            np.stack((self.get_patched_map(self.OBSERVATION_MAP_SIZE), self.get_spatial_distance_map(self.OBSERVATION_MAP_SIZE)), axis = 0),
+            dtype=torch.float32
+        )
+
+        small_map_patch = torch.tensor(
+            np.stack((self.get_patched_map(self.ACTION_MAP_SIZE), self.get_spatial_distance_map(self.ACTION_MAP_SIZE)), axis = 0),
             dtype=torch.float32
         )
 
         # individual_map_uncertainty: (1,) - Try to normalize. But it is still possible that the uncertainty is larger than 1.0
-        norm = 2*self.MAP_WIDTH * self.MAP_HEIGHT
+        individual_map_uncertainty = self.mean_and_std_deviation_uncertainty()
+
         uncertainty = torch.tensor(
-            [self.total_uncertainty / norm],
+            individual_map_uncertainty,
             dtype=torch.float32
         )
 
         # position: (2,) — drone x,y normalized to [0, 1] over the world
-        world_w = self.MAP_WIDTH  * self.DISTANCE_BETWEEN_CELLS
-        world_h = self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS
-        pos_x = (self.drone_position[0] + world_w / 2) / world_w
-        pos_y = (self.drone_position[1] + world_h / 2) / world_h
+        pos_x, pos_y = self.get_normalized_drone_position()
         position = torch.tensor([pos_x, pos_y], dtype=torch.float32)
 
         # estimated_positions: (N-1, 3) — other drones' last known positions, normalized
-        est = []
-        for i, s in enumerate(self.drone_states):
-            if i == self.provider.get_id():
-                continue
-            px = (s['position'][0] + world_w / 2) / world_w
-            py = (s['position'][1] + world_h / 2) / world_h
-            dt_norm = min(float(self.provider.current_time() - s['time_of_last_update']) / self.NORMALIZE_TIME, 1.0)
-            est.append([px, py, dt_norm])
-
+        est = self.get_estimated_drone_destinations()
         estimated_positions_and_time = torch.tensor(est, dtype=torch.float32)  # (N, 2)
 
         return TensorDict(
             {
-                self.MAP_KEY:                            map_patch,
+                self.LARGE_MAP_KEY:                      large_map_patch,
+                self.SMALL_MAP_KEY:                      small_map_patch,
                 self.UNCERTAINTY_KEY:                    uncertainty,
                 self.POSITION_KEY:                       position,
                 self.ESTIMATED_POSITIONS_AND_TIME_KEY:   estimated_positions_and_time,
@@ -413,7 +492,14 @@ class Drone(IProtocol):
         self.send_broadcast_destination()
         #print(f"Drone {self.provider.get_id()} broadcasted its destination {self.goto_command} to other drones.") 
 
-
+        self.results_aggregator.setdefault("decisions", {}).setdefault(
+            self.provider.get_id(), []
+        ).append({
+            "t": self.provider.current_time(),
+            "current_cell": (current_x_cell, current_y_cell),
+            "target_cell": (target_row, target_col),
+            "action": (float(x), float(y)),
+        })
 
     def send_heartbeat(self):
         #self._log.info(f"Sending heartbeat ...")
@@ -579,8 +665,13 @@ class Drone(IProtocol):
                 # Update the map and the states of the drones, both will be used in the NN policy
                 self.update_states(data)
                 if self.provider.current_time() - self.last_drone_interaction_time[data['sender']]  > self.TIMEOUT_TO_UPDATE_DESTINATION: # the drone id starts at 0
-                    action = self._select_action()
-                    self.mobility_command(action, self.OBSERVATION_MAP_SIZE)
+                    if self.provider.get_id() > data['sender']:
+                        action = self._select_action()
+                        self.mobility_command(action, self.ACTION_MAP_SIZE)
+                        self._log.info(f"Drone {self.provider.get_id()} updated position command.")   
+                    else:
+                        self.waiting_for_destination = True
+                    
                     self.last_drone_interaction_time[data['sender']] = self.provider.current_time() 
             
             elif msg_type == MessageType.BROADCAST_DESTINATION_MESSAGE.value:
@@ -588,7 +679,12 @@ class Drone(IProtocol):
                 destination = np.array(data['destination'])
                 self.drone_states[sender_id]['position'] = destination[0:2] # only x and y
                 self.drone_states[sender_id]['time_of_last_update'] = self.provider.current_time()
-                #print(f"Drone {self.provider.get_id()} received broadcasted destination {destination} from drone {sender_id}.") 
+                #print(f"Drone {self.provider.get_id()} received broadcasted destination {destination} from drone {sender_id}.")
+                if self.waiting_for_destination:
+                    action = self._select_action()
+                    self.mobility_command(action, self.ACTION_MAP_SIZE)
+                    self.waiting_for_destination = False
+                    self._log.info(f"Drone {self.provider.get_id()} received broadcasted destination {destination} from drone {sender_id}")
             else:
                 self._log.warning(f"Received message with unknown type: {msg_type}")
 
