@@ -118,7 +118,7 @@ class Drone(IProtocol):
         values_0_to_1 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT)
         values_2_to_3 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) + 1
         #self.map[:,:,0] = np.where(mask, values_2_to_3, values_0_to_1)
-        self.map[:,:,0] = 1.0
+        self.map[:,:,0] = 0.50
         self.total_uncertainty = self.map[:,:,0].sum()
         self.is_cell_visited = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT))
         self.accomulated_uncertainty = 0.0
@@ -187,7 +187,7 @@ class Drone(IProtocol):
         self.POSITION_KEY = 'position'
         self.UNCERTAINTY_KEY = 'individual_map_uncertainty'
         self.ESTIMATED_POSITIONS_AND_TIME_KEY = 'estimated_positions_and_time'
-        ACTION_DIMENSION = 100
+        ACTION_DIMENSION = 121
       
         self.actor = Actor(
             max_num_agents=self.NUMBER_OF_DRONES,
@@ -330,7 +330,7 @@ class Drone(IProtocol):
         the drone is always at patch[M//2, M//2] regardless of edge proximity.
         """
         mean_u, std_u = self.mean_and_std_deviation_uncertainty()
-        normalized_map = (self.map[:, :, 0] - mean_u) / (std_u + 1e-4)
+        normalized_map = (self.map[:, :, 0] - mean_u)
         normalized_map = np.clip(normalized_map, -clip_limit, clip_limit)
 
         if observation_map_size == self.MAP_WIDTH:

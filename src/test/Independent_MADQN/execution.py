@@ -44,7 +44,7 @@ def create_and_run_simulation():
         map_width=MAP_WIDTH,
         map_height=MAP_HEIGHT,
         observation_map_size=50,
-        action_map_size=10,
+        action_map_size=11,
         results_aggregator=results_aggregator
     )
 
