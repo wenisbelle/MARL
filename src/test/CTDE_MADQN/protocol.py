@@ -117,7 +117,8 @@ class Drone(IProtocol):
         mask = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) < 0.25
         values_0_to_1 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT)
         values_2_to_3 = np.random.rand(self.MAP_WIDTH, self.MAP_HEIGHT) + 1
-        self.map[:,:,0] = np.where(mask, values_2_to_3, values_0_to_1)
+        #self.map[:,:,0] = np.where(mask, values_2_to_3, values_0_to_1)
+        self.map[:,:,0] = 1.0
         self.total_uncertainty = self.map[:,:,0].sum()
         self.is_cell_visited = np.zeros((self.MAP_WIDTH, self.MAP_HEIGHT))
         self.accomulated_uncertainty = 0.0
@@ -222,10 +223,10 @@ class Drone(IProtocol):
         current_y = int((self.drone_position[1] + (self.MAP_HEIGHT * self.DISTANCE_BETWEEN_CELLS) / 2) / self.DISTANCE_BETWEEN_CELLS)
 
         ### Calculating the range of cells to update based on the observation radius. The range in index, so it needs to be converted to the map coordinates. 
-        x_min = max(0, math.floor(current_x - cells_to_check))
-        x_max = min(self.MAP_WIDTH, math.floor(current_x + cells_to_check) + 1)
-        y_min = max(0, math.floor(current_y - cells_to_check))
-        y_max = min(self.MAP_HEIGHT, math.floor(current_y + cells_to_check) + 1)
+        x_min = max(0, int(current_x - cells_to_check))
+        x_max = min(self.MAP_WIDTH, int(current_x + cells_to_check) + 1)
+        y_min = max(0, int(current_y - cells_to_check))
+        y_max = min(self.MAP_HEIGHT, int(current_y + cells_to_check) + 1)
 
         #self._log.info(f"Drone {self.provider.get_id()} is updating cells in range x: [{x_min}, {x_max}), y: [{y_min}, {y_max}) based on its position {self.drone_position} and observation radius {observation_radius}")
 
@@ -354,8 +355,8 @@ class Drone(IProtocol):
             src_y_lo = max(0, y_lo)
             src_y_hi = min(self.MAP_HEIGHT, y_hi)
 
-            # Pre-fill with 0.0 so off-map cells look maximally uncertain (not "explored").
-            patch = np.full((M, M), 0.0, dtype=np.float32)
+            # Pre-fill with 0.0 so off-map cells look well known
+            patch = np.full((M, M), -5.0, dtype=np.float32)
 
             if src_x_hi > src_x_lo and src_y_hi > src_y_lo:
                 dst_x_lo = src_x_lo - x_lo
@@ -392,6 +393,8 @@ class Drone(IProtocol):
             target_col = int(current_y_cell + (y - 0.5) * M)
             if 0 <= target_row < self.MAP_WIDTH and 0 <= target_col < self.MAP_HEIGHT:
                 mask[idx] = True
+            if target_row == current_x_cell and target_col == current_y_cell:
+                mask[idx] = False
         return mask
 
     def _build_obs_td(self) -> TensorDict:

@@ -2,6 +2,7 @@ import dataclasses
 import math
 import random
 from typing import Optional
+from scipy.spatial.distance import pdist
 
 import numpy as np
 import torch
@@ -470,8 +471,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         ##### Get the individual uncertainty before the step, to compute the reward later
         pre_step_agents = self._active_episode_agents()
-        collected_individual_uncertainty_before_mean = self.get_individual_uncertainty_from_simulation(pre_step_agents)
-        collected_global_uncertainty_before_mean = self.get_global_map_from_simulation(pre_step_agents).mean()
+        collected_individual_uncertainty_before = self.get_individual_uncertainty_from_simulation(pre_step_agents)
+        collected_global_uncertainty_before = self.get_global_map_from_simulation(pre_step_agents).sum()
 
         self._apply_actions(actions)
         status = self.step_simulation()
@@ -479,8 +480,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
         ##### Get the individual uncertainty after the step, to compute the reward later
         ##### For now, in this calculation we are considering that the reward is given to the specific agent even if he dies in this step
-        collected_individual_uncertainty_after_mean = self.get_individual_uncertainty_from_simulation(pre_step_agents)
-        collected_global_uncertainty_after_mean = self.get_global_map_from_simulation(pre_step_agents).mean()
+        collected_individual_uncertainty_after = self.get_individual_uncertainty_from_simulation(pre_step_agents)
+        collected_global_uncertainty_after = self.get_global_map_from_simulation(pre_step_agents).sum()
 
         #print(f"Pre steps uncertainty: {collected_individual_uncertainty_before_mean}")
         #print(f"Post steps uncertainty: {collected_individual_uncertainty_after_mean}")
@@ -488,11 +489,11 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         #print(f"Post steps global uncertainty: {collected_global_uncertainty_after_mean:.4f}")
 
         ##### Reward
-        individual_rewards = self._compute_individual_rewards(collected_individual_uncertainty_before_mean,
-                                                              collected_individual_uncertainty_after_mean,
+        individual_rewards = self._compute_individual_rewards(collected_individual_uncertainty_before,
+                                                              collected_individual_uncertainty_after,
                                                               pre_step_agents)
         
-        global_reward = self._compute_global_rewards(collected_global_uncertainty_before_mean, collected_global_uncertainty_after_mean)
+        global_reward = self._compute_global_rewards(collected_global_uncertainty_before, collected_global_uncertainty_after, pre_step_agents)
         
         #"Step reward calculation: individual rewards = {individual_rewards}, global reward = {global_reward:.4f}")
         
@@ -603,7 +604,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             destination_x = protocol.drone_position[0] + (x - 0.5)*self.action_map_size*self.distance_between_cells
             destination_y = protocol.drone_position[1] + (y - 0.5)*self.action_map_size*self.distance_between_cells
 
-            self.immediate_reward_from_action[agent.slot_index] = -self.get_immediate_distance_penalty(agent, destination_x, destination_y)
+            self.immediate_reward_from_action[agent.slot_index] = self.get_immediate_distance_penalty(agent, destination_x, destination_y)
 
     def _sample_dying_agents(self, stepped_agents: list[EpisodeAgentState]) -> list[EpisodeAgentState]:
         if self.agent_death_probability <= 0.0:
@@ -661,6 +662,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             target_col = int(current_y_cell + (y - 0.5) * A)
             if 0 <= target_row < self.map_width and 0 <= target_col < self.map_height:
                 mask[idx] = True
+            if target_row == current_x_cell and target_col == current_y_cell:
+                mask[idx] = False
         return mask
 
     def get_estimated_positions_and_time_from_simulation(self, agent: EpisodeAgentState) -> np.ndarray:
@@ -678,14 +681,33 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             positions.append(protocol.drone_position[:2])
         return positions
     
+    def get_global_distance_penalty(self, agents: list[EpisodeAgentState]) -> float:
+        positions = self.get_global_positions_from_simulation(agents)
+        
+        if len(positions) < 2:
+            return 0.0
+        pos_arr = np.array(positions)
+        # pdist computes only the unique pairs
+        dists = pdist(pos_arr)
+        #print(f"Distances between drones: {dists}")
+
+        raw_penalty = np.sum(np.minimum(dists / (2*self.communication_range), 2) - 1)
+        
+        min_penalty = -1.0
+        max_penalty = 1.0
+
+        penalty = np.clip(raw_penalty, min_penalty, max_penalty)
+        #print(f"Global distance penalty: {penalty:.4f}")
+        return penalty 
+    
     def get_individual_uncertainty_from_simulation(self, agents: list[EpisodeAgentState]) -> list[float]:
         agents_uncertainty = []
         for agent in agents:
             if agent.active is False:
                 continue
             protocol = self.simulator.get_node(agent.node_id).protocol_encapsulator.protocol
-            mean, _ = protocol.get_mean_and_std_deviation_uncertainty()
-            agents_uncertainty.append(mean)
+            uncertainty = protocol.get_current_map_uncertainty()
+            agents_uncertainty.append(uncertainty)
         return agents_uncertainty
     
     
@@ -742,11 +764,12 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
 
             other_x, other_y= agent_state['position'][:2]      
             distance_to_other = math.sqrt((destination_x - other_x) ** 2 + (destination_y - other_y) ** 2)
-            if distance_to_other > self.communication_range:
-                continue  # It is far way to consider a penalty
-            norm_distance = distance_to_other / (self.action_map_size * self.distance_between_cells)
+
+            norm_distance = distance_to_other / (self.communication_range)  # Normalize by the communication range
+
+            cliped_norm_distance = min(norm_distance, 2.0) # Clip it to 2.0
             
-            total_penalty += 2*max(0, 1 - norm_distance)  # Closer means higher penalty, with a hard cutoff at the action map's diagonal distance
+            total_penalty +=  cliped_norm_distance - 1  
         
         #print(f"------------Total penalty of drone {agent.node_id} is: {total_penalty:.4f}")
         return total_penalty
@@ -772,8 +795,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         mean_uncertainty = np.mean(global_map)
         std_uncertainty = np.std(global_map)
 
-        normalized_global_map = (global_map - mean_uncertainty) / (std_uncertainty + 1e-4)
-
+        #normalized_global_map = (global_map - mean_uncertainty) / (std_uncertainty + 1e-4)
+        normalized_global_map = (global_map - mean_uncertainty) 
         return np.clip(normalized_global_map, -5.0, 5.0)
     
     def get_normalized_global_uncertainty(self, agents: list[EpisodeAgentState]):
@@ -797,7 +820,9 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         
         for agent, u_before, u_after in zip(stepped_agents,uncertainty_before, uncertainty_after):
             ### Positive reward from reducing uncertainty
-            reward_1 = 100*(u_before - u_after)            
+            reward_1 = (u_before - u_after)
+            reward_1 = np.clip(reward_1, -1.0, 1.0)  
+            #print(f"u before: {u_before}. u after {u_after}")            
 
             ### reward for distance penalty:
             reward_2 = self.immediate_reward_from_action[agent.slot_index]
@@ -810,11 +835,15 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             #print(f"The final reward of agent {agent.slot_index} is {reward}")
         return rewards   
 
-    def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float) -> float:
+    def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float, stepped_agents: list[EpisodeAgentState]) -> float:
         """Return the global reward based on the change in global uncertainty."""
-        global_1 = 100*(uncertainty_before - uncertainty_after)
-        #print(f"Global: {global_1:.4f}")
-        return global_1 
+        global_1 = (uncertainty_before - uncertainty_after)
+        #print(f"Global 1: {global_1:.4f}")
+        
+        # This value can be positive or negative, depending on whether the agents are too close or too far from each other
+        global_2 = 0.5*self.get_global_distance_penalty(stepped_agents)
+        #print(f"Global 2 {global_2:.4f}")
+        return global_1 + global_2
 
 
     def _reward_sum_update(self, individual_rewards: list[float], global_reward: float, stepped_agents: list[EpisodeAgentState]) -> None:
