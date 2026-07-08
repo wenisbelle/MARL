@@ -166,7 +166,7 @@ class AsyncMARLOrchestrator:
             "joint_action":       p.joint_action,
         }, batch_size=[])
         self.transitions.append(transition)
-        print(f"Reward: {clipped_reward_sum:.4f}  n_sim_steps: {p.agent_n_sim_steps}")
+        #print(f"Reward: {clipped_reward_sum:.4f}  n_sim_steps: {p.agent_n_sim_steps}")
         self.pending_transition[i] = None
         
 
