@@ -119,6 +119,7 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             raise ValueError("agent_death_probability must be in [0, 1].")
         self.speed_action = config.speed_action
         self.agent_death_probability = config.agent_death_probability
+        self.DRIFT = self.map_width * self.map_height * self.uncertainty_rate
 
         ###########################################
         # IMPORTANT PARAMETER CHANGES THE BEHAVIOR#
@@ -201,16 +202,16 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         results_aggregator = {}
         ### Initial map most be the more diverse possible
         num = random.random()
-
+        #initial_map = np.random.rand(self.map_width, self.map_height)
         if num < 0.25:
             ### Uniform values between 0 and 1
             initial_map = np.random.rand(self.map_width, self.map_height)
-        elif num < 0.5:
+        elif num < 0.50:
             ### Uniform values between 0.5 and 1.0
             initial_map = np.random.uniform(low=0.5, high=1.0, size=(self.map_width, self.map_height))           
         elif num < 0.75:
             ### The map will start with 25% of the cells with a high uncertainty value between 1 and 2.
-            mask = np.random.rand(self.map_width, self.map_height) < 0.25
+            mask = np.random.rand(self.map_width, self.map_height) < 0.10
             values_0_to_1 = np.random.rand(self.map_width, self.map_height)
             values_2_to_3 = np.random.rand(self.map_width, self.map_height) + 1
             initial_map = np.where(mask, values_2_to_3, values_0_to_1)
@@ -231,8 +232,8 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         for agent in self._existing_episode_agents():
             if self.full_random_drone_position:
                 agent.node_id = builder.add_node(ConfiguredDrone, (
-                    random.uniform(-self.map_width*self.distance_between_cells/2, self.map_width*self.distance_between_cells/2),
-                    random.uniform(-self.map_height*self.distance_between_cells/2, self.map_height*self.distance_between_cells/2),
+                    random.uniform(-self.map_width/2, self.map_width/2),
+                    random.uniform(-self.map_height/2, self.map_height/2),
                     self.drone_altitude
                 ))
             else:
@@ -691,7 +692,10 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         dists = pdist(pos_arr)
         #print(f"Distances between drones: {dists}")
 
-        raw_penalty = np.sum(np.minimum(dists / (2*self.communication_range), 2) - 1)
+        base_penalty = np.sum(np.minimum(dists / (2*self.communication_range), 2) - 1)/self.max_num_agents
+        exp_penalty = -np.sum(np.exp(-dists / (0.5 * self.communication_range)))
+        #print(f"Exponential: {exp_penalty}")
+        raw_penalty = base_penalty + exp_penalty
         
         min_penalty = -1.0
         max_penalty = 1.0
@@ -820,8 +824,11 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
         
         for agent, u_before, u_after in zip(stepped_agents,uncertainty_before, uncertainty_after):
             ### Positive reward from reducing uncertainty
-            reward_1 = (u_before - u_after)
-            reward_1 = np.clip(reward_1, -1.0, 1.0)  
+            reward_1 = (u_before - u_after)/self.DRIFT
+            # Maximum value is clipped to minimize the behavior of 2 or more drones being near to each other
+            # because it could help them to get more individual reward, but it would be something not good for the
+            # global behavior 
+            reward_1 = np.clip(reward_1, -2.0, 2.0)  
             #print(f"u before: {u_before}. u after {u_after}")            
 
             ### reward for distance penalty:
@@ -831,19 +838,19 @@ class MappingEnvironment(BaseGrADySEnvironment, EnvBase):
             #print(f"Reward 1: {reward_1:.4f}")
             #print(f"Reward 2: {reward_2:.4f}")
 
-            rewards[agent.slot_index] = reward_1 + reward_2
+            rewards[agent.slot_index] = reward_1 
             #print(f"The final reward of agent {agent.slot_index} is {reward}")
         return rewards   
 
     def _compute_global_rewards(self, uncertainty_before: float, uncertainty_after: float, stepped_agents: list[EpisodeAgentState]) -> float:
         """Return the global reward based on the change in global uncertainty."""
-        global_1 = (uncertainty_before - uncertainty_after)
+        global_1 = (uncertainty_before - uncertainty_after)/self.DRIFT
         #print(f"Global 1: {global_1:.4f}")
         
         # This value can be positive or negative, depending on whether the agents are too close or too far from each other
-        global_2 = 0.5*self.get_global_distance_penalty(stepped_agents)
+        #global_2 = self.get_global_distance_penalty(stepped_agents)
         #print(f"Global 2 {global_2:.4f}")
-        return global_1 + global_2
+        return global_1 
 
 
     def _reward_sum_update(self, individual_rewards: list[float], global_reward: float, stepped_agents: list[EpisodeAgentState]) -> None:

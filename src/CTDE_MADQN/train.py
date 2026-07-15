@@ -44,7 +44,7 @@ ESTIMATED_POSITIONS_KEY = "estimated_positions_and_time"
 EPS_INIT = 1.0
 EPS_DECAY = 0.9998
 EPS_MIN = 0.1
-N_WORKERS = 16
+N_WORKERS = 12
 STEPS_PER_BATCH = 100
 NUM_ITERATIONS = 20000
 MIN_TRANSITIONS_PER_COLLECT = 100
@@ -58,8 +58,8 @@ BATCH_SIZE = 256
 BUFFERSIZE = 30000
 VALUE_NETWORK_UPDATES_PER_ITERATION = 4
 
-GAMMA        = 0.99
-REWARD_DECAY = 0.999
+GAMMA        = 0.90
+REWARD_DECAY = 0.90
 LR = 1e-4
 TARGET_SYNC = 10 
 GRAD_CLIP = 1.0
@@ -70,7 +70,7 @@ CHECKPOINT_DIR      = "checkpoints"
 LOG_EVERY           = 1                # print every iter; raise for long runs
 REWARD_WINDOW       = 100               # rolling-average window for "is it improving?"
 
-LOCAL_GLOBAL_REWARD_RATIO = 0.5 # how to weight the local vs global reward in the worker's reward calculation
+LOCAL_GLOBAL_REWARD_RATIO = 1.0 # how to weight the local vs global reward in the worker's reward calculation
 
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
@@ -188,6 +188,8 @@ def main():
                     action = batch["action"].to(device)
                     reward = batch["reward"].float().to(device)
                     done = batch["done"].float().to(device)
+                    n_steps = batch["n_sim_steps"].float().to(device)
+
 
                     with torch.no_grad():
                         #### Double DQN target calculation
@@ -195,7 +197,7 @@ def main():
                         a_next = next_q_value_online.argmax(dim=-1, keepdim=True)  # (B, 1)
                         next_q_target = target_actor(next_obs).gather(-1, a_next) #  B, 1)
 
-                        y = reward + GAMMA * next_q_target * (1.0 - done) 
+                        y = reward + (GAMMA**n_steps) * next_q_target * (1.0 - done) 
 
                     q_pred_all = trainer_policy.actor(obs)  # (B, action_dim)
                     q_pred = q_pred_all.gather(-1, action)  # (B, 1)
